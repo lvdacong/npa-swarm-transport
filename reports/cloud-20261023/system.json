@@ -1,0 +1,16 @@
+{
+  "utc": "2026-10-23T10:09:35.562247+00:00",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "torch": "2.14.1+cpu",
+  "torch_cuda_build": null,
+  "cuda_available": false,
+  "device": "cpu",
+  "cpu_count": 9,
+  "torch_threads": 2,
+  "tf32_matmul": false,
+  "deterministic_algorithms": false,
+  "runtime_source_sha256": "6c0c0a39e47ad2e469f418cfaf4f6645461ccb6baf5c93132fc3197fee4a7b6e",
+  "git_commit": "599607d6bdac39699009cb9af535620c2013cebb",
+  "git_dirty": true
+}

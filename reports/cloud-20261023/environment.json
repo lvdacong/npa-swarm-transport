@@ -1,0 +1,302 @@
+{
+  "timestamp_utc": "2026-10-23T09:57:32.062713+00:00",
+  "device": "cpu",
+  "torch": "2.14.1+cpu",
+  "threads": 2,
+  "population": 4096,
+  "substeps": 8,
+  "status": "bounded engineering probe; not learned task success; not CUDA performance",
+  "stages": {
+    "search": {
+      "reset_seconds": 0.5444142790001933,
+      "step_median_seconds": 0.21999863349992665,
+      "step_p95_seconds": 0.31134206900242134,
+      "mean_control_steps_per_second": 4.507214456031646,
+      "initial_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          true
+        ],
+        "largest_fraction": [
+          1.0
+        ],
+        "bridge": [
+          false
+        ],
+        "bridge_eligible": [
+          false
+        ],
+        "found_object": [
+          false
+        ],
+        "found_goal": [
+          false
+        ],
+        "object_distance": [
+          14.066611289978027
+        ],
+        "contact_count": [
+          0
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          0
+        ],
+        "episode_return": [
+          0.0
+        ],
+        "ever_disconnected": [
+          false
+        ],
+        "disconnected_seconds": [
+          0.0
+        ],
+        "min_largest_fraction": [
+          1.0
+        ],
+        "bridge_eligible_steps": [
+          0
+        ],
+        "bridge_steps": [
+          0
+        ]
+      },
+      "final_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          false
+        ],
+        "largest_fraction": [
+          0.993408203125
+        ],
+        "bridge": [
+          false
+        ],
+        "bridge_eligible": [
+          false
+        ],
+        "found_object": [
+          false
+        ],
+        "found_goal": [
+          false
+        ],
+        "object_distance": [
+          14.066611289978027
+        ],
+        "contact_count": [
+          0
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          22
+        ],
+        "episode_return": [
+          -0.0010886862874031067
+        ],
+        "ever_disconnected": [
+          true
+        ],
+        "disconnected_seconds": [
+          1.700000286102295
+        ],
+        "min_largest_fraction": [
+          0.993408203125
+        ],
+        "bridge_eligible_steps": [
+          0
+        ],
+        "bridge_steps": [
+          0
+        ],
+        "reward_progress": [
+          0.0
+        ],
+        "reward_discovery": [
+          0.0
+        ],
+        "reward_connectivity": [
+          -6.591797136934474e-05
+        ],
+        "reward_exploration": [
+          4.882812390860636e-06
+        ],
+        "reward_local_progress": [
+          0.0
+        ],
+        "reward_effort": [
+          -3.36166012857575e-05
+        ]
+      },
+      "edge_count": 121352,
+      "observations_finite": true,
+      "rewards_finite": true,
+      "formal_success": false
+    },
+    "contact": {
+      "reset_seconds": 0.08673623700087774,
+      "step_median_seconds": 0.260933796498648,
+      "step_p95_seconds": 0.7476045080002223,
+      "mean_control_steps_per_second": 2.9749918842764864,
+      "initial_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          true
+        ],
+        "largest_fraction": [
+          1.0
+        ],
+        "bridge": [
+          true
+        ],
+        "bridge_eligible": [
+          true
+        ],
+        "found_object": [
+          true
+        ],
+        "found_goal": [
+          true
+        ],
+        "object_distance": [
+          2.049999952316284
+        ],
+        "contact_count": [
+          46
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          0
+        ],
+        "episode_return": [
+          0.0
+        ],
+        "ever_disconnected": [
+          false
+        ],
+        "disconnected_seconds": [
+          0.0
+        ],
+        "min_largest_fraction": [
+          1.0
+        ],
+        "bridge_eligible_steps": [
+          0
+        ],
+        "bridge_steps": [
+          0
+        ]
+      },
+      "final_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          false
+        ],
+        "largest_fraction": [
+          0.989501953125
+        ],
+        "bridge": [
+          true
+        ],
+        "bridge_eligible": [
+          true
+        ],
+        "found_object": [
+          true
+        ],
+        "found_goal": [
+          true
+        ],
+        "object_distance": [
+          1.9786248207092285
+        ],
+        "contact_count": [
+          27
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          22
+        ],
+        "episode_return": [
+          0.21284718811511993
+        ],
+        "ever_disconnected": [
+          true
+        ],
+        "disconnected_seconds": [
+          1.600000262260437
+        ],
+        "min_largest_fraction": [
+          0.989501953125
+        ],
+        "bridge_eligible_steps": [
+          22
+        ],
+        "bridge_steps": [
+          22
+        ],
+        "reward_progress": [
+          0.02723550796508789
+        ],
+        "reward_discovery": [
+          0.0
+        ],
+        "reward_connectivity": [
+          -0.00010498047777218744
+        ],
+        "reward_exploration": [
+          4.882812390860636e-06
+        ],
+        "reward_local_progress": [
+          -1.8900522036346956e-06
+        ],
+        "reward_effort": [
+          -3.36166012857575e-05
+        ]
+      },
+      "edge_count": 122362,
+      "observations_finite": true,
+      "rewards_finite": true,
+      "formal_success": false
+    }
+  },
+  "contact_force_diagnostics": {
+    "1": {
+      "cargo_position": [
+        0.0,
+        0.0
+      ],
+      "elapsed_simulation_seconds": 3.0,
+      "active_pushers": 1,
+      "policy": "scripted force diagnostic only, not a learned controller"
+    },
+    "8": {
+      "cargo_position": [
+        0.13924995064735413,
+        -5.461785246296813e-09
+      ],
+      "elapsed_simulation_seconds": 3.0,
+      "active_pushers": 8,
+      "policy": "scripted force diagnostic only, not a learned controller"
+    }
+  },
+  "max_process_rss_kib": 282284,
+  "topology_sampling": "end of every control step; continuous-time or all-physics-substep connectivity is not certified",
+  "tests": "16 targeted tests passed, including all-pairs graph oracle, exact components, observation invariance, real force coupling, disconnection continuing, and full environment/RNG restoration"
+}

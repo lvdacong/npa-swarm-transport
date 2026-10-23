@@ -1,0 +1,8 @@
+{
+  "command": "python -m pytest -q --junitxml=reports/cloud-20261023/pytest.xml",
+  "returncode": 0,
+  "elapsed_seconds": 9.433771133422852,
+  "runtime_source_sha256": "6c0c0a39e47ad2e469f418cfaf4f6645461ccb6baf5c93132fc3197fee4a7b6e",
+  "cuda_validated": false,
+  "note": "Localhost sockets allowed for real HTTP tests. The earlier sandbox socket denial is preserved separately."
+}

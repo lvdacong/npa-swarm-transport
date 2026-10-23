@@ -1,0 +1,4 @@
+{
+  "error": "{'backend': 'Canvas 2D', 'adapter': 'CPU 绘制回退 · 用户选择 Canvas', 'sequence': 0, 'step': 0, 'particles': 4096, 'selected': -1, 'paused': True, 'errors': ['WebGPU device lost: unknown'], 'snapshotBytes': 131200, 'visible': True, 'renderedFrames': 2}",
+  "physical_gpu_validated": false
+}

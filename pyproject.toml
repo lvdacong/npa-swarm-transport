@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "npa-swarm-transport"
+version = "0.1.0"
+description = "Minimal NPA-inspired local-message recurrent RL for collective transport"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26,<3", "torch>=2.6,<3"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "playwright==1.56.0", "Pillow>=10,<13"]
+
+[project.scripts]
+npa-swarm = "npa_swarm.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+

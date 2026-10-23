@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "checkpoint": {
+    "checkpoint_sha256": "0f136f5632df4cb9c5c19e139040dba596dc54d4dfe220a98e1d0184d6c957dc",
+    "updates": 1,
+    "env_steps": 4,
+    "stage": "search",
+    "source_sha256": "a59d77742ecdf6fec75bd4cb17da58a528c76e968a8edb16a6a44ec71214e105",
+    "learned_success_verified": false
+  },
+  "runtime_source_sha256": "a59d77742ecdf6fec75bd4cb17da58a528c76e968a8edb16a6a44ec71214e105",
+  "source_changed": false,
+  "env_config": {
+    "n_agents": 32,
+    "num_envs": 1,
+    "arena_half": 10.0,
+    "agent_radius": 0.04,
+    "object_radius": 0.65,
+    "goal_radius": 1.0,
+    "comm_radius": 0.32,
+    "sense_radius": 0.8,
+    "dt": 0.1,
+    "substeps": 8,
+    "max_force": 1.0,
+    "agent_drag": 2.0,
+    "max_speed": 0.5,
+    "object_drag": 15.0,
+    "object_static_friction": 4.0,
+    "contact_stiffness": 100.0,
+    "episode_steps": 6,
+    "stage": "search",
+    "connectivity_weight": 0.1,
+    "seed": 42
+  },
+  "requested": 2,
+  "device": "cpu",
+  "policy_mode": "deterministic",
+  "max_steps": 3,
+  "diagnostic": true,
+  "connectivity_sampling": "control-step endpoints (not continuous-time proof)",
+  "requests": [
+    {
+      "seed": 45,
+      "episode": 0,
+      "layout_seed": 45,
+      "status": "censored",
+      "steps": 3,
+      "final_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          true
+        ],
+        "largest_fraction": [
+          1.0
+        ],
+        "bridge": [
+          false
+        ],
+        "bridge_eligible": [
+          false
+        ],
+        "found_object": [
+          false
+        ],
+        "found_goal": [
+          false
+        ],
+        "object_distance": [
+          13.022896766662598
+        ],
+        "contact_count": [
+          0
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          3
+        ],
+        "episode_return": [
+          -3.4533627069066597e-09
+        ],
+        "ever_disconnected": [
+          false
+        ],
+        "disconnected_seconds": [
+          0.0
+        ],
+        "min_largest_fraction": [
+          1.0
+        ],
+        "bridge_eligible_steps": [
+          0
+        ],
+        "bridge_steps": [
+          0
+        ]
+      },
+      "full_connectivity": true,
+      "trajectory": "episode-0000.npz",
+      "trajectory_sha256": "35ac3cf947500f59fab339433a56946905935653f976d817d5942b8ee0ebda9c"
+    },
+    {
+      "seed": 46,
+      "episode": 0,
+      "layout_seed": 46,
+      "status": "censored",
+      "steps": 3,
+      "final_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          true
+        ],
+        "largest_fraction": [
+          1.0
+        ],
+        "bridge": [
+          false
+        ],
+        "bridge_eligible": [
+          false
+        ],
+        "found_object": [
+          false
+        ],
+        "found_goal": [
+          false
+        ],
+        "object_distance": [
+          14.783632278442383
+        ],
+        "contact_count": [
+          0
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          3
+        ],
+        "episode_return": [
+          -3.4480489574661988e-09
+        ],
+        "ever_disconnected": [
+          false
+        ],
+        "disconnected_seconds": [
+          0.0
+        ],
+        "min_largest_fraction": [
+          1.0
+        ],
+        "bridge_eligible_steps": [
+          0
+        ],
+        "bridge_steps": [
+          0
+        ]
+      },
+      "full_connectivity": true,
+      "trajectory": "episode-0001.npz",
+      "trajectory_sha256": "097814125541be03baac36fdacebdf8e5f5fe56ff1b5066dcb93fd162bfb0794"
+    }
+  ]
+}

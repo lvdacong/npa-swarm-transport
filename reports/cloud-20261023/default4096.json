@@ -1,0 +1,62 @@
+{
+  "scope": "one full-default 4096-agent PPO engineering update, not trained task success",
+  "train_config": {
+    "hidden_dim": 32,
+    "rollout_steps": 32,
+    "bptt_steps": 8,
+    "ppo_epochs": 3,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_ratio": 0.2,
+    "value_coef": 0.5,
+    "entropy_coef": 0.005,
+    "max_grad_norm": 0.5,
+    "seed": 42
+  },
+  "source_sha256": "6c0c0a39e47ad2e469f418cfaf4f6645461ccb6baf5c93132fc3197fee4a7b6e",
+  "metrics": {
+    "update": 1,
+    "env_steps": 32,
+    "agent_steps": 131072,
+    "episodes": 0,
+    "successes": 0,
+    "seconds": 20.509185359002004,
+    "world_steps_per_second": 1.560276502447933,
+    "agent_decisions_per_second": 6390.892554026734,
+    "device": "cpu",
+    "stage": "contact",
+    "n_agents": 4096,
+    "cuda_peak_allocated_bytes": null,
+    "mean_reward": -2.755564491963014e-05,
+    "rollout_episodes": 0,
+    "rollout_successes": 0,
+    "connected_fraction": 0.90625,
+    "largest_fraction": 0.9994964599609375,
+    "bridge_fraction": 1.0,
+    "policy_loss": -9.028380736708641e-05,
+    "value_loss": 0.000167520105605945,
+    "entropy": 1.197267770767212,
+    "approx_kl": 9.823782420426141e-06,
+    "clip_fraction": 0.0,
+    "gradient_norm": 0.06738647818565369
+  },
+  "summary": {
+    "updates": 1,
+    "additional_updates": 1,
+    "env_steps": 32,
+    "episodes": 0,
+    "successes": 0,
+    "checkpoint": "runs/cloud-default4096/last.pt",
+    "checkpoint_sha256": "1fd887bd13a6cd7e8f4b5c6920be1ea8b69c8b5970130f85fed68ef77966c0a8",
+    "stage": "contact",
+    "n_agents": 4096,
+    "device": "cpu",
+    "research_task_passed": false,
+    "lineage": {
+      "kind": "new"
+    }
+  },
+  "peak_rss_kib": 595976,
+  "cuda_validated": false
+}

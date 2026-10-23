@@ -1,0 +1,52 @@
+{
+  "n_agents": 4096,
+  "requested_renderer": "canvas",
+  "initial": {
+    "backend": "Canvas 2D",
+    "adapter": "CPU 绘制回退 · 用户选择 Canvas",
+    "sequence": 0,
+    "step": 0,
+    "particles": 4096,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "snapshotBytes": 131200,
+    "visible": true,
+    "renderedFrames": 1
+  },
+  "after_play": {
+    "backend": "Canvas 2D",
+    "adapter": "CPU 绘制回退 · 用户选择 Canvas",
+    "sequence": 16,
+    "step": 15,
+    "particles": 4096,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "snapshotBytes": 131200,
+    "visible": true,
+    "renderedFrames": 8
+  },
+  "final": {
+    "backend": "Canvas 2D",
+    "adapter": "CPU 绘制回退 · 自动模式避开软件 WebGPU",
+    "sequence": 17,
+    "step": 0,
+    "particles": 4096,
+    "selected": 2048,
+    "paused": true,
+    "errors": [],
+    "snapshotBytes": 131200,
+    "visible": true,
+    "renderedFrames": 13
+  },
+  "page_errors": [],
+  "console_errors": [],
+  "scene_pixels": {
+    "teal": 20551,
+    "orange": 1296
+  },
+  "physical_gpu_validated": false,
+  "trained_transport_validated": false,
+  "scope": "real headless Chromium, software graphics, local inference/control/snapshot/render integration"
+}

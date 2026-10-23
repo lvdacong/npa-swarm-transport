@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>NPA Swarm · 群体搬运实验室</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/"><span class="brand-mark">∴</span><span>NPA <strong>SWARM</strong><small>LOCAL INTELLIGENCE · COLLECTIVE MOTION</small></span></a><div class="top-right"><span class="status-dot" id="connection-dot"></span><span id="connection">连接中</span><span class="tag">研究预览</span></div></header>
+  <main>
+    <section class="workspace">
+      <div class="scene-heading"><div><div class="eyebrow">群体搬运实验室</div><h1>局部感知，共同行动。</h1><p>寻找 · 连接 · 合力搬运</p></div><span class="mode-pill" id="stage-badge">SEARCH</span></div>
+      <div class="stage" id="stage"><canvas id="scene" aria-label="粒子群、搬运物体与目的地区域"></canvas><div class="scene-corner"><span class="live-dot"></span><span id="scene-label">等待状态</span></div><div class="scene-scale" id="scale">单击粒子查看局部邻域 · 滚轮缩放</div><div class="scene-legend"><span><i class="agent"></i>粒子</span><span><i class="cargo"></i>重物</span><span><i class="goal"></i>目的地</span></div><div id="scene-error" class="scene-error" hidden></div></div>
+      <div class="controls"><button class="primary" id="play" disabled>▶ 开始</button><button id="reset" disabled>重置</button><button id="fit">适应视野</button><span class="control-divider"></span><label>速度 <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label><div class="control-spacer"></div><label class="renderer-control">渲染 <select id="renderer"><option value="auto">自动</option><option value="webgpu">WebGPU</option><option value="canvas">Canvas</option></select></label></div>
+      <div class="disclosure" id="training-notice">正在读取策略信息…</div>
+    </section>
+    <aside>
+      <section class="panel"><div class="panel-heading"><h2>运行状态</h2><span id="run-state" class="muted">已暂停</span></div><div class="metrics-grid"><div><span class="metric-label">粒子数量</span><strong id="count">—</strong></div><div><span class="metric-label">演化步数</span><strong id="steps">—</strong></div></div><div class="metric-row"><span>物体距目的地</span><b id="distance">—</b></div><div class="metric-row"><span>当前接触粒子</span><b id="contacts">—</b></div><div class="metric-row"><span>物体速度</span><b id="object-speed">—</b></div><div class="progress-track"><div id="progress-fill"></div></div><p class="small muted" id="progress-label">到达目的地需整个物体进入目标区域。</p></section>
+      <section class="panel"><div class="panel-heading"><h2>连接与通信</h2><span class="tag subtle">局部</span></div><div class="metric-row"><span>最大连通群占比</span><b id="largest">—</b></div><div class="metric-row"><span>全群连通</span><b id="connected">—</b></div><div class="metric-row"><span>两端通路</span><b id="bridge">—</b></div><p class="small muted">断连只影响奖励，不会触发自动保护或修正动作。</p><div class="selection" id="selection">单击一个粒子，查看其感知范围与邻居数量。</div></section>
+      <section class="panel"><div class="panel-heading"><h2>性能与来源</h2><span class="tag subtle" id="backend">—</span></div><div class="metric-row"><span>唯一状态 / 秒</span><b id="snapshot-rate">—</b></div><div class="metric-row"><span>绘制提交 / 秒</span><b id="draw-rate">—</b></div><div class="metric-row"><span>仿真一步</span><b id="step-ms">—</b></div><div class="metric-row"><span>GPU render pass</span><b id="gpu-ms">未采集</b></div><div class="source"><span id="device">—</span><span id="adapter">—</span><span id="checkpoint">—</span></div><p class="small muted">绘制提交率不等于显示器呈现 FPS。原生状态经二进制快照传入浏览器。</p></section>
+    </aside>
+  </main>
+  <footer><span>NPA-inspired · Recurrent local policy · Reinforcement learning</span><span>无绝对坐标输入 · 无预设角色 · 无连通保护器</span></footer>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

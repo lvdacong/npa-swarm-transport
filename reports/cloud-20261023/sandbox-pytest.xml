@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="3" tests="35" time="6.628" timestamp="2026-10-23T07:09:31.253015-03:00" hostname="7022a12adfdf"><testcase classname="tests.test_cli" name="test_evaluation_engineering_error_has_nonzero_exit" time="0.007" /><testcase classname="tests.test_cli" name="test_task_timeout_is_a_result_not_cli_failure" time="0.006" /><testcase classname="tests.test_cli" name="test_resume_rejects_silently_ignored_cli_configuration" time="0.005" /><testcase classname="tests.test_cuda" name="test_cuda_radius_graph_and_local_policy_backward_match_cpu" time="0.000"><skipped type="pytest.skip" message="requires a physical CUDA device">/workspace/scratch/d5c88b93317d/npa-swarm-transport/tests/test_cuda.py:28: requires a physical CUDA device</skipped></testcase><testcase classname="tests.test_cuda" name="test_cuda_environment_state_restore_continues_with_tolerance" time="0.000"><skipped type="pytest.skip" message="requires a physical CUDA device">/workspace/scratch/d5c88b93317d/npa-swarm-transport/tests/test_cuda.py:53: requires a physical CUDA device</skipped></testcase><testcase classname="tests.test_cuda" name="test_cuda_ppo_checkpoint_next_update_preserves_counts_and_finite_state" time="0.000"><skipped type="pytest.skip" message="requires a physical CUDA device">/workspace/scratch/d5c88b93317d/npa-swarm-transport/tests/test_cuda.py:74: requires a physical CUDA device</skipped></testcase><testcase classname="tests.test_graph_env" name="test_complete_spatial_graph_matches_all_pairs[1]" time="0.038" /><testcase classname="tests.test_graph_env" name="test_complete_spatial_graph_matches_all_pairs[7]" time="0.031" /><testcase classname="tests.test_graph_env" name="test_complete_spatial_graph_matches_all_pairs[23]" time="0.038" /><testcase classname="tests.test_graph_env" name="test_dense_cell_is_not_silently_capped" time="0.038" /><testcase classname="tests.test_graph_env" name="test_exact_components_long_shuffled_chain" time="0.004" /><testcase classname="tests.test_graph_env" name="test_message_mean_and_backward" time="0.010" /><testcase classname="tests.test_graph_env" name="test_search_initial_connected_and_targets_hidden[32]" time="0.010" /><testcase classname="tests.test_graph_env" name="test_search_initial_connected_and_targets_hidden[4096]" time="0.181" /><testcase classname="tests.test_graph_env" name="test_observation_has_no_absolute_position_interior_translation" time="0.011" /><testcase classname="tests.test_graph_env" name="test_contact_warmup_has_local_witnesses_for_both_endpoints[32]" time="0.005" /><testcase classname="tests.test_graph_env" name="test_contact_warmup_has_local_witnesses_for_both_endpoints[4096]" time="0.144" /><testcase classname="tests.test_graph_env" name="test_no_remote_force_and_no_stationary_contact_bonus" time="0.015" /><testcase classname="tests.test_graph_env" name="test_one_agent_cannot_push_heavy_object_but_group_can" time="0.338" /><testcase classname="tests.test_graph_env" name="test_disconnection_penalty_without_termination_or_protection" time="0.011" /><testcase classname="tests.test_graph_env" name="test_whole_object_success_and_time_limit_separate" time="0.016" /><testcase classname="tests.test_graph_env" name="test_checkpoint_restores_physics_metrics_and_reset_rng" time="0.034" /><testcase classname="tests.test_learning" name="test_squashed_density_matches_torch_transform_and_extreme_values" time="1.417" /><testcase classname="tests.test_learning" name="test_timeout_bootstraps_terminal_state_but_not_next_episode" time="0.003" /><testcase classname="tests.test_learning" name="test_local_messages_take_one_hop_per_step_and_backpropagate" time="0.018" /><testcase classname="tests.test_learning" name="test_policy_is_particle_permutation_equivariant" time="0.007" /><testcase classname="tests.test_learning" name="test_recurrent_ppo_updates_actor_memory_and_message_weights" time="1.267" /><testcase classname="tests.test_learning" name="test_cpu_resume_reproduces_next_complete_update_across_pool_reset" time="0.227" /><testcase classname="tests.test_learning" name="test_train_resume_adds_budget_and_warmstart_resets_it" time="0.112" /><testcase classname="tests.test_learning" name="test_evaluation_preserves_timeouts_and_raw_trajectories" time="0.070" /><testcase classname="tests.test_learning" name="test_evaluation_preserves_error_and_not_started_denominator" time="0.026" /><testcase classname="tests.test_learning" name="test_short_evaluation_is_censored_not_formal_success" time="0.032" /><testcase classname="tests.test_viewer" name="test_snapshot_identity_and_unchanged_etag" time="0.011"><error message="failed on setup with &quot;PermissionError: [Errno 1] Operation not permitted&quot;">@pytest.fixture
+    def viewer():
+        torch.set_num_threads(1)
+&gt;       server = create_server(EnvConfig(n_agents=16, episode_steps=3), untrained=True, port=0)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_viewer.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/npa_swarm/server.py:276: in create_server
+    return ViewerServer((host, port), simulation)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/npa_swarm/server.py:200: in __init__
+    super().__init__(address, ViewerHandler)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py:453: in __init__
+    self.socket = socket.socket(self.address_family,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;socket.socket fd=-1, family=0, type=0, proto=0&gt;
+family = &lt;AddressFamily.AF_INET: 2&gt;, type = &lt;SocketKind.SOCK_STREAM: 1&gt;
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+&gt;       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError</error></testcase><testcase classname="tests.test_viewer" name="test_control_terminal_hold_and_reset" time="0.008"><error message="failed on setup with &quot;PermissionError: [Errno 1] Operation not permitted&quot;">@pytest.fixture
+    def viewer():
+        torch.set_num_threads(1)
+&gt;       server = create_server(EnvConfig(n_agents=16, episode_steps=3), untrained=True, port=0)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_viewer.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/npa_swarm/server.py:276: in create_server
+    return ViewerServer((host, port), simulation)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/npa_swarm/server.py:200: in __init__
+    super().__init__(address, ViewerHandler)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py:453: in __init__
+    self.socket = socket.socket(self.address_family,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;socket.socket fd=-1, family=0, type=0, proto=0&gt;
+family = &lt;AddressFamily.AF_INET: 2&gt;, type = &lt;SocketKind.SOCK_STREAM: 1&gt;
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+&gt;       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError</error></testcase><testcase classname="tests.test_viewer" name="test_random_policy_requires_explicit_opt_in" time="0.001" /></testsuite></testsuites>

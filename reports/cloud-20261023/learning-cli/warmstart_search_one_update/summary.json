@@ -1,0 +1,19 @@
+{
+  "updates": 1,
+  "additional_updates": 1,
+  "env_steps": 4,
+  "episodes": 0,
+  "successes": 0,
+  "checkpoint": "runs/cloud-cli/search/last.pt",
+  "checkpoint_sha256": "0f136f5632df4cb9c5c19e139040dba596dc54d4dfe220a98e1d0184d6c957dc",
+  "stage": "search",
+  "n_agents": 32,
+  "device": "cpu",
+  "research_task_passed": false,
+  "lineage": {
+    "kind": "warmstart",
+    "parent_sha256": "33d0b949d068397cbb965b3f5fdaf57564c6dcb0d3eaa94f34dfa87bcf4f0e42",
+    "parent_updates": 3,
+    "parent_stage": "contact"
+  }
+}

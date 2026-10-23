@@ -1,0 +1,4 @@
+{
+  "error": "Locator.screenshot: Element is not attached to the DOM\nCall log:\n  - taking element screenshot\n  - waiting for fonts to load...\n  - fonts loaded\n  - attempting scroll into view action\n    - waiting for element to be stable\n    - element is not stable\n  - retrying scroll into view action\n    - waiting for element to be stable\n",
+  "physical_gpu_validated": false
+}

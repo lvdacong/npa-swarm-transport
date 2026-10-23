@@ -1,0 +1,16 @@
+{
+  "updates": 2,
+  "additional_updates": 2,
+  "env_steps": 8,
+  "episodes": 1,
+  "successes": 0,
+  "checkpoint": "runs/cloud-cli/contact/last.pt",
+  "checkpoint_sha256": "13f1758c88c80cddeb10a7a1c24d5c01209fcfe057d9cbf9ab1972791fffab26",
+  "stage": "contact",
+  "n_agents": 32,
+  "device": "cpu",
+  "research_task_passed": false,
+  "lineage": {
+    "kind": "new"
+  }
+}

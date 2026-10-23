@@ -1,0 +1,17 @@
+{"update": 3, "env_steps": 12, "agent_steps": 384, "episodes": 2, "successes": 0, "seconds": 0.1109026489975804, "world_steps_per_second": 36.06766868199216, "agent_decisions_per_second": 1154.1653978237491, "device": "cpu", "stage": "contact", "n_agents": 32, "cuda_peak_allocated_bytes": null, "mean_reward": -0.00013386250066105276, "rollout_episodes": 1, "rollout_successes": 0, "connected_fraction": 1.0, "largest_fraction": 1.0, "bridge_fraction": 1.0, "policy_loss": -2.9802322387695312e-08, "value_loss": 0.00040824973257258534, "entropy": 1.2062222957611084, "approx_kl": 0.0, "clip_fraction": 0.0, "gradient_norm": 0.19803614914417267, "resume": {"checkpoint_sha256": "13f1758c88c80cddeb10a7a1c24d5c01209fcfe057d9cbf9ab1972791fffab26", "source_changed": false, "device_changed": false, "trajectory_bitwise_claimed": false}}
+{
+  "updates": 3,
+  "additional_updates": 1,
+  "env_steps": 12,
+  "episodes": 2,
+  "successes": 0,
+  "checkpoint": "runs/cloud-cli/contact/last.pt",
+  "checkpoint_sha256": "33d0b949d068397cbb965b3f5fdaf57564c6dcb0d3eaa94f34dfa87bcf4f0e42",
+  "stage": "contact",
+  "n_agents": 32,
+  "device": "cpu",
+  "research_task_passed": false,
+  "lineage": {
+    "kind": "new"
+  }
+}

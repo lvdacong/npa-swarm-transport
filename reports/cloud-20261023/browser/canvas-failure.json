@@ -1,0 +1,4 @@
+{
+  "error": "[Errno 13] Permission denied: '/workspace/scratch/d5c88b93317d/.venv/lib/python3.12/site-packages/playwright/driver/node'",
+  "physical_gpu_validated": false
+}
