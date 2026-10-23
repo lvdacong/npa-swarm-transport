@@ -1,0 +1,137 @@
+{
+  "schema_version": 2,
+  "task_version": 2,
+  "checkpoint": {
+    "checkpoint_sha256": "39aabb36388fe67535f768bac124b6e74345a8109f67bf17a4d6a289634d97e2",
+    "updates": 40,
+    "env_steps": 10240,
+    "stage": "search",
+    "source_sha256": "ab3fd0c536d9537db2e22e7b5fa79444407a615eda21d09de3d7d837ff57d5a0",
+    "learned_success_verified": false,
+    "has_trained_weights": true,
+    "lineage": {
+      "kind": "warmstart",
+      "parent_sha256": "78ad568acc6a490324b3ba932dc08849f2cfd267cd9a06290b700622700682d8",
+      "inherited_trained_weights": true,
+      "parent_updates": 20,
+      "parent_stage": "search"
+    }
+  },
+  "runtime_source_sha256": "ab3fd0c536d9537db2e22e7b5fa79444407a615eda21d09de3d7d837ff57d5a0",
+  "source_changed": false,
+  "env_config": {
+    "n_agents": 900,
+    "num_envs": 1,
+    "arena_half": 10.0,
+    "agent_radius": 0.06,
+    "object_radius": 0.65,
+    "goal_radius": 1.0,
+    "comm_radius": 0.48,
+    "sense_radius": 1.2,
+    "dt": 0.1,
+    "substeps": 8,
+    "max_force": 1.0,
+    "agent_drag": 1.0,
+    "max_speed": 1.0,
+    "object_drag": 12.0,
+    "object_static_friction": 0.0,
+    "contact_stiffness": 60.0,
+    "episode_steps": 1200,
+    "stage": "search",
+    "layout": "random",
+    "task_version": 2,
+    "connectivity_weight": 0.15,
+    "repair_weight": 0.2,
+    "bridge_weight": 0.05,
+    "bridge_progress_weight": 0.25,
+    "work_credit_weight": 900.0,
+    "exploration_weight": 0.2,
+    "seed": 42
+  },
+  "requested": 1,
+  "device": "cuda:0",
+  "policy_mode": "sampled_seeded",
+  "max_steps": 1200,
+  "diagnostic": false,
+  "task_config_differences": {},
+  "connectivity_sampling": "control-step endpoints, not continuous-time proof",
+  "bridge_definition": "same particle component within comm_radius of both endpoint surfaces; sensing is insufficient",
+  "requests": [
+    {
+      "seed": 100,
+      "episode": 0,
+      "layout_seed": 100,
+      "action_seed": 100,
+      "status": "timeout",
+      "steps": 1200,
+      "final_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          false
+        ],
+        "largest_fraction": [
+          0.7711111307144165
+        ],
+        "bridge": [
+          false
+        ],
+        "bridge_eligible": [
+          true
+        ],
+        "found_object": [
+          true
+        ],
+        "found_goal": [
+          true
+        ],
+        "object_distance": [
+          13.782505989074707
+        ],
+        "contact_count": [
+          0
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          1200
+        ],
+        "cargo_force_norm": [
+          0.0
+        ],
+        "cargo_force_toward_goal": [
+          0.0
+        ],
+        "repair_gap_max": [
+          16.361589431762695
+        ],
+        "endpoint_gap": [
+          9.809301376342773
+        ],
+        "episode_return": [
+          -2.293853998184204
+        ],
+        "ever_disconnected": [
+          true
+        ],
+        "disconnected_seconds": [
+          82.3993148803711
+        ],
+        "min_largest_fraction": [
+          0.7700000405311584
+        ],
+        "bridge_eligible_steps": [
+          106
+        ],
+        "bridge_steps": [
+          0
+        ]
+      },
+      "full_connectivity": false,
+      "trajectory": "episode-0000.npz",
+      "trajectory_sha256": "51539a0d948050afb5cf832a7e897ab7de9e0e279f3a2a9de1bc94fa100d6f77"
+    }
+  ]
+}

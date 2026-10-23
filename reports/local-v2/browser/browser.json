@@ -1,0 +1,73 @@
+{
+  "scope": "untrained 900-particle WebGPU integration, not learned transport",
+  "physical_gpu_validated": true,
+  "initial": {
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 0,
+    "step": 0,
+    "particles": 900,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 1,
+    "uploads": 1,
+    "actualSpeed": 0,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  "scene_pixels": {
+    "teal": 13208,
+    "orange": 2306
+  },
+  "paused": {
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 12,
+    "step": 18,
+    "particles": 900,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 24,
+    "uploads": 12,
+    "actualSpeed": 0,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  "selected": 0,
+  "final": {
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 28,
+    "step": 22,
+    "particles": 900,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 55,
+    "uploads": 26,
+    "actualSpeed": 0,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  "page_errors": [],
+  "software_adapter": false,
+  "unsupported_webgpu_error": "此浏览器未提供 WebGPU。请使用启用硬件加速的 Chrome / Edge，并通过 localhost 打开。",
+  "status": "PASS"
+}

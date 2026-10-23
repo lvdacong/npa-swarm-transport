@@ -1,0 +1,65 @@
+[
+  {
+    "wall": 1792785419741,
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 0,
+    "step": 0,
+    "particles": 900,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 2,
+    "uploads": 1,
+    "actualSpeed": 0,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  {
+    "wall": 1792785433648,
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 303,
+    "step": 536,
+    "particles": 900,
+    "selected": -1,
+    "paused": false,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 706,
+    "uploads": 288,
+    "actualSpeed": 4.340195655822754,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  {
+    "wall": 1792785459498,
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 677,
+    "step": 1200,
+    "particles": 900,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 1589,
+    "uploads": 650,
+    "actualSpeed": 4.388216972351074,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+]

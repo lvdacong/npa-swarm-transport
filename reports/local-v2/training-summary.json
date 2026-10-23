@@ -1,0 +1,38 @@
+[
+  {
+    "run": "search-seed42",
+    "updates": 20,
+    "completed_episodes": 4,
+    "successes": 0,
+    "median_update_seconds": 10.763649299973622,
+    "median_world_steps_per_second": 23.785499397727786,
+    "peak_allocated_bytes": 440376832,
+    "peak_reserved_bytes": 463470592,
+    "total_update_seconds": 219.12356649991125,
+    "best_rollout_progress": 0.0
+  },
+  {
+    "run": "persistent-search-seed42",
+    "updates": 20,
+    "completed_episodes": 4,
+    "successes": 0,
+    "median_update_seconds": 7.907231700140983,
+    "median_world_steps_per_second": 32.3766879537814,
+    "peak_allocated_bytes": 519020544,
+    "peak_reserved_bytes": 606076928,
+    "total_update_seconds": 157.30178399989381,
+    "best_rollout_progress": 0.36887502670288086
+  },
+  {
+    "run": "causal-search-seed42",
+    "updates": 40,
+    "completed_episodes": 8,
+    "successes": 0,
+    "median_update_seconds": 7.858822100330144,
+    "median_world_steps_per_second": 32.57496580618442,
+    "peak_allocated_bytes": 717859328,
+    "peak_reserved_bytes": 765460480,
+    "total_update_seconds": 313.5681170001626,
+    "best_rollout_progress": 0.0005693435668945312
+  }
+]

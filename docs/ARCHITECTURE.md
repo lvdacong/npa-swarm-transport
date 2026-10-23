@@ -10,6 +10,8 @@ Default memory width 32 contains 28 GRU scalars plus two learned 2D vector slots
 
 The sorted-cell radius graph and canonical CUDA CSR aggregation from the local OOM repair are retained. No N×N hidden-message tensor or silent neighbor truncation. Component calculation is exact at sampled states. Reward-only repair gaps use chunked distances, which may need local profiling if disconnection makes them expensive.
 
+The local CUDA runtime captures only the unchanged eight physics substeps in edge-size buckets. Zero-force self edges pad unused capacity; larger complete graphs allocate a larger bucket. CPU and an explicit eager CUDA diagnostic use the same integrator. Repair gaps query detached rows only. These execution changes do not change the timestep, physics, observation or neighbor semantics.
+
 ## Recurrent PPO
 
 Default 128-step rollout, 32-step truncated backpropagation, three epochs, gamma .999. Whole worlds/ordered time are replayed; particle/time samples are not randomly detached from communication histories. Ordinary next-state values reuse the next forward pass. Timeouts explicitly bootstrap the PRE-reset state, true terminals do not, and GAE never crosses an episode boundary. A regression compares this with eager per-step bootstrapping through resets.
@@ -23,3 +25,5 @@ One native inference worker, newest-only immutable binary snapshots, ETag for un
 This architecture still has **CUDA -> host -> HTTP -> browser GPU** copies. It is not CUDA/WebGPU shared-memory zero-copy. Eliminating that boundary would require a different execution/integration backend; do not build a second simulator merely to claim it. At 900 agents each packet is 28,928 bytes. No per-particle DOM nodes. No Canvas or renderer selector. Unsupported or lost WebGPU is explicit; device loss pauses the local simulation.
 
 Controls cycle requested 1×/4×/8×/unpaced (∞); the diagnostics show actual simulated-seconds/wall-second separately. Neither rAF nor draw submission rate is monitor presentation FPS. A low-power adapter preference is a hint, not an AMD device guarantee. Actual browser/torch devices must be recorded on the laptop.
+
+Windows Python 3.12 may implement `monotonic()` using coarse GetTickCount64. Playback therefore uses high-resolution `perf_counter()` and accumulated deadlines, carrying wait overshoot into the following step. Status also records simulated seconds, active wall seconds and their cumulative ratio, excluding pauses and resetting with the scene.

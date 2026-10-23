@@ -1,0 +1,26 @@
+[
+  {
+    "scope": "synthetic display geometry only; no learned recruitment or physical rollout",
+    "state": "connected",
+    "n_agents": 900,
+    "bridge": true,
+    "connected": true,
+    "largest_fraction": 1.0
+  },
+  {
+    "scope": "synthetic display geometry only; no learned recruitment or physical rollout",
+    "state": "broken",
+    "n_agents": 900,
+    "bridge": false,
+    "connected": false,
+    "largest_fraction": 0.5
+  },
+  {
+    "scope": "synthetic display geometry only; no learned recruitment or physical rollout",
+    "state": "restored",
+    "n_agents": 900,
+    "bridge": true,
+    "connected": true,
+    "largest_fraction": 1.0
+  }
+]

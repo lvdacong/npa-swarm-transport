@@ -1,0 +1,47 @@
+{
+  "initial": {
+    "production_step_ms": 12.552303116535768,
+    "production_actual_speed": 7.966665485337513,
+    "stage_ms_instrumented": {
+      "policy": 1.2484937033150345,
+      "radius_graph": 3.198256192263216,
+      "components": 1.5211187419481575,
+      "repair_gaps": 0.4408874665386975,
+      "refresh_including_nested": 4.434081231011078,
+      "step_including_nested": 10.95737496507354
+    },
+    "largest_fraction": 0.9522222280502319,
+    "edges": 12200,
+    "checkpoint": "C:\\Users\\ASUS\\research-repos\\npa-swarm-transport\\runs\\v2\\persistent-search-seed42\\last.pt"
+  },
+  "saved_world": {
+    "production_step_ms": 18.234228118672036,
+    "production_actual_speed": 5.484191562657867,
+    "stage_ms_instrumented": {
+      "policy": 2.0223688043188304,
+      "radius_graph": 4.501606133999303,
+      "components": 2.54149385727942,
+      "repair_gaps": 2.5653937773313373,
+      "refresh_including_nested": 8.812256332021207,
+      "step_including_nested": 18.145418842323124
+    },
+    "largest_fraction": 0.1066666692495346,
+    "edges": 1760,
+    "checkpoint": "C:\\Users\\ASUS\\research-repos\\npa-swarm-transport\\runs\\v2\\persistent-search-seed42\\last.pt"
+  },
+  "viewer_world": {
+    "production_step_ms": 19.507990626152605,
+    "production_actual_speed": 5.126104575113903,
+    "stage_ms_instrumented": {
+      "policy": 1.9604561966843903,
+      "radius_graph": 4.62576252175495,
+      "components": 2.469418745022267,
+      "repair_gaps": 2.024087472818792,
+      "refresh_including_nested": 8.286556258099154,
+      "step_including_nested": 20.175368728814647
+    },
+    "largest_fraction": 0.2133333384990692,
+    "edges": 6946,
+    "checkpoint": "C:\\Users\\ASUS\\research-repos\\npa-swarm-transport\\runs\\v2\\persistent-search-seed42\\last.pt"
+  }
+}

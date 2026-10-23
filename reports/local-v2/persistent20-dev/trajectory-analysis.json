@@ -1,0 +1,55 @@
+{
+  "evaluation": "C:\\Users\\ASUS\\research-repos\\npa-swarm-transport\\reports\\local-v2\\persistent20-dev",
+  "checkpoint": {
+    "checkpoint_sha256": "78ad568acc6a490324b3ba932dc08849f2cfd267cd9a06290b700622700682d8",
+    "updates": 20,
+    "env_steps": 5120,
+    "stage": "search",
+    "source_sha256": "c67a1af3890cb44f0dd2b8dde38356b2d0570df8e0303b06d8a9b5fbe82f6e8d",
+    "learned_success_verified": false,
+    "has_trained_weights": true,
+    "lineage": {
+      "kind": "warmstart",
+      "parent_sha256": "f3d0593477552424e5086b5c9fff84165762c92217471cf7c0c0b1f95f7f76b2",
+      "inherited_trained_weights": false,
+      "parent_updates": 0,
+      "parent_stage": "search"
+    }
+  },
+  "requested": 1,
+  "diagnostic": false,
+  "episodes": [
+    {
+      "seed": 100,
+      "episode": 0,
+      "layout_seed": 100,
+      "status": "timeout",
+      "steps": 1200,
+      "initial_distance": 13.782505989074707,
+      "final_distance": 14.08716869354248,
+      "minimum_distance": 13.782505989074707,
+      "progress": -0.30466270446777344,
+      "displacement": 0.368674099445343,
+      "maximum_displacement": 0.38799044489860535,
+      "path_length": 1.4564824104309082,
+      "mean_contacts": 0.6361365528726062,
+      "maximum_contacts": 6,
+      "sampled_fully_connected": false,
+      "found_object": true,
+      "found_goal": true,
+      "cargo_force_norm_mean": 0.2290699190858439,
+      "cargo_force_norm_max": 1.743287444114685,
+      "cargo_force_toward_goal_mean": -0.03931329500130526,
+      "cargo_force_toward_goal_max": 1.091703176498413,
+      "reward_contact_credit_mean": -2.6268976255017227e-07,
+      "reward_contact_credit_max": 7.63681237003766e-06,
+      "found_object_seconds": 7.0,
+      "found_goal_seconds": 7.0,
+      "post_discovery_contact_fraction": 0.4235190097259063,
+      "post_discovery_maximum_contacts": 6,
+      "longest_continuous_contact_seconds": 7.4,
+      "distinct_contact_agents": 79,
+      "bridge_transition_steps": []
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "code_commit": "c216c297e9ba84ee95f49ad997eef685d9c90b29",
+  "engineering_incremental_cuda_webgpu_passed": true,
+  "sustained_requested_4x_achieved": false,
+  "actual_full_episode_speed": 3.681232619003386,
+  "rl_full_task_learned": false,
+  "main_frozen_success": 0,
+  "main_frozen_requests": 3,
+  "diagonal_success": 0,
+  "diagonal_requests": 1,
+  "independent_training_seeds": 1,
+  "heldout_1000_to_1002_used": false,
+  "denominators": {
+    "baseline-dev": {
+      "requested": 3,
+      "completed": 3,
+      "success": 0,
+      "timeout": 3,
+      "censored": 0,
+      "error": 0,
+      "interrupted": 0,
+      "not_started": 0
+    },
+    "persistent-untrained": {
+      "requested": 1,
+      "completed": 1,
+      "success": 0,
+      "timeout": 1,
+      "censored": 0,
+      "error": 0,
+      "interrupted": 0,
+      "not_started": 0
+    },
+    "persistent20-dev": {
+      "requested": 1,
+      "completed": 1,
+      "success": 0,
+      "timeout": 1,
+      "censored": 0,
+      "error": 0,
+      "interrupted": 0,
+      "not_started": 0
+    },
+    "persistent20-extra": {
+      "requested": 2,
+      "completed": 2,
+      "success": 0,
+      "timeout": 2,
+      "censored": 0,
+      "error": 0,
+      "interrupted": 0,
+      "not_started": 0
+    },
+    "persistent20-diagonal": {
+      "requested": 1,
+      "completed": 1,
+      "success": 0,
+      "timeout": 1,
+      "censored": 0,
+      "error": 0,
+      "interrupted": 0,
+      "not_started": 0
+    },
+    "causal40-dev": {
+      "requested": 1,
+      "completed": 1,
+      "success": 0,
+      "timeout": 1,
+      "censored": 0,
+      "error": 0,
+      "interrupted": 0,
+      "not_started": 0
+    }
+  },
+  "representative_checkpoint": {
+    "checkpoint_sha256": "78ad568acc6a490324b3ba932dc08849f2cfd267cd9a06290b700622700682d8",
+    "updates": 20,
+    "env_steps": 5120,
+    "stage": "search",
+    "source_sha256": "c67a1af3890cb44f0dd2b8dde38356b2d0570df8e0303b06d8a9b5fbe82f6e8d",
+    "learned_success_verified": false,
+    "has_trained_weights": true,
+    "lineage": {
+      "kind": "warmstart",
+      "parent_sha256": "f3d0593477552424e5086b5c9fff84165762c92217471cf7c0c0b1f95f7f76b2",
+      "inherited_trained_weights": false,
+      "parent_updates": 0,
+      "parent_stage": "search"
+    }
+  },
+  "rejected_credit_branch": {
+    "checkpoint_sha256": "39aabb36388fe67535f768bac124b6e74345a8109f67bf17a4d6a289634d97e2",
+    "updates": 40,
+    "env_steps": 10240,
+    "stage": "search",
+    "source_sha256": "ab3fd0c536d9537db2e22e7b5fa79444407a615eda21d09de3d7d837ff57d5a0",
+    "learned_success_verified": false,
+    "has_trained_weights": true,
+    "lineage": {
+      "kind": "warmstart",
+      "parent_sha256": "78ad568acc6a490324b3ba932dc08849f2cfd267cd9a06290b700622700682d8",
+      "inherited_trained_weights": true,
+      "parent_updates": 20,
+      "parent_stage": "search"
+    }
+  },
+  "note": "Engineering validation is not learned recruitment, bridge maintenance or transport. No v1/4096/contact curriculum."
+}
