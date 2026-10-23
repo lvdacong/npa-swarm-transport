@@ -43,6 +43,8 @@ class SwarmEnv:
         self.bridge_eligible_steps = torch.zeros_like(self.steps)
         self.bridge_steps = torch.zeros_like(self.steps)
         self.detached_age = torch.zeros(b, n, device=self.device)
+        self.use_cuda_graph_physics = True
+        self._physics_cache = {}
         self.reset()
 
     @torch.no_grad()
@@ -144,15 +146,15 @@ class SwarmEnv:
         """
         c = self.cfg
         gap = torch.zeros(c.num_envs, c.n_agents, device=self.device)
-        ids = (~self._connected).nonzero(as_tuple=False).flatten()
-        if ids.numel():
-            p, main = self.positions[ids], self._in_main[ids]
-            chunks = []
-            for begin in range(0, c.n_agents, 128):
-                distance = torch.cdist(p[:, begin:begin+128], p)
-                distance.masked_fill_(~main[:, None, :], float("inf"))
-                chunks.append((distance.amin(-1) - c.comm_radius).clamp_min(0))
-            gap[ids] = torch.cat(chunks, -1).masked_fill(main, 0)
+        detached = (~self._in_main).nonzero(as_tuple=False)
+        # Only detached rows need distances. A few outliers previously made
+        # every particle query every other particle in eight chunks.
+        for begin in range(0, detached.shape[0], 128):
+            world, node = detached[begin:begin+128].unbind(-1)
+            query = self.positions[world, node]
+            distance = (query[:, None] - self.positions[world]).norm(dim=-1)
+            distance.masked_fill_(~self._in_main[world], float("inf"))
+            gap[world, node] = (distance.amin(-1) - c.comm_radius).clamp_min(0)
         return gap
 
     @torch.no_grad()
@@ -239,45 +241,24 @@ class SwarmEnv:
         old_repair = torch.log1p(self._repair_gap / c.comm_radius)
         old_endpoint_gap = self._endpoint_gap.clone()
         broad = radius_graph(self.positions, 2 * c.agent_radius + 2 * c.max_speed * c.dt + 1e-6)
-        flat = self.positions.reshape(-1, 2)
-        sub_dt = c.dt / c.substeps
-        work_credit = torch.zeros_like(self._object_distance_agent)
-        for _ in range(c.substeps):
-            delta = flat[broad.dst] - flat[broad.src]
-            distance = delta.norm(dim=-1)
-            normal = delta / distance.clamp_min(1e-8)[:, None]
-            overlap = (2 * c.agent_radius - distance).clamp_min(0)
-            repulsion = normal * (c.contact_stiffness * overlap)[:, None]
-            pair_force = torch.zeros_like(flat).index_add_(0, broad.dst, repulsion).reshape_as(self.positions)
-            object_delta = self.positions - self.object_pos[:, None]
-            object_distance = object_delta.norm(dim=-1)
-            object_normal = object_delta / object_distance.clamp_min(1e-8)[..., None]
-            object_overlap = (c.object_radius + c.agent_radius - object_distance).clamp_min(0)
-            contact_force = object_normal * (c.contact_stiffness * object_overlap)[..., None]
-            velocity = (actuator + pair_force + contact_force) / c.agent_drag
-            speed = velocity.norm(dim=-1, keepdim=True)
-            velocity = velocity * (c.max_speed / speed.clamp_min(c.max_speed))
-            cargo_force = -contact_force.sum(1)
-            magnitude = cargo_force.norm(dim=-1, keepdim=True)
-            effective = (magnitude - c.object_static_friction).clamp_min(0)
-            self.object_vel = cargo_force / magnitude.clamp_min(1e-8) * effective / c.object_drag
-            before_cargo = self.object_pos.clone()
-            self.positions.add_(velocity * sub_dt)
-            self.object_pos.add_(self.object_vel * sub_dt)
-            before_wall = self.positions.clone()
-            self.positions.clamp_(-c.arena_half + c.agent_radius, c.arena_half - c.agent_radius)
-            self.velocities = velocity.masked_fill(before_wall != self.positions, 0)
-            before_cargo_wall = self.object_pos.clone()
-            self.object_pos.clamp_(-c.arena_half + c.object_radius, c.arena_half - c.object_radius)
-            self.object_vel.masked_fill_(before_cargo_wall != self.object_pos, 0)
-            if c.work_credit_weight:
-                displacement = self.object_pos - before_cargo
-                work = (-contact_force * displacement[:, None]).sum(-1)
-                # No displacement -> no credit, even if many agents lean on
-                # a wall. Opposing/cancelling forces cannot farm impulse reward.
-                progress = ((self.goal_pos - before_cargo).norm(dim=-1)
-                            - (self.goal_pos - self.object_pos).norm(dim=-1))
-                work_credit += work / work.abs().sum(-1, keepdim=True).clamp_min(1e-8) * progress[:, None]
+        from .physics import CapturedPhysics, integrate
+        if self.device.type == "cuda" and self.use_cuda_graph_physics:
+            capacity = 1 << max(0, (broad.src.numel() - 1).bit_length())
+            key = (capacity, tuple(asdict(c).values()))
+            if key not in self._physics_cache:
+                # At most a few edge-size buckets; never truncate dense graphs.
+                if len(self._physics_cache) >= 4:
+                    self._physics_cache.clear()
+                self._physics_cache[key] = CapturedPhysics(
+                    self.positions, self.object_pos, self.goal_pos, actuator, capacity, c)
+            outputs = self._physics_cache[key](self.positions, self.object_pos, self.goal_pos,
+                                               actuator, broad.src, broad.dst)
+        else:
+            outputs = integrate(self.positions, self.object_pos, self.goal_pos,
+                                actuator, broad.src, broad.dst, c)
+        for target, value in zip((self.positions, self.velocities, self.object_pos, self.object_vel), outputs[:4]):
+            target.copy_(value)
+        work_credit = outputs[4].clone()
         self.steps += 1
         self._refresh()
         self.found_object |= self._object_visible.any(-1)

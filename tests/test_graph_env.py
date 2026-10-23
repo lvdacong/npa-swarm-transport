@@ -161,3 +161,15 @@ def test_state_restore_and_masked_reset():
     env.reset(mask);restored.reset(mask)
     assert torch.equal(env.positions,restored.positions) and torch.equal(env.positions[1],untouched)
     assert torch.equal(env.generator.get_state(),restored.generator.get_state())
+@pytest.mark.parametrize("device", ["cpu", "cuda"])
+def test_sparse_detached_gap_matches_full_distance_reference(device):
+    if device == "cuda" and not torch.cuda.is_available():
+        pytest.skip("requires CUDA")
+    env = SwarmEnv(EnvConfig(n_agents=48, num_envs=2), device)
+    env.positions[0, -2:] += torch.tensor([5., 0.], device=device)
+    env.positions[1, -15:] += torch.tensor([-5., 0.], device=device)
+    env._refresh()
+    distance = torch.cdist(env.positions, env.positions)
+    distance.masked_fill_(~env._in_main[:, None], float("inf"))
+    reference = (distance.amin(-1) - env.cfg.comm_radius).clamp_min(0).masked_fill(env._in_main, 0)
+    torch.testing.assert_close(env._repair_gap, reference, atol=2e-5, rtol=2e-5)

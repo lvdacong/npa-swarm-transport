@@ -47,3 +47,17 @@ def test_physical_threshold_is_only_an_explicit_diagnostic():
         info=env.step(a)[4]
         assert torch.equal(env.object_pos,torch.zeros_like(env.object_pos))
         assert info["reward_contact_credit"]==0
+def test_population_scaled_work_credit_retains_mean_at_different_population():
+    means = []
+    for n in (8, 16):
+        env = SwarmEnv(EnvConfig(n_agents=n, work_credit_weight=n))
+        env.positions[0, :, 0] = torch.arange(n) * .2 + 3
+        env.positions[0, :, 1] = 3
+        env.positions[0, 0] = torch.tensor([-.708, 0.])
+        env.object_pos.zero_(); env.goal_pos[:] = torch.tensor([2., 0.])
+        env._refresh(); env.found_goal[:] = True
+        action = torch.zeros_like(env.positions); action[0, 0, 0] = 1
+        info = env.step(action)[4]
+        means.append(info["reward_contact_credit"])
+        torch.testing.assert_close(info["reward_contact_credit"], info["reward_progress"] / 3, atol=1e-6, rtol=1e-4)
+    torch.testing.assert_close(means[0], means[1], atol=1e-6, rtol=1e-4)

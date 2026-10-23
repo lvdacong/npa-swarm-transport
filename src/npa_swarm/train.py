@@ -116,6 +116,7 @@ class Trainer:
             "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
             "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
         initial_hidden = self.hidden.detach().clone()
+        contact_peaks, contact_active = [], []
         for t in range(c.rollout_steps):
             obs, graph = self.env.observe(), self.env.graph
             action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
@@ -131,6 +132,8 @@ class Trainer:
             for key in physical:
                 if key in info:
                     physical[key].append(info[key].float().mean())
+            contact_peaks.append(info["contact_count"].max())
+            contact_active.append((info["contact_count"] > 0).float().mean())
             done = terminated | truncated
             self.hidden = memory * (~done).view(-1, 1, 1)
             if bool(done.any()):
@@ -152,7 +155,9 @@ class Trainer:
         self.successes += success_count
         advantages, returns = compute_gae(rewards_t, values_t, next_values, term_t, trunc_t, c.gamma, c.gae_lambda)
         metrics = {"mean_reward": float(rewards_t.mean()), "rollout_episodes": episode_count,
-                   "rollout_successes": success_count}
+                   "rollout_successes": success_count,
+                   "contact_count_max": int(torch.stack(contact_peaks).max()),
+                   "contact_active_fraction": float(torch.stack(contact_active).mean())}
         aliases = {"connected": "connected_fraction", "largest_fraction": "largest_fraction", "bridge": "bridge_fraction"}
         for key, collected in physical.items():
             if collected:

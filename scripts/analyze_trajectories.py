@@ -32,6 +32,24 @@ def analyze(root):
                     if values:
                         row[key + "_mean"] = float(np.mean(values))
                         row[key + "_max"] = float(np.max(values))
+                dt = manifest["env_config"]["dt"]
+                for key in ("found_object", "found_goal"):
+                    first = next((i for i, m in enumerate(metrics) if m[key][0]), None)
+                    row[key + "_seconds"] = None if first is None else first * dt
+                first = next((i for i, m in enumerate(metrics) if m["found_object"][0]), None)
+                if first is not None:
+                    after = np.asarray(contacts[first:])
+                    longest = current = 0
+                    for count in after:
+                        current = current + 1 if count > 0 else 0
+                        longest = max(longest, current)
+                    row.update(post_discovery_contact_fraction=float((after > 0).mean()),
+                               post_discovery_maximum_contacts=int(after.max()),
+                               longest_continuous_contact_seconds=longest * dt,
+                               distinct_contact_agents=int((np.linalg.norm(data["positions"][first:] - cargo[first:, None], axis=-1)
+                                   < manifest["env_config"]["object_radius"] + manifest["env_config"]["agent_radius"]).any(0).sum()))
+                bridge = np.asarray([m["bridge"][0] for m in metrics], dtype=bool)
+                row["bridge_transition_steps"] = (np.flatnonzero(bridge[1:] != bridge[:-1]) + 1).tolist()
         rows.append(row)
     return {"evaluation": str(root.resolve()), "checkpoint": manifest["checkpoint"],
             "requested": manifest["requested"], "diagnostic": manifest["diagnostic"], "episodes": rows}

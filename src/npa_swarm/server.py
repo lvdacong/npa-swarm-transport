@@ -42,7 +42,7 @@ def pack_snapshot(env, hidden, info, sequence, paused, revision, step_ms=0., rea
     struct.pack_into("<8I", header, 0, MAGIC, 1, c.n_agents, HEADER_BYTES, sequence, flags, int(d[10]), revision)
     struct.pack_into("<24f", header, 32, *d[:4], c.object_radius, c.goal_radius,
                      c.agent_radius, c.arena_half, c.comm_radius, c.sense_radius,
-                     *d[4:10], step_ms, time.monotonic() % 1_000_000, c.dt,
+                     *d[4:10], step_ms, time.perf_counter() % 1_000_000, c.dt,
                      d[11], realtime_factor, d[12], d[13], d[14])
     return bytes(header) + payload.tobytes()
 
@@ -74,6 +74,8 @@ class Simulation:
         self.error = None
         self.info = self.env.metrics()
         self.step_ms = self.realtime_factor = 0.
+        self.active_wall_seconds = self.simulated_seconds = 0.
+        self.play_started = None
         self.snapshot = pack_snapshot(self.env, self.hidden, self.info, 0, True, 0)
         self.worker = threading.Thread(target=self._run, name="swarm-inference", daemon=True)
         self.worker.start()
@@ -101,9 +103,12 @@ class Simulation:
 
     def status(self):
         with self.lock:
+            active = self.active_wall_seconds + (time.perf_counter() - self.play_started if self.play_started is not None else 0.)
             return {"schema": 1, "config": asdict(self.env.cfg), "checkpoint": self.checkpoint,
                     "device": str(self.env.device), "paused": self.paused, "speed": self.speed,
                     "sequence": self.sequence, "revision": self.revision, "step_ms": self.step_ms,
+                    "active_wall_seconds": active, "simulated_seconds": self.simulated_seconds,
+                    "average_realtime_factor": self.simulated_seconds / active if active else 0.,
                     "realtime_factor": self.realtime_factor, "publication_hz_limit": 30,
                     "error": self.error, "finished": self.finished, "trained_transport_verified": False,
                     "policy_mode": "sampled_seeded" if self.stochastic else "deterministic",
@@ -111,15 +116,18 @@ class Simulation:
                     "transport": "One batched CUDA-to-host copy per published snapshot; HTTP-to-WebGPU upload. Not zero-copy."}
 
     def _run(self):
-        last_revision, last_publish = 0, time.monotonic()
-        window_start, window_steps = time.monotonic(), 0
+        last_revision, last_publish = 0, time.perf_counter()
+        window_start, window_steps = time.perf_counter(), 0
+        deadline = window_start
         while not self.stop_event.is_set():
-            started = time.monotonic()
+            started = time.perf_counter()
             with self.lock:
                 reset = self.reset_pending
                 self.reset_pending = False
                 paused, speed, revision = self.paused, self.speed, self.revision
             changed = revision != last_revision
+            if paused or changed:
+                deadline = started
             try:
                 with torch.inference_mode():
                     if reset:
@@ -128,11 +136,15 @@ class Simulation:
                         self.info = self.env.metrics()
                         self.error, self.finished = None, False
                         self.realtime_factor = 0.
+                        self.active_wall_seconds = self.simulated_seconds = 0.
+                        self.play_started = None
                         changed = True
                     if paused or changed:
                         window_start, window_steps = started, 0
                         self.realtime_factor = 0.
                     if not paused:
+                        if self.play_started is None:
+                            self.play_started = started
                         action, _, _, _, self.hidden = self.policy.act(
                             self.env.observe(), self.hidden, self.env.graph, deterministic=not self.stochastic,
                             generator=self.action_generator if self.stochastic else None)
@@ -140,20 +152,24 @@ class Simulation:
                         # The termination query synchronizes the executed step;
                         # no redundant synchronize() + many scalar CPU copies.
                         ended = bool((terminated | truncated).any())
-                        self.step_ms = (time.monotonic() - started) * 1000
+                        self.simulated_seconds += self.env.cfg.dt
+                        self.step_ms = (time.perf_counter() - started) * 1000
                         window_steps += 1
-                        elapsed = time.monotonic() - window_start
+                        elapsed = time.perf_counter() - window_start
                         if elapsed >= .5:
                             self.realtime_factor = window_steps * self.env.cfg.dt / elapsed
-                            window_start, window_steps = time.monotonic(), 0
+                            window_start, window_steps = time.perf_counter(), 0
                         if ended:
                             with self.lock:
                                 self.paused, self.finished = True, True
                             paused, changed = True, True
+                    if paused and self.play_started is not None:
+                        self.active_wall_seconds += time.perf_counter() - self.play_started
+                        self.play_started = None
                     # Simulation pacing is independent of display publication.
                     # Commands/terminal states publish immediately, otherwise
                     # snapshots are latest-only and limited to 30 Hz.
-                    now = time.monotonic()
+                    now = time.perf_counter()
                     if changed or (not paused and now - last_publish >= 1 / 30):
                         with self.lock:
                             self.sequence += 1
@@ -174,7 +190,16 @@ class Simulation:
                     struct.pack_into("<I", header, 20, struct.unpack_from("<I", header, 20)[0] | 1 | 8)
                     self.snapshot = bytes(header) + self.snapshot[HEADER_BYTES:]
                 paused = True
-            delay = .02 if paused else (0 if speed == 0 else max(0, self.env.cfg.dt / speed - (time.monotonic() - started)))
+            if paused:
+                delay = .02
+            elif speed == 0:
+                delay = 0
+            else:
+                # Carry timer overshoot forward. Windows waits can overshoot
+                # by a timer tick; resetting a relative sleep each step made
+                # a requested 4x run at ~3x despite ample compute headroom.
+                deadline = max(deadline, started - .5) + self.env.cfg.dt / speed
+                delay = max(0, deadline - time.perf_counter())
             self.stop_event.wait(delay)
 
     def close(self):

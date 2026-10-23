@@ -20,6 +20,7 @@ def main(argv=None):
         p.add_argument("--seed",type=int,default=42)
         p.add_argument("--episode-steps",type=int,default=1200)
         p.add_argument("--sense-radius",type=float,default=1.2)
+        p.add_argument("--work-credit-weight",type=float,default=1.,help="actual moving-work credit; population-mean experiment uses N")
         device_args(p)
     doctor=sub.add_parser("doctor"); device_args(doctor);doctor.add_argument("--output")
     perf=sub.add_parser("probe");env_args(perf)
@@ -57,14 +58,15 @@ def main(argv=None):
                         stage=args.stage,max_steps=args.max_steps,deterministic=not args.stochastic,layout=args.layout)
     else:
         cfg=EnvConfig(n_agents=args.agents,num_envs=args.envs,stage=args.stage,layout=args.layout,
-                      seed=args.seed,episode_steps=args.episode_steps,sense_radius=args.sense_radius)
+                      seed=args.seed,episode_steps=args.episode_steps,sense_radius=args.sense_radius,
+                      work_credit_weight=args.work_credit_weight)
         if args.command=="probe":
             result=probe(cfg,args.output,str(device),args.steps,args.warmup,args.train_updates,args.trace)
         elif args.command=="train":
             from .train import train
             if args.resume and args.warmstart:parser.error("Choose --resume OR --warmstart")
             if args.resume:
-                forbidden={"--agents","--envs","--stage","--layout","--seed","--episode-steps","--sense-radius",
+                forbidden={"--agents","--envs","--stage","--layout","--seed","--episode-steps","--sense-radius","--work-credit-weight",
                            "--rollout-steps","--bptt-steps","--ppo-epochs","--hidden-dim","--learning-rate"}
                 provided=sys.argv[1:] if argv is None else argv
                 if any(token.split("=",1)[0] in forbidden for token in provided):
