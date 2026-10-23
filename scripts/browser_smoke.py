@@ -29,7 +29,12 @@ def run(output, n_agents=4096, renderer="canvas"):
     base = f"http://127.0.0.1:{server.server_address[1]}"
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, executable_path=os.environ.get("SWARM_BROWSER_EXECUTABLE"), args=["--enable-unsafe-webgpu", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--no-sandbox"])
+            # ANGLE selects WebGL's backend; explicitly select Dawn's Vulkan
+            # software backend too. Chromium 141's implicit backend can lose the
+            # instance even for a standalone triangle in headless Linux.
+            executable = os.environ.get("SWARM_BROWSER_EXECUTABLE")
+            browser_choice = {"executable_path": executable} if executable else {"channel": "chromium"}
+            browser = p.chromium.launch(headless=True, **browser_choice, args=["--enable-unsafe-webgpu", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--enable-features=Vulkan", "--use-vulkan=swiftshader", "--no-sandbox"])
             page = browser.new_page(viewport={"width": 1440, "height": 1050}, device_scale_factor=1)
             page.on("pageerror", lambda e: errors.append(str(e)))
             page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
@@ -43,6 +48,7 @@ def run(output, n_agents=4096, renderer="canvas"):
                 assert initial["backend"] == "WebGPU", initial
             # Pixel evidence: at least many varying pixels; do not accept a blank canvas.
             scene_png = page.locator("#scene").screenshot()
+            (output / f"{renderer}-scene.png").write_bytes(scene_png)
             pixels = np.asarray(Image.open(io.BytesIO(scene_png)).convert("RGB")).astype(np.int32)
             teal = (pixels[..., 1] > 100) & (pixels[..., 1] > pixels[..., 0] * 1.25) & (pixels[..., 2] > pixels[..., 0] * 1.1)
             orange = (pixels[..., 0] > 120) & (pixels[..., 0] > pixels[..., 1] * 1.15) & (pixels[..., 1] > pixels[..., 2] * 1.2)

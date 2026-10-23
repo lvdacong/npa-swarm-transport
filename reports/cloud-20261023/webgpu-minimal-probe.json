@@ -1,0 +1,51 @@
+[
+  {
+    "variant": "baseline",
+    "args": [
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader"
+    ],
+    "console": [
+      "WebGPU is experimental on this platform. See https://github.com/gpuweb/gpuweb/wiki/Implementation-Status#implementation-status",
+      "A valid external Instance reference no longer exists."
+    ],
+    "error": "Page.evaluate: OperationError: A valid external Instance reference no longer exists.",
+    "seconds": 1.828
+  },
+  {
+    "variant": "explicit-vulkan",
+    "args": [
+      "--use-angle=swiftshader",
+      "--enable-unsafe-swiftshader",
+      "--enable-features=Vulkan",
+      "--use-vulkan=swiftshader",
+      "--disable-vulkan-surface"
+    ],
+    "console": [
+      "WebGPU is experimental on this platform. See https://github.com/gpuweb/gpuweb/wiki/Implementation-Status#implementation-status"
+    ],
+    "result": {
+      "frames": 90,
+      "errors": [],
+      "adapter": {
+        "description": ""
+      }
+    },
+    "seconds": 3.091
+  },
+  {
+    "variant": "angle-vulkan",
+    "args": [
+      "--use-angle=vulkan",
+      "--enable-features=Vulkan",
+      "--use-vulkan=swiftshader",
+      "--disable-vulkan-surface"
+    ],
+    "console": [
+      "WebGPU is experimental on this platform. See https://github.com/gpuweb/gpuweb/wiki/Implementation-Status#implementation-status",
+      "A valid external Instance reference no longer exists."
+    ],
+    "error": "Page.evaluate: OperationError: A valid external Instance reference no longer exists.",
+    "seconds": 0.785
+  }
+]
