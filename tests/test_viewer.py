@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from npa_swarm.config import EnvConfig
-from npa_swarm.server import HEADER_BYTES, MAGIC, create_server
+from npa_swarm.server import HEADER_BYTES, MAGIC, Simulation, create_server
 
 
 def request(base, path, payload=None, headers=None):
@@ -87,3 +87,18 @@ def test_control_terminal_hold_and_reset(viewer):
 def test_random_policy_requires_explicit_opt_in():
     with pytest.raises(ValueError, match="untrained"):
         create_server(EnvConfig(n_agents=16), port=0)
+
+
+def test_sampled_inference_reports_mode_and_does_not_consume_global_rng():
+    before = torch.get_rng_state().clone()
+    simulation = Simulation(EnvConfig(n_agents=16, episode_steps=3), untrained=True, stochastic=True)
+    try:
+        assert simulation.status()["policy_mode"] == "sampled_seeded"
+        assert simulation.status()["action_seed"] == 42
+        simulation.command({"command": "speed", "value": 4})
+        simulation.command({"command": "play"})
+        wait_for(lambda: simulation.finished)
+        assert int(simulation.env.steps[0]) == 3
+        assert torch.equal(before, torch.get_rng_state())
+    finally:
+        simulation.close()

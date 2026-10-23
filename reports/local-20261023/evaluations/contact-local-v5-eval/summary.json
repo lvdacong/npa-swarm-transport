@@ -1,0 +1,33 @@
+{
+  "requested": 3,
+  "completed": 3,
+  "success": 3,
+  "timeout": 0,
+  "censored": 0,
+  "error": 0,
+  "interrupted": 0,
+  "not_started": 0,
+  "transport_success_rate_all_requests": 1.0,
+  "full_connectivity_successes": 0,
+  "episodes_fully_connected": 0,
+  "found_object_requests": 3,
+  "found_goal_requests": 3,
+  "bridge_eligible_steps": 257,
+  "bridge_connected_steps": 257,
+  "bridge_keep_fraction": 1.0,
+  "diagnostic": true,
+  "stage": "contact",
+  "n_agents": 4096,
+  "task_config_differences": {
+    "episode_steps": {
+      "actual": 400,
+      "reference": 1200
+    }
+  },
+  "policy_mode": "sampled_seeded",
+  "seconds": 7.241562299896032,
+  "engineering_evaluation_completed": true,
+  "full_horizon_completed": true,
+  "research_task_passed": false,
+  "note": "Task quality requires reviewed cross-seed outcomes; an executable evaluator is not a learned result."
+}

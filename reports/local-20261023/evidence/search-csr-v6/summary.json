@@ -1,0 +1,19 @@
+{
+  "updates": 100,
+  "additional_updates": 72,
+  "env_steps": 12800,
+  "episodes": 8,
+  "successes": 0,
+  "checkpoint": "runs\\local\\search-csr-v6\\last.pt",
+  "checkpoint_sha256": "a4a019f8a8a2f8a3b38bf92d4efb52b966c93b62492330d1a8be858bbfe99f4d",
+  "stage": "search",
+  "n_agents": 4096,
+  "device": "cuda:0",
+  "research_task_passed": false,
+  "lineage": {
+    "kind": "warmstart",
+    "parent_sha256": "4989bd05dfc88305dc28a7b451efecfe884da8dde3d62b9dd2614b1a9d8a0b68",
+    "parent_updates": 3,
+    "parent_stage": "contact"
+  }
+}

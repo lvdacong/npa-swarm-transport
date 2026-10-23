@@ -28,7 +28,7 @@ class LocalPolicy(nn.Module):
     graph hop per control step. Relative vectors use common simulation axes.
     """
 
-    def __init__(self, obs_dim: int, hidden_dim: int = 32):
+    def __init__(self, obs_dim: int, hidden_dim: int = 32, vector_actor: bool = False, vector_only: bool = False):
         super().__init__()
         self.obs_dim, self.hidden_dim = obs_dim, hidden_dim
         self.encode = nn.Sequential(nn.Linear(obs_dim + hidden_dim, hidden_dim), nn.Tanh())
@@ -38,6 +38,20 @@ class LocalPolicy(nn.Module):
         self.log_std = nn.Parameter(torch.full((2,), -0.5))
         nn.init.orthogonal_(self.actor.weight, gain=0.01)
         nn.init.zeros_(self.actor.bias)
+        self.vector_actor = vector_actor
+        if vector_only and not vector_actor:
+            raise ValueError("vector_only requires vector_actor")
+        self.vector_only = vector_only
+        if vector_actor:
+            if obs_dim != 20:
+                raise ValueError("The local vector actor requires the documented 20-dimensional observation")
+            # Every coefficient is learned. The bases are existing LOCAL
+            # observations, not a privileged goal direction or a controller.
+            # This gives the optimizer a shared direction parameter across
+            # layouts instead of learning only a world-axis action bias.
+            self.basis_actor = nn.Linear(hidden_dim, 6)
+            nn.init.zeros_(self.basis_actor.weight)
+            nn.init.zeros_(self.basis_actor.bias)
 
     def initial_state(self, batch: int, n_agents: int, device=None) -> torch.Tensor:
         if device is None:
@@ -48,13 +62,23 @@ class LocalPolicy(nn.Module):
         neighbor_memory = aggregate(hidden, graph)
         encoded = self.encode(torch.cat((obs, neighbor_memory), dim=-1))
         next_hidden = self.memory(encoded.flatten(0, 1), hidden.flatten(0, 1)).view_as(hidden)
-        return (self.actor(next_hidden), self.log_std.clamp(-5, 1),
+        mean = torch.zeros_like(obs[..., :2]) if self.vector_only else self.actor(next_hidden)
+        if self.vector_actor:
+            bases = torch.stack((obs[..., 0:2], obs[..., 2:4], obs[..., 4:6],
+                                 obs[..., 7:9], obs[..., 10:12], obs[..., 13:15]), dim=-2)
+            mean = mean + (self.basis_actor(next_hidden)[..., None] * bases).sum(-2)
+        return (mean, self.log_std.clamp(-5, 1),
                 self.critic(next_hidden).squeeze(-1), next_hidden)
 
     def act(self, obs: torch.Tensor, hidden: torch.Tensor, graph: Graph,
-            deterministic: bool = False):
+            deterministic: bool = False, generator=None):
         mean, log_std, value, next_hidden = self(obs, hidden, graph)
-        latent = mean if deterministic else mean + log_std.exp() * torch.randn_like(mean)
+        if deterministic:
+            latent = mean
+        else:
+            noise = (torch.randn_like(mean) if generator is None else
+                     torch.randn(mean.shape, dtype=mean.dtype, device=mean.device, generator=generator))
+            latent = mean + log_std.exp() * noise
         return (latent.tanh(), latent, squashed_log_prob(mean, log_std, latent),
                 value, next_hidden)
 

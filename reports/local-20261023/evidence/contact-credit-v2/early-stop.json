@@ -1,0 +1,10 @@
+{
+  "status": "stopped_by_agent",
+  "requested_additional_updates": 80,
+  "completed_updates": 76,
+  "env_steps": 9728,
+  "episodes": 8,
+  "successes": 0,
+  "reason": "No stable frozen contact policy after v1; force-weight-only v2 failed to improve training distance and retained at last atomic checkpoint. Switch to visible-goal contact curriculum and local transport credit.",
+  "current_incomplete_update_discarded": true
+}

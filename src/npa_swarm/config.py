@@ -23,6 +23,9 @@ class EnvConfig:
     episode_steps: int = 1200
     stage: str = "search"
     connectivity_weight: float = 0.1
+    force_credit_weight: float = 0.0
+    local_transport_reward: bool = False
+    exploration_weight: float = 0.01
     seed: int = 42
 
     def __post_init__(self):
@@ -37,7 +40,7 @@ class EnvConfig:
             raise ValueError("substeps and episode_steps must be positive")
         if self.goal_radius <= self.object_radius:
             raise ValueError("destination must contain the complete object")
-        if self.object_static_friction < 0 or self.connectivity_weight < 0:
+        if min(self.object_static_friction, self.connectivity_weight, self.force_credit_weight, self.exploration_weight) < 0:
             raise ValueError("friction and connectivity weight cannot be negative")
 
     def to_dict(self):
@@ -47,6 +50,8 @@ class EnvConfig:
 @dataclass
 class TrainConfig:
     hidden_dim: int = 32
+    vector_actor: bool = False
+    vector_only: bool = False
     rollout_steps: int = 32
     bptt_steps: int = 8
     ppo_epochs: int = 3
@@ -60,6 +65,8 @@ class TrainConfig:
     seed: int = 42
 
     def __post_init__(self):
+        if self.vector_only and not self.vector_actor:
+            raise ValueError("vector_only requires vector_actor")
         if min(self.hidden_dim, self.rollout_steps, self.bptt_steps, self.ppo_epochs) < 1:
             raise ValueError("network and rollout dimensions must be positive")
         if self.learning_rate <= 0 or not 0 < self.gamma <= 1 or not 0 <= self.gae_lambda <= 1:

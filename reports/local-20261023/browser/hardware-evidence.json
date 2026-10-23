@@ -1,0 +1,442 @@
+{
+  "scope": "visible Chrome / physical AMD RDNA3 WebGPU, native CUDA RTX5060",
+  "samples": [
+    {
+      "label": "sustain-start",
+      "utc": "2026-10-23T13:11:45.225Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 141,
+        "step": 58,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 175
+      },
+      "heap": 42815220,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.9",
+        "draw-rate": "4.9",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "31.0 ms",
+        "run-state": "运行中"
+      }
+    },
+    {
+      "label": "sustain-sample-2",
+      "utc": "2026-10-23T13:12:58.515Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 493,
+        "step": 410,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 715
+      },
+      "heap": 38938403,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "5.0",
+        "draw-rate": "29.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "31.0 ms",
+        "run-state": "运行中"
+      }
+    },
+    {
+      "label": "sustain-sample-3",
+      "utc": "2026-10-23T13:14:21.189Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 891,
+        "step": 808,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 1440
+      },
+      "heap": 37879381,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.7",
+        "draw-rate": "10.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "31.0 ms",
+        "run-state": "运行中"
+      }
+    },
+    {
+      "label": "first-full-horizon-terminal-check",
+      "utc": "2026-10-23T13:16:03.771Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 1283,
+        "step": 1200,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 2060
+      },
+      "heap": 36927105,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "47.0 ms",
+        "run-state": "时间用尽"
+      }
+    },
+    {
+      "label": "hidden-tab",
+      "utc": "2026-10-23T13:16:32.868Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 1283,
+        "step": 1200,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 2062
+      },
+      "heap": 36561425,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "47.0 ms",
+        "run-state": "时间用尽"
+      }
+    },
+    {
+      "label": "sustain-second-episode-start",
+      "utc": "2026-10-23T13:16:53.164Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 1284,
+        "step": 0,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 2080
+      },
+      "heap": 35874890,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "47.0 ms",
+        "run-state": "已暂停"
+      }
+    },
+    {
+      "label": "second-horizon-check",
+      "utc": "2026-10-23T13:22:44.621Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 2484,
+        "step": 1200,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 3997
+      },
+      "heap": 35620495,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "31.0 ms",
+        "run-state": "时间用尽"
+      }
+    },
+    {
+      "label": "actual-background-check",
+      "utc": "2026-10-23T13:23:29.548Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 2606,
+        "step": 121,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 4179
+      },
+      "heap": 43263675,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.9",
+        "draw-rate": "4.9",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "15.0 ms",
+        "run-state": "运行中"
+      }
+    },
+    {
+      "label": "background-after-foreground-health",
+      "utc": "2026-10-23T13:23:51.286Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 2711,
+        "step": 226,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 4376
+      },
+      "heap": 39382355,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.8",
+        "draw-rate": "10.9",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "47.0 ms",
+        "run-state": "运行中"
+      }
+    },
+    {
+      "label": "visible-restored",
+      "utc": "2026-10-23T13:24:23.359Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 2865,
+        "step": 380,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 4589
+      },
+      "heap": 41417177,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.9",
+        "draw-rate": "7.8",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "31.0 ms",
+        "run-state": "运行中"
+      }
+    },
+    {
+      "label": "third-episode-ten-active-minutes-check",
+      "utc": "2026-10-23T13:26:35.672Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 3500,
+        "step": 1015,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 5907
+      },
+      "heap": 44711296,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.6",
+        "draw-rate": "3.8",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "31.0 ms",
+        "run-state": "运行中"
+      }
+    },
+    {
+      "label": "sustain-end-paused",
+      "utc": "2026-10-23T13:27:03.007Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 3630,
+        "step": 1144,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 6017
+      },
+      "heap": 43198729,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.3",
+        "draw-rate": "3.6",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "62.0 ms",
+        "run-state": "已暂停"
+      }
+    },
+    {
+      "label": "canvas-hardware-regression",
+      "utc": "2026-10-23T13:27:03.137Z",
+      "diagnostics": {
+        "backend": "Canvas 2D",
+        "adapter": "CPU 绘制回退 · 用户选择 Canvas",
+        "sequence": 3630,
+        "step": 1144,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 6017
+      },
+      "heap": 43243543,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.3",
+        "draw-rate": "3.6",
+        "gpu-ms": "未采集",
+        "step-ms": "62.0 ms",
+        "run-state": "已暂停"
+      }
+    },
+    {
+      "label": "hardware-final",
+      "utc": "2026-10-23T13:28:16.140Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 3630,
+        "step": 1144,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": false,
+        "renderedFrames": 6018
+      },
+      "heap": 36041365,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "62.0 ms",
+        "run-state": "已暂停"
+      }
+    },
+    {
+      "label": "hidden-polling-suspended-while-native-advances",
+      "utc": "2026-10-23T13:29:17.729Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 3630,
+        "step": 1144,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": false,
+        "renderedFrames": 6018
+      },
+      "heap": 36206574,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "62.0 ms",
+        "run-state": "已暂停"
+      }
+    },
+    {
+      "label": "visibility-restored-latest-terminal",
+      "utc": "2026-10-23T13:29:37.760Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 3686,
+        "step": 1200,
+        "particles": 4096,
+        "selected": 2073,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 6030
+      },
+      "heap": 36593192,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "31.0 ms",
+        "run-state": "时间用尽"
+      }
+    }
+  ],
+  "actions": [
+    "play and pause advanced to step80",
+    "reset advanced sequence and returned step0",
+    "selected particle2073",
+    "wheel zoom and fit",
+    "speed0.5 continuous-run start"
+  ],
+  "summary": {
+    "native_device": "RTX 5060 Laptop / CUDA 13.0",
+    "browser_adapter": "amd / rdna-3 (physical Radeon 780M)",
+    "episodes_full_horizon": 3,
+    "third_episode_steps": 1200,
+    "active_control_steps": 3600,
+    "nominal_active_playback_seconds_at_speed_half": 720,
+    "wall_seconds_since_sustain_sample": 917.782,
+    "errors": [],
+    "visibility_transition_validated": true,
+    "limitation": "No claim about monitor presentation FPS, continuous-time connectivity, or forced physical device loss.",
+    "visibility_method": "Temporarily disabled automation focus emulation to expose actual document.hidden=true, then restored its original enabled state. Native server advanced while UI stayed at step1144; restored UI caught up to terminal step1200."
+  },
+  "console": []
+}

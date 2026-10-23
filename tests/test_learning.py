@@ -21,9 +21,9 @@ def small_thread_pool():
     torch.set_num_threads(old)
 
 
-def tiny_trainer(episode_steps=5):
+def tiny_trainer(episode_steps=5, vector_actor=False):
     env = SwarmEnv(EnvConfig(n_agents=16, stage="contact", episode_steps=episode_steps))
-    return Trainer(env, TrainConfig(hidden_dim=8, rollout_steps=4, bptt_steps=2, ppo_epochs=2))
+    return Trainer(env, TrainConfig(hidden_dim=8, vector_actor=vector_actor, rollout_steps=4, bptt_steps=2, ppo_epochs=2))
 
 
 def test_squashed_density_matches_torch_transform_and_extreme_values():
@@ -86,8 +86,9 @@ def test_policy_is_particle_permutation_equivariant():
     torch.testing.assert_close(ph, memory[:, order], atol=1e-6, rtol=1e-5)
 
 
-def test_recurrent_ppo_updates_actor_memory_and_message_weights():
-    trainer = tiny_trainer()
+@pytest.mark.parametrize("vector_actor", [False, True])
+def test_recurrent_ppo_updates_actor_memory_and_message_weights(vector_actor):
+    trainer = tiny_trainer(vector_actor=vector_actor)
     before = copy.deepcopy(trainer.policy.state_dict())
     metrics = trainer.update()
     assert metrics["update"] == 1 and metrics["env_steps"] == 4
@@ -96,6 +97,8 @@ def test_recurrent_ppo_updates_actor_memory_and_message_weights():
     for key in ("actor.weight", "memory.weight_hh", "encode.0.weight"):
         assert not torch.equal(before[key], after[key]), key
     assert not torch.equal(before["encode.0.weight"][:, -8:], after["encode.0.weight"][:, -8:])
+    if vector_actor:
+        assert not torch.equal(before["basis_actor.weight"], after["basis_actor.weight"])
 
 
 def test_cpu_resume_reproduces_next_complete_update_across_pool_reset(tmp_path):
@@ -137,6 +140,7 @@ def test_train_resume_adds_budget_and_warmstart_resets_it(tmp_path):
     assert warm["lineage"]["kind"] == "warmstart"
     policy, cfg, metadata = load_policy_checkpoint(tmp_path / "warm" / "last.pt")
     assert cfg.stage == "search" and metadata["updates"] == 0
+    assert metadata["has_trained_weights"]
     assert not metadata["learned_success_verified"]
 
 
@@ -181,3 +185,53 @@ def test_short_evaluation_is_censored_not_formal_success(tmp_path):
     summary = evaluate(checkpoint, tmp_path / "short", seeds=(5,), episodes_per_seed=1, max_steps=1)
     assert summary["censored"] == 1 and summary["completed"] == 0
     assert summary["engineering_evaluation_completed"] and not summary["full_horizon_completed"]
+
+
+def test_sampled_frozen_evaluation_repeats_recorded_action_seeds(tmp_path):
+    trainer = tiny_trainer(episode_steps=2)
+    checkpoint = tmp_path / "policy.pt"
+    trainer.save(checkpoint)
+    for name in ("a", "b"):
+        summary = evaluate(checkpoint, tmp_path / name, seeds=(19,), episodes_per_seed=1,
+                           stage="contact", deterministic=False)
+        assert summary["policy_mode"] == "sampled_seeded" and summary["requested"] == 1
+    a = np.load(tmp_path / "a" / "episode-0000.npz")
+    b = np.load(tmp_path / "b" / "episode-0000.npz")
+    np.testing.assert_array_equal(a["actions"], b["actions"])
+    np.testing.assert_array_equal(a["positions"], b["positions"])
+    manifest = json.loads((tmp_path / "a" / "manifest.json").read_text())
+    assert manifest["requests"][0]["action_seed"] == 19
+
+
+def test_modified_task_scales_are_recorded_as_diagnostic(tmp_path):
+    trainer = tiny_trainer(episode_steps=2)
+    trainer.env.cfg.sense_radius = 1.8
+    checkpoint = tmp_path / "policy.pt"
+    trainer.save(checkpoint)
+    summary = evaluate(checkpoint, tmp_path / "evaluation", seeds=(19,), episodes_per_seed=1,
+                       stage="search")
+    assert summary["diagnostic"]
+    assert summary["task_config_differences"]["sense_radius"] == {"actual": 1.8, "reference": .8}
+
+
+def test_checkpoint_keeps_loaded_source_identity_if_files_change(tmp_path, monkeypatch):
+    trainer = tiny_trainer()
+    loaded_identity = trainer.runtime_source_sha256
+    monkeypatch.setattr("npa_swarm.train.source_sha256", lambda: "changed-on-disk")
+    checkpoint = tmp_path / "policy.pt"
+    trainer.save(checkpoint)
+    payload = torch.load(checkpoint, map_location="cpu", weights_only=False)
+    assert payload["source_sha256"] == loaded_identity
+
+
+def test_vector_only_actor_has_no_unconditioned_world_direction():
+    policy = LocalPolicy(20, 8, vector_actor=True, vector_only=True)
+    with torch.no_grad():
+        policy.actor.bias.fill_(3)
+        policy.basis_actor.bias.fill_(.4)
+    obs = torch.zeros(1, 3, 20)
+    obs[..., 6] = .5  # scalar density cannot provide a direction
+    obs[..., 16:] = .7
+    graph = Graph(torch.tensor([0, 1]), torch.tensor([1, 0]), 3)
+    mean, _, _, _ = policy(obs, torch.randn(1, 3, 8), graph)
+    torch.testing.assert_close(mean, torch.zeros_like(mean), rtol=0, atol=0)

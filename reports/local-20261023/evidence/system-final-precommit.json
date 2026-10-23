@@ -1,0 +1,28 @@
+{
+  "utc": "2026-10-23T14:03:48.011932+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "torch": "2.14.1+cu130",
+  "torch_cuda_build": "13.0",
+  "cuda_available": true,
+  "device": "cuda:0",
+  "cpu_count": 16,
+  "torch_threads": 2,
+  "tf32_matmul": false,
+  "deterministic_algorithms": false,
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+      "capability": [
+        12,
+        0
+      ],
+      "total_memory_bytes": 8546484224
+    }
+  ],
+  "nvidia_smi": "NVIDIA GeForce RTX 5060 Laptop GPU, 596.13, 8151 MiB, 214 MiB, 0 %, 5.39 W, 55",
+  "runtime_source_sha256": "1ccebfdabf5b0c9ee336de78ea6a4b0b31211fafb8f12ef9413ffd8a97f61a5d",
+  "git_commit": "cc83926b08ce6ae8e603b56e37a48b6edc63eb40",
+  "git_dirty": true
+}

@@ -1,0 +1,10 @@
+{
+  "status": "stopped_by_agent",
+  "requested_additional_updates": 80,
+  "completed_updates": 73,
+  "env_steps": 9344,
+  "episodes": 6,
+  "successes": 2,
+  "reason": "Two visible-goal contact curriculum successes occurred by update13, then no new success and regression for over40 updates. Freeze best-distance candidate, do not consume remaining budget.",
+  "current_incomplete_update_discarded": true
+}

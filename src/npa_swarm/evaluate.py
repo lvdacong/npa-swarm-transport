@@ -30,8 +30,8 @@ def _metrics(info):
 
 @torch.no_grad()
 def evaluate(checkpoint, output, seeds=(42, 43, 44), episodes_per_seed=3,
-             device="cpu", stage="search", max_steps=None):
-    """Deterministic policy, fresh layouts; never silently omit failed requests.
+             device="cpu", stage="search", max_steps=None, deterministic=True):
+    """Frozen policy, fresh layouts; never silently omit failed requests.
 
     Every control-step position/action and task metric is saved. CPU diagnostic
     populations and shortened horizons are explicitly excluded from formal
@@ -53,16 +53,25 @@ def evaluate(checkpoint, output, seeds=(42, 43, 44), episodes_per_seed=3,
     policy, saved_cfg, checkpoint_metadata = load_policy_checkpoint(frozen, device)
     cfg = dataclasses.replace(saved_cfg, num_envs=1, stage=stage)
     horizon = cfg.episode_steps if max_steps is None else min(max_steps, cfg.episode_steps)
-    diagnostic = cfg.n_agents != 4096 or horizon < cfg.episode_steps or stage != "search"
+    reference = type(cfg)()
+    physical_fields = ("arena_half", "agent_radius", "object_radius", "goal_radius", "comm_radius",
+                       "sense_radius", "dt", "substeps", "max_force", "agent_drag", "max_speed",
+                       "object_drag", "object_static_friction", "contact_stiffness", "episode_steps")
+    task_differences = {name: {"actual": getattr(cfg, name), "reference": getattr(reference, name)}
+                        for name in physical_fields if getattr(cfg, name) != getattr(reference, name)}
+    diagnostic = cfg.n_agents != 4096 or horizon < cfg.episode_steps or stage != "search" or bool(task_differences)
     requests = [{"seed": seed, "episode": episode,
-                 "layout_seed": seed + 1000003 * episode, "status": "not_started"}
+                 "layout_seed": seed + 1000003 * episode,
+                 "action_seed": None if deterministic else seed + 1000003 * episode,
+                 "status": "not_started"}
                 for seed in seeds for episode in range(episodes_per_seed)]
     manifest = {"schema_version": 1, "checkpoint": checkpoint_metadata,
                 "runtime_source_sha256": source_sha256(),
                 "source_changed": source_sha256() != checkpoint_metadata["source_sha256"],
                 "env_config": dataclasses.asdict(cfg), "requested": len(requests),
-                "device": str(device), "policy_mode": "deterministic",
+                "device": str(device), "policy_mode": "deterministic" if deterministic else "sampled_seeded",
                 "max_steps": horizon, "diagnostic": diagnostic,
+                "task_config_differences": task_differences,
                 "connectivity_sampling": "control-step endpoints (not continuous-time proof)",
                 "requests": requests}
     _json_dump(output / "manifest.json", manifest)
@@ -85,7 +94,7 @@ def evaluate(checkpoint, output, seeds=(42, 43, 44), episodes_per_seed=3,
             metrics.append(_metrics(env.metrics()))
             for step in range(horizon):
                 obs = env.observe()
-                action, _, _, _, hidden = policy.act(obs, hidden, env.graph, deterministic=True)
+                action, _, _, _, hidden = policy.act(obs, hidden, env.graph, deterministic=deterministic)
                 _, _, terminated, truncated, info = env.step(action)
                 actions.append(action[0].cpu().numpy().copy())
                 positions.append(env.positions[0].cpu().numpy().copy())
@@ -136,6 +145,8 @@ def evaluate(checkpoint, output, seeds=(42, 43, 44), episodes_per_seed=3,
                "bridge_eligible_steps": eligible_steps, "bridge_connected_steps": bridge_steps,
                "bridge_keep_fraction": bridge_steps / eligible_steps if eligible_steps else None,
                "diagnostic": diagnostic, "stage": stage, "n_agents": cfg.n_agents,
+               "task_config_differences": task_differences,
+               "policy_mode": manifest["policy_mode"],
                "seconds": time.perf_counter() - start,
                "engineering_evaluation_completed": not (counts["error"] + counts["interrupted"] + counts["not_started"]),
                "full_horizon_completed": completed == len(requests),

@@ -1,0 +1,62 @@
+{
+  "processes": [
+    {
+      "pid": 11504,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 47428,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 61800,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 2208,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 41696,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 66356,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 49004,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 57912,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 37844,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 32964,
+      "alive": true,
+      "same_creation_time": true
+    },
+    {
+      "pid": 39580,
+      "alive": true,
+      "same_creation_time": true
+    }
+  ],
+  "task_training_processes_remaining": 0,
+  "npa_worktree_clean": true,
+  "npa_head_matches": true
+}

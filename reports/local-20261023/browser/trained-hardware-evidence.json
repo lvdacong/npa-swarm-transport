@@ -1,0 +1,100 @@
+{
+  "scope": "Final trained search checkpoint / native CUDA / physical AMD RDNA3 Chrome WebGPU",
+  "samples": [
+    {
+      "label": "trained-soak-start",
+      "utc": "2026-10-23T14:04:14.998Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 185,
+        "step": 185,
+        "particles": 4096,
+        "selected": -1,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 45
+      },
+      "heap": 35192373,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.9",
+        "draw-rate": "1.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "47.0 ms",
+        "run-state": "运行中",
+        "checkpoint": "策略：last.pt · 64341906974c · 抽样动作",
+        "training-notice": "已加载 last.pt · 本段 80 次更新 · 继承已训练权重。加载权重不代表已学会搬运，实际质量以独立评价为准。"
+      }
+    },
+    {
+      "label": "trained-soak-middle",
+      "utc": "2026-10-23T14:10:44.695Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 2053,
+        "step": 852,
+        "particles": 4096,
+        "selected": -1,
+        "paused": false,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 2141
+      },
+      "heap": 32411172,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "4.9",
+        "draw-rate": "13.0",
+        "gpu-ms": "0.13 ms",
+        "step-ms": "47.0 ms",
+        "run-state": "运行中",
+        "checkpoint": "策略：last.pt · 64341906974c · 抽样动作",
+        "training-notice": "已加载 last.pt · 本段 80 次更新 · 继承已训练权重。加载权重不代表已学会搬运，实际质量以独立评价为准。"
+      }
+    },
+    {
+      "label": "trained-soak-end-paused",
+      "utc": "2026-10-23T14:14:09.353Z",
+      "diagnostics": {
+        "backend": "WebGPU",
+        "adapter": "amd · rdna-3",
+        "sequence": 2875,
+        "step": 472,
+        "particles": 4096,
+        "selected": -1,
+        "paused": true,
+        "errors": [],
+        "snapshotBytes": 131200,
+        "visible": true,
+        "renderedFrames": 3000
+      },
+      "heap": 29500434,
+      "dom": 124,
+      "meters": {
+        "snapshot-rate": "0.0",
+        "draw-rate": "0.0",
+        "gpu-ms": "0.07 ms",
+        "step-ms": "32.0 ms",
+        "run-state": "已暂停",
+        "checkpoint": "策略：last.pt · 64341906974c · 抽样动作",
+        "training-notice": "已加载 last.pt · 本段 80 次更新 · 继承已训练权重。加载权重不代表已学会搬运，实际质量以独立评价为准。"
+      }
+    }
+  ],
+  "summary": {
+    "duration_seconds": 600.2659999998286,
+    "status": "PASS",
+    "checkpoint_sha256": "64341906974c0fa3689cf408f33e54f0278422b28b74877070b1b1aa6986b18e",
+    "terminal_resets": 2,
+    "physical_adapter": "amd / rdna-3",
+    "native_device": "cuda:0 / RTX5060 Laptop",
+    "research_task_passed": false,
+    "scope": "Ten minutes of final trained policy inference with real hardware Chrome rendering; normal 1200-step terminations reset via API; no display-FPS claim."
+  },
+  "console": []
+}

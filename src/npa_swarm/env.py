@@ -230,6 +230,8 @@ class SwarmEnv:
         broad = radius_graph(self.positions, broad_radius)
         flat = self.positions.reshape(-1, 2)
         sub_dt = c.dt / c.substeps
+        contact_credit = torch.zeros_like(self._object_distance_agent)
+        goal_direction = (self.goal_pos - self.object_pos) / self._distance.clamp_min(1e-8)[:, None]
         for _ in range(c.substeps):
             delta = flat[broad.dst] - flat[broad.src]
             distance = delta.norm(dim=-1)
@@ -242,6 +244,11 @@ class SwarmEnv:
             object_normal = object_delta / object_distance.clamp_min(1e-8)[..., None]
             object_overlap = (c.object_radius + c.agent_radius - object_distance).clamp_min(0)
             contact_force = object_normal * (c.contact_stiffness * object_overlap)[..., None]
+            if c.force_credit_weight:
+                # Credit the actual force that THIS particle transmits to the
+                # cargo, including its sign. This is reward-only supervision:
+                # no target vector is inserted into observations or actions.
+                contact_credit -= (contact_force * goal_direction[:, None]).sum(-1) * sub_dt
             force = actuator + pair_force + contact_force
             velocity = force / c.agent_drag
             speed = velocity.norm(dim=-1, keepdim=True)
@@ -277,22 +284,36 @@ class SwarmEnv:
         # local-message path between their current sensor witnesses.
         bridge_gap = (eligible & ~self._bridge).float()
         connectivity_cost = c.connectivity_weight * (1 - self._largest_fraction + bridge_gap) * c.dt
-        exploration = self._mark_coverage() * .01
+        exploration = self._mark_coverage() * c.exploration_weight
         local_progress = ((old_local_distance - self._object_distance_agent)
                           * (old_visible & self._object_visible)) * .05
         effort = .0005 * actions.square().sum(-1) * c.dt
-        team_reward = progress + discovery + success.float() * 5 - connectivity_cost
-        reward = team_reward[:, None] + exploration + local_progress - effort
+        team_reward = discovery + success.float() * 5 - connectivity_cost
+        transport_reward = progress[:, None]
+        if c.local_transport_reward:
+            # The cargo's movement is chiefly caused by local witnesses. Do
+            # not train thousands of uninformed distant actions on the same
+            # high-variance movement return. Success/discovery remain shared.
+            transport_reward = transport_reward * (old_visible | self._object_visible)
+        contact_credit *= c.force_credit_weight * self.found_goal[:, None]
+        reward = team_reward[:, None] + transport_reward + exploration + local_progress - effort + contact_credit
         self.episode_return += reward.mean(-1)
         info = self.metrics()
         info.update(reward_progress=progress, reward_discovery=discovery,
                     reward_connectivity=-connectivity_cost, reward_exploration=exploration.mean(-1),
-                    reward_local_progress=local_progress.mean(-1), reward_effort=-effort.mean(-1))
+                    reward_local_progress=local_progress.mean(-1), reward_effort=-effort.mean(-1),
+                    reward_contact_credit=contact_credit.mean(-1))
         return self.observe(), reward, success, (self.steps >= c.episode_steps) & ~success, info
 
     @torch.no_grad()
     def metrics(self):
         eligible = self.found_object & self.found_goal
+        # Instantaneous physical contact resultant at the sampled state. This
+        # includes opposing contacts; contact count alone cannot prove pushing.
+        normal = -self._object_delta / self._object_distance_agent.clamp_min(1e-8)[..., None]
+        overlap = (self.cfg.object_radius + self.cfg.agent_radius - self._object_distance_agent).clamp_min(0)
+        cargo_force = -(normal * (self.cfg.contact_stiffness * overlap)[..., None]).sum(1)
+        goal_direction = (self.goal_pos - self.object_pos) / self._distance.clamp_min(1e-8)[:, None]
         return {
             "success": self._distance <= self.cfg.goal_radius - self.cfg.object_radius,
             "connected": self._connected.clone(), "largest_fraction": self._largest_fraction.clone(),
@@ -300,6 +321,8 @@ class SwarmEnv:
             "found_object": self.found_object.clone(), "found_goal": self.found_goal.clone(),
             "object_distance": self._distance.clone(), "contact_count": self._contact.sum(-1),
             "object_speed": self.object_vel.norm(dim=-1), "steps": self.steps.clone(),
+            "cargo_force_norm": cargo_force.norm(dim=-1),
+            "cargo_force_toward_goal": (cargo_force * goal_direction).sum(-1),
             "episode_return": self.episode_return.clone(), "ever_disconnected": self.ever_disconnected.clone(),
             "disconnected_seconds": self.disconnected_seconds.clone(),
             "min_largest_fraction": self.min_largest_fraction.clone(),
@@ -314,7 +337,7 @@ class SwarmEnv:
 
     @torch.no_grad()
     def load_state_dict(self, state):
-        if state["config"] != asdict(self.cfg):
+        if asdict(EnvConfig(**state["config"])) != asdict(self.cfg):
             raise ValueError("Environment configuration differs from checkpoint")
         for name in self._state_names:
             target, saved = getattr(self, name), state[name]

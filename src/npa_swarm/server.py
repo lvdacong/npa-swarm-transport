@@ -65,7 +65,7 @@ def pack_snapshot(env: SwarmEnv, hidden: torch.Tensor, info: dict,
 
 class Simulation:
     def __init__(self, config: EnvConfig | None = None, checkpoint: str | Path | None = None,
-                 device: str = "cpu", untrained: bool = False):
+                 device: str = "cpu", untrained: bool = False, stochastic: bool = False):
         if checkpoint is None and not untrained:
             raise ValueError("Pass --checkpoint or explicitly opt into --untrained diagnostics")
         self.checkpoint = None
@@ -85,6 +85,8 @@ class Simulation:
             self.checkpoint = {"name": "随机初始化 / 未训练", "updates": 0,
                                "checkpoint_sha256": None, "stage": config.stage}
         self.policy.eval()
+        self.stochastic = stochastic
+        self.action_generator = torch.Generator(device=self.env.device).manual_seed(config.seed)
         self.hidden = self.policy.initial_state(1, config.n_agents, self.env.device)
         self.lock = threading.Lock()
         self.stop_event = threading.Event()
@@ -131,6 +133,8 @@ class Simulation:
                     "device": str(self.env.device), "paused": self.paused, "speed": self.speed,
                     "sequence": self.sequence, "revision": self.revision, "step_ms": self.step_ms,
                     "error": self.error, "finished": self.finished, "trained_transport_verified": False,
+                    "policy_mode": "sampled_seeded" if self.stochastic else "deterministic",
+                    "action_seed": self.env.cfg.seed if self.stochastic else None,
                     "transport": "CPU/CUDA to host binary snapshot to browser GPU; not end-to-end zero-copy"}
 
     def _run(self):
@@ -153,7 +157,9 @@ class Simulation:
                         changed = True
                     if not paused:
                         obs = self.env.observe()
-                        action, _, _, _, self.hidden = self.policy.act(obs, self.hidden, self.env.graph, deterministic=True)
+                        action, _, _, _, self.hidden = self.policy.act(
+                            obs, self.hidden, self.env.graph, deterministic=not self.stochastic,
+                            generator=self.action_generator if self.stochastic else None)
                         _, _, terminated, truncated, self.info = self.env.step(action)
                         if self.env.device.type == "cuda":
                             torch.cuda.synchronize(self.env.device)
@@ -270,8 +276,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
 
 
 def create_server(config: EnvConfig | None = None, checkpoint=None, device="cpu", port=8765,
-                  host="127.0.0.1", untrained=False) -> ViewerServer:
-    simulation = Simulation(config, checkpoint, device, untrained)
+                  host="127.0.0.1", untrained=False, stochastic=False) -> ViewerServer:
+    simulation = Simulation(config, checkpoint, device, untrained, stochastic)
     try:
         return ViewerServer((host, port), simulation)
     except Exception:
@@ -280,8 +286,8 @@ def create_server(config: EnvConfig | None = None, checkpoint=None, device="cpu"
 
 
 def serve(config: EnvConfig | None = None, checkpoint=None, device="cpu", port=8765,
-          host="127.0.0.1", untrained=False):
-    with create_server(config, checkpoint, device, port, host, untrained) as server:
+          host="127.0.0.1", untrained=False, stochastic=False):
+    with create_server(config, checkpoint, device, port, host, untrained, stochastic) as server:
         print(f"NPA Swarm viewer: http://{host}:{server.server_address[1]} (inference only)", flush=True)
         try:
             server.serve_forever(poll_interval=0.2)

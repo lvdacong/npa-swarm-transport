@@ -193,10 +193,10 @@ async function pollStatus(){
     const s=await response.json();state.status=s;
     $('connection').textContent='本机已连接';$('connection-dot').classList.add('online');
     $('device').textContent=`仿真 / 策略设备：${s.device}`;$('stage-badge').textContent=s.config.stage==='search'?'SEARCH · 正式任务':'CONTACT · 热身任务';
-    const ck=s.checkpoint,trained=Number(ck.updates)>0;
-    $('training-notice').textContent=trained?`已加载 ${ck.name} · ${ck.updates} 次更新。加载权重不代表已学会搬运，实际质量以独立评价为准。`:'未训练策略 · 这是随机初始化网络的工程诊断，不能作为学会探索、连通或搬运的证据。';
+    const ck=s.checkpoint,trained=ck.has_trained_weights??Number(ck.updates)>0;
+    $('training-notice').textContent=trained?`已加载 ${ck.name} · 本段 ${ck.updates} 次更新${ck.lineage?.kind==='warmstart'?' · 继承已训练权重':''}。加载权重不代表已学会搬运，实际质量以独立评价为准。`:'未训练策略 · 这是随机初始化网络的工程诊断，不能作为学会探索、连通或搬运的证据。';
     $('training-notice').classList.toggle('trained',trained);
-    $('checkpoint').textContent=`策略：${ck.name}${ck.checkpoint_sha256?' · '+ck.checkpoint_sha256.slice(0,12):''}`;
+    $('checkpoint').textContent=`策略：${ck.name}${ck.checkpoint_sha256?' · '+ck.checkpoint_sha256.slice(0,12):''} · ${s.policy_mode==='sampled_seeded'?'抽样动作':'均值动作'}`;
     if(s.error)error(`仿真已暂停：${s.error}`);
   } catch(e) {$('connection').textContent='连接中断';$('connection-dot').classList.remove('online');}
   if(!state.stopped)setTimeout(pollStatus,2000);

@@ -112,7 +112,7 @@ class Trainer:
         self.env, self.cfg = env, config
         self.device = torch.device(env.device)
         seed_all(config.seed)
-        self.policy = (policy or LocalPolicy(env.obs_dim, config.hidden_dim)).to(self.device)
+        self.policy = (policy or LocalPolicy(env.obs_dim, config.hidden_dim, config.vector_actor, config.vector_only)).to(self.device)
         self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=config.learning_rate)
         self.hidden = self.policy.initial_state(env.cfg.num_envs, env.cfg.n_agents, self.device)
         self.updates = 0
@@ -121,6 +121,8 @@ class Trainer:
         self.successes = 0
         self.lineage = {"kind": "new"}
         self.resume_metadata = None
+        self.runtime_source_sha256 = source_sha256()
+        self.best_rollout_distance = None
 
     @torch.no_grad()
     def collect(self):
@@ -128,6 +130,9 @@ class Trainer:
         observations, graphs, latent, logp, values = [], [], [], [], []
         rewards, next_values, terms, truncs = [], [], [], []
         connected, largest, bridge = [], [], []
+        physical = {key: [] for key in ("object_distance", "object_speed", "contact_count",
+                                       "cargo_force_norm", "cargo_force_toward_goal",
+                                       "reward_progress", "reward_contact_credit", "found_object", "found_goal")}
         initial_hidden = self.hidden.detach().clone()
         start_episodes, start_successes = self.episodes, self.successes
         for _ in range(c.rollout_steps):
@@ -149,6 +154,9 @@ class Trainer:
             for key, destination in (("connected", connected), ("largest_fraction", largest), ("bridge", bridge)):
                 if key in info:
                     destination.append(torch.as_tensor(info[key], device=self.device).float().mean())
+            for key, destination in physical.items():
+                if key in info:
+                    destination.append(info[key].float().mean())
             done = terminated | truncated
             self.hidden = memory * (~done).view(-1, 1, 1)
             if bool(done.any()):
@@ -166,6 +174,12 @@ class Trainer:
         for key, collected in (("connected_fraction", connected), ("largest_fraction", largest), ("bridge_fraction", bridge)):
             if collected:
                 metrics[key] = float(torch.stack(collected).mean())
+        for key, collected in physical.items():
+            if collected:
+                metrics[key + "_mean"] = float(torch.stack(collected).mean())
+        if physical["reward_progress"]:
+            # Sum actual per-step changes, so resets cannot look like progress.
+            metrics["rollout_distance_delta"] = float(torch.stack(physical["reward_progress"]).sum() / 3)
         return Rollout(observations, graphs, torch.stack(latent), torch.stack(logp),
                        values_t, advantages, returns, term_t | trunc_t,
                        initial_hidden, metrics)
@@ -241,6 +255,10 @@ class Trainer:
                   "n_agents": self.env.cfg.n_agents,
                   "cuda_peak_allocated_bytes": torch.cuda.max_memory_allocated(self.device)
                     if self.device.type == "cuda" else None,
+                  "cuda_reserved_bytes": torch.cuda.memory_reserved(self.device)
+                    if self.device.type == "cuda" else None,
+                  "cuda_peak_reserved_bytes": torch.cuda.max_memory_reserved(self.device)
+                    if self.device.type == "cuda" else None,
                   **rollout.metrics, **stats}
         if self.resume_metadata is not None:
             result["resume"] = self.resume_metadata
@@ -255,7 +273,8 @@ class Trainer:
                    "env_state": self.env.state_dict(), "rng": capture_rng(),
                    "updates": self.updates, "env_steps": self.env_steps,
                    "episodes": self.episodes, "successes": self.successes,
-                   "lineage": self.lineage, "source_sha256": source_sha256(),
+                   "lineage": self.lineage, "source_sha256": self.runtime_source_sha256,
+                   "best_rollout_distance": self.best_rollout_distance,
                    "torch_version": torch.__version__, "device": str(self.device)}
         atomic_torch_save(payload, path)
 
@@ -278,6 +297,7 @@ class Trainer:
             setattr(trainer, field, value)
         restore_rng(data["rng"], device)
         trainer.lineage = data.get("lineage", {"kind": "unknown"})
+        trainer.best_rollout_distance = data.get("best_rollout_distance")
         trainer.resume_metadata = {"checkpoint_sha256": file_sha256(path),
                                    "source_changed": source_sha256() != data["source_sha256"],
                                    "device_changed": str(device) != data["device"],
@@ -293,16 +313,25 @@ def _read_checkpoint(path, device):
     return data
 
 
+def has_trained_weights(data):
+    lineage = data.get("lineage", {})
+    return bool(data["updates"] > 0 or lineage.get("inherited_trained_weights", False)
+                or lineage.get("parent_updates", 0) > 0)
+
+
 def load_policy_checkpoint(path, device="cpu"):
     """Inference-only loading: never resumes a training environment or RNG."""
     data = _read_checkpoint(path, device)
     cfg = EnvConfig(**data["env_config"])
-    policy = LocalPolicy(data["obs_dim"], data["train_config"]["hidden_dim"]).to(device)
+    policy = LocalPolicy(data["obs_dim"], data["train_config"]["hidden_dim"],
+                         data["train_config"].get("vector_actor", False),
+                         data["train_config"].get("vector_only", False)).to(device)
     policy.load_state_dict(data["model"])
     policy.eval()
     metadata = {"checkpoint_sha256": file_sha256(path), "updates": data["updates"],
                 "env_steps": data["env_steps"], "stage": cfg.stage,
-                "source_sha256": data["source_sha256"], "learned_success_verified": False}
+                "source_sha256": data["source_sha256"], "learned_success_verified": False,
+                "has_trained_weights": has_trained_weights(data), "lineage": data.get("lineage", {})}
     return policy, cfg, metadata
 
 
@@ -329,11 +358,32 @@ def train(env_cfg, train_cfg, output, updates, device="cpu", resume=None, warmst
             parent = _read_checkpoint(warmstart, device)
             trainer.policy.load_state_dict(parent["model"])
             trainer.lineage = {"kind": "warmstart", "parent_sha256": file_sha256(warmstart),
+                               "inherited_trained_weights": has_trained_weights(parent),
                                "parent_updates": parent["updates"], "parent_stage": parent["env_config"]["stage"]}
     trainer.save(output / "last.pt")
     with (output / "metrics.jsonl").open("a", encoding="utf-8") as stream:
         for _ in range(updates):
             result = trainer.update()
+            # Dynamic edge counts leave differently sized cached blocks after
+            # a rollout. Trim only large idle pools, between complete updates,
+            # rather than allowing an 8-GiB WDDM device to page or fail.
+            trim_start = time.perf_counter()
+            trimmed = False
+            if trainer.device.type == "cuda":
+                reserved = torch.cuda.memory_reserved(trainer.device)
+                allocated = torch.cuda.memory_allocated(trainer.device)
+                if reserved > 4 * 1024 ** 3 and reserved - allocated > 2 * 1024 ** 3:
+                    torch.cuda.empty_cache()
+                    trimmed = True
+                result["cuda_reserved_after_update_bytes"] = torch.cuda.memory_reserved(trainer.device)
+            result["cache_trimmed"] = trimmed
+            result["cache_trim_seconds"] = time.perf_counter() - trim_start if trimmed else 0.0
+            score = result.get("object_distance_mean")
+            if score is not None and (trainer.best_rollout_distance is None or score < trainer.best_rollout_distance):
+                trainer.best_rollout_distance = score
+                # A training-metric candidate only; independent evaluation is
+                # still required. Preserve it when later updates regress.
+                trainer.save(output / "best-distance.pt")
             trainer.save(output / "last.pt")
             stream.write(json.dumps(result, allow_nan=False) + "\n")
             stream.flush()

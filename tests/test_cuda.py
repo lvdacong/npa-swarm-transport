@@ -8,7 +8,7 @@ import torch
 
 from npa_swarm.config import EnvConfig, TrainConfig
 from npa_swarm.env import SwarmEnv
-from npa_swarm.graph import radius_graph
+from npa_swarm.graph import Graph, aggregate, radius_graph
 from npa_swarm.policy import LocalPolicy
 from npa_swarm.train import Trainer
 
@@ -93,3 +93,18 @@ def test_cuda_ppo_checkpoint_next_update_preserves_counts_and_finite_state(tmp_p
         torch.testing.assert_close(actual.cpu(), expected_state[name], atol=2e-5, rtol=2e-4, msg=name)
     torch.testing.assert_close(restored.hidden.cpu(), expected_hidden, atol=1e-4, rtol=1e-3)
     assert abs(actual_metrics["mean_reward"] - expected_metrics["mean_reward"]) < 1e-4
+
+
+def test_cuda_sparse_mean_shuffled_duplicate_edges_preserves_values_and_gradients():
+    graph = Graph(torch.tensor([2, 0, 1, 0]), torch.tensor([1, 1, 0, 1]), 3)
+    gpu_graph = graph.to("cuda")
+    x = torch.tensor([[[1., 2.], [3., 4.], [7., 8.]]], requires_grad=True)
+    y = x.detach().cuda().requires_grad_()
+    expected, actual = aggregate(x, graph), aggregate(y, gpu_graph)
+    torch.testing.assert_close(actual.cpu(), expected, atol=2e-6, rtol=2e-5)
+    expected.square().sum().backward()
+    actual.square().sum().backward()
+    torch.testing.assert_close(y.grad.cpu(), x.grad, atol=2e-6, rtol=2e-5)
+    matrix = gpu_graph._mean_matrix
+    torch.sparse_csr_tensor(matrix.crow_indices(), matrix.col_indices(), matrix.values(),
+                           size=matrix.shape, check_invariants=True)

@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "checkpoint": {
+    "checkpoint_sha256": "852f2e75bda8effc2f6d8de2067b8888862156e79df13fc7f2d633e5cdd40329",
+    "updates": 0,
+    "env_steps": 0,
+    "stage": "contact",
+    "source_sha256": "127fbcff8a22a5b6e1d818ee67e5823fe302e70183b55fdd00509bc4b503b53e",
+    "learned_success_verified": false
+  },
+  "runtime_source_sha256": "127fbcff8a22a5b6e1d818ee67e5823fe302e70183b55fdd00509bc4b503b53e",
+  "source_changed": false,
+  "env_config": {
+    "n_agents": 4096,
+    "num_envs": 1,
+    "arena_half": 10.0,
+    "agent_radius": 0.04,
+    "object_radius": 0.65,
+    "goal_radius": 1.0,
+    "comm_radius": 0.32,
+    "sense_radius": 0.8,
+    "dt": 0.1,
+    "substeps": 8,
+    "max_force": 1.0,
+    "agent_drag": 2.0,
+    "max_speed": 0.5,
+    "object_drag": 15.0,
+    "object_static_friction": 4.0,
+    "contact_stiffness": 100.0,
+    "episode_steps": 1200,
+    "stage": "contact",
+    "connectivity_weight": 0.1,
+    "seed": 42
+  },
+  "requested": 1,
+  "device": "cuda:0",
+  "policy_mode": "deterministic",
+  "max_steps": 1200,
+  "diagnostic": true,
+  "connectivity_sampling": "control-step endpoints (not continuous-time proof)",
+  "requests": [
+    {
+      "seed": 100,
+      "episode": 0,
+      "layout_seed": 100,
+      "status": "timeout",
+      "steps": 1200,
+      "final_metrics": {
+        "success": [
+          false
+        ],
+        "connected": [
+          true
+        ],
+        "largest_fraction": [
+          1.0
+        ],
+        "bridge": [
+          true
+        ],
+        "bridge_eligible": [
+          true
+        ],
+        "found_object": [
+          true
+        ],
+        "found_goal": [
+          true
+        ],
+        "object_distance": [
+          2.049999952316284
+        ],
+        "contact_count": [
+          22
+        ],
+        "object_speed": [
+          0.0
+        ],
+        "steps": [
+          1200
+        ],
+        "cargo_force_norm": [
+          0.07786736637353897
+        ],
+        "cargo_force_toward_goal": [
+          0.07785159349441528
+        ],
+        "episode_return": [
+          0.000255986291449517
+        ],
+        "ever_disconnected": [
+          false
+        ],
+        "disconnected_seconds": [
+          0.0
+        ],
+        "min_largest_fraction": [
+          1.0
+        ],
+        "bridge_eligible_steps": [
+          1200
+        ],
+        "bridge_steps": [
+          1200
+        ]
+      },
+      "full_connectivity": true,
+      "trajectory": "episode-0000.npz",
+      "trajectory_sha256": "6c91190419b146e74002afc18d02135f624b5bf21d895aac7539c1ee68df9d1c"
+    }
+  ]
+}

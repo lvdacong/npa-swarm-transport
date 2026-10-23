@@ -3,7 +3,7 @@
 Only cell keys are sorted. Particle arrays and their identities never move.
 Candidate counts are variable: dense cells cost more memory, never lose neighbors.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import math
 
 import torch
@@ -14,6 +14,7 @@ class Graph:
     src: torch.Tensor
     dst: torch.Tensor
     num_nodes: int = 0
+    _mean_matrix: torch.Tensor | None = field(default=None, repr=False)
 
     def to(self, device):
         return Graph(self.src.to(device), self.dst.to(device), self.num_nodes)
@@ -56,6 +57,25 @@ def radius_graph(positions: torch.Tensor, radius: float) -> Graph:
 def aggregate(hidden: torch.Tensor, graph: Graph) -> torch.Tensor:
     """Differentiable neighbor mean. An isolated node receives zeros."""
     flat = hidden.reshape(-1, hidden.shape[-1])
+    if flat.is_cuda:
+        # radius_graph emits nondecreasing destination IDs. CSR SpMM avoids
+        # materializing [edges, hidden_dim] gathers during every recurrent
+        # forward/backward, which exhausted 8 GiB after dense-world rollouts.
+        # Cache only fixed graph weights, never learned hidden states.
+        matrix = graph._mean_matrix
+        if matrix is None or matrix.dtype != flat.dtype or matrix.shape[0] != flat.shape[0]:
+            with torch.no_grad():
+                dst, src = graph.dst, graph.src
+                degree = torch.zeros(flat.shape[0], device=flat.device, dtype=torch.long)
+                degree.scatter_add_(0, dst, torch.ones_like(dst))
+                values = degree[dst].to(flat.dtype).reciprocal()
+                # Canonicalize columns and preserve duplicate-edge weights for
+                # hand-built graphs too. COO coalescing guarantees valid CSR.
+                matrix = torch.sparse_coo_tensor(torch.stack((dst, src)), values,
+                                                 size=(flat.shape[0], flat.shape[0]), device=flat.device,
+                                                 check_invariants=False).coalesce().to_sparse_csr()
+                graph._mean_matrix = matrix
+        return torch.sparse.mm(matrix, flat).reshape_as(hidden)
     result = torch.zeros_like(flat).index_add(0, graph.dst, flat[graph.src])
     degree = torch.zeros(flat.shape[0], device=flat.device, dtype=flat.dtype)
     degree.index_add_(0, graph.dst, torch.ones_like(graph.dst, dtype=flat.dtype))

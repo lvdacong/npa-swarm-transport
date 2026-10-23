@@ -23,6 +23,13 @@ def main(argv=None):
         p.add_argument("--stage", choices=("contact", "search"), default="search")
         p.add_argument("--seed", type=int, default=42)
         p.add_argument("--episode-steps", type=int, default=1200)
+        p.add_argument("--sense-radius", type=float, default=0.8,
+                       help="local sensing distance; larger contact curricula must be labelled")
+        p.add_argument("--local-transport-reward", action="store_true",
+                       help="assign cargo-distance progress only to local cargo witnesses")
+        p.add_argument("--exploration-weight", type=float, default=0.01)
+        p.add_argument("--force-credit-weight", type=float, default=0.0,
+                       help="reward-only signed actual contact impulse toward the destination")
         p.add_argument("--device", default="auto")
         p.add_argument("--threads", type=int, default=2)
 
@@ -44,6 +51,8 @@ def main(argv=None):
     training.add_argument("--bptt-steps", type=int, default=8)
     training.add_argument("--ppo-epochs", type=int, default=3)
     training.add_argument("--hidden-dim", type=int, default=32)
+    training.add_argument("--vector-actor", action="store_true", help="learn coefficients of existing local observation vectors")
+    training.add_argument("--vector-only", action="store_true", help="omit the unconstrained world-axis action residual; requires --vector-actor")
     training.add_argument("--learning-rate", type=float, default=3e-4)
 
     evaluation = sub.add_parser("evaluate", help="frozen checkpoint evaluation, preserving failures and trajectories")
@@ -53,6 +62,7 @@ def main(argv=None):
     evaluation.add_argument("--episodes-per-seed", type=int, default=1)
     evaluation.add_argument("--stage", choices=("contact", "search"), default="search")
     evaluation.add_argument("--max-steps", type=int, help="diagnostic horizon override; not formal evaluation")
+    evaluation.add_argument("--stochastic", action="store_true", help="evaluate the frozen sampled policy with recorded action seeds")
     evaluation.add_argument("--device", default="auto")
     evaluation.add_argument("--threads", type=int, default=2)
 
@@ -60,6 +70,7 @@ def main(argv=None):
     env_args(viewer)
     viewer.add_argument("--checkpoint")
     viewer.add_argument("--untrained", action="store_true")
+    viewer.add_argument("--stochastic", action="store_true", help="serve the seeded sampled policy, matching sampled evaluation")
     viewer.add_argument("--port", type=int, default=8765)
     viewer.add_argument("--host", default="127.0.0.1")
 
@@ -77,10 +88,13 @@ def main(argv=None):
             write_json(args.output, result)
     elif args.command == "evaluate":
         from .evaluate import evaluate
-        result = evaluate(args.checkpoint, args.output, args.seeds, args.episodes_per_seed, device=str(device), stage=args.stage, max_steps=args.max_steps)
+        result = evaluate(args.checkpoint, args.output, args.seeds, args.episodes_per_seed, device=str(device), stage=args.stage, max_steps=args.max_steps, deterministic=not args.stochastic)
     else:
         cfg = EnvConfig(n_agents=args.agents, num_envs=args.envs, stage=args.stage,
-                        seed=args.seed, episode_steps=args.episode_steps)
+                        seed=args.seed, episode_steps=args.episode_steps,
+                        force_credit_weight=args.force_credit_weight,
+                        sense_radius=args.sense_radius, local_transport_reward=args.local_transport_reward,
+                        exploration_weight=args.exploration_weight)
         if args.command == "probe":
             result = probe(cfg, args.output, str(device), args.steps, args.warmup, args.train_updates, args.trace)
         elif args.command == "train":
@@ -88,11 +102,12 @@ def main(argv=None):
             if args.resume and args.warmstart:
                 parser.error("choose strict --resume OR policy-only --warmstart")
             if args.resume:
-                forbidden = {"--agents", "--envs", "--stage", "--seed", "--episode-steps", "--rollout-steps", "--bptt-steps", "--ppo-epochs", "--hidden-dim", "--learning-rate"}
+                forbidden = {"--agents", "--envs", "--stage", "--seed", "--episode-steps", "--sense-radius", "--local-transport-reward", "--force-credit-weight", "--exploration-weight", "--vector-actor", "--vector-only", "--rollout-steps", "--bptt-steps", "--ppo-epochs", "--hidden-dim", "--learning-rate"}
                 provided = sys.argv[1:] if argv is None else argv
                 if any(token.split("=", 1)[0] in forbidden for token in provided):
                     parser.error("strict resume uses saved configs; omit config overrides, or use --warmstart for a new experiment")
             tc = TrainConfig(hidden_dim=args.hidden_dim, rollout_steps=args.rollout_steps,
+                             vector_actor=args.vector_actor, vector_only=args.vector_only,
                              bptt_steps=args.bptt_steps, ppo_epochs=args.ppo_epochs,
                              learning_rate=args.learning_rate, seed=args.seed)
             result = train(None if args.resume else cfg, None if args.resume else tc,
@@ -100,7 +115,7 @@ def main(argv=None):
         else:
             from .server import serve
             serve(config=cfg, checkpoint=args.checkpoint, untrained=args.untrained,
-                  device=str(device), port=args.port, host=args.host)
+                  device=str(device), port=args.port, host=args.host, stochastic=args.stochastic)
             return
     if result is not None:
         if not isinstance(result, (dict, list, str, int, float, bool)):

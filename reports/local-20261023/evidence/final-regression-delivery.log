@@ -1,0 +1,8 @@
+.............................................                            [100%]
+============================== warnings summary ===============================
+tests/test_cuda.py::test_cuda_radius_graph_and_local_policy_backward_match_cpu
+  C:\Users\ASUS\research-repos\npa-swarm-transport\src\npa_swarm\graph.py:76: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\aten\src\ATen\SparseCsrTensorImpl.cpp:51.)
+    check_invariants=False).coalesce().to_sparse_csr()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+45 passed, 1 warning in 6.31s
