@@ -1,92 +1,81 @@
-"""Shared local recurrent policy. No coordinates or privileged task inputs."""
-
+"""One shared recurrent policy, with learned scalar and directional messages."""
 from __future__ import annotations
-
 import math
-
 import torch
 from torch import nn
 from torch.nn import functional as F
-
 from .graph import Graph, aggregate
 
 
-def squashed_log_prob(mean: torch.Tensor, log_std: torch.Tensor,
-                      latent: torch.Tensor) -> torch.Tensor:
-    """Log density of tanh(latent), using a stable exact Jacobian."""
-    normal_logp = -0.5 * (((latent - mean) / log_std.exp()).square()
-                         + 2 * log_std + math.log(2 * math.pi))
+def squashed_log_prob(mean, log_std, latent):
+    normal_logp = -.5 * (((latent - mean) / log_std.exp()).square() + 2 * log_std + math.log(2 * math.pi))
     log_jacobian = 2 * (math.log(2) - latent - F.softplus(-2 * latent))
-    return (normal_logp - log_jacobian).sum(dim=-1)
+    return (normal_logp - log_jacobian).sum(-1)
 
 
 class LocalPolicy(nn.Module):
-    """One-hop learned messages, persistent GRU memory, and bounded 2-D force.
+    """Local observation -> GRU + two learned vector slots -> bounded force.
 
-    The same weights act on every particle. Hidden channels are learned scalar
-    messages; they do not grant remote sensing. A message travels at most one
-    graph hop per control step. Relative vectors use common simulation axes.
+    Neighbor messages are OLD state, hence one hop per control step. Vector
+    slots have no prescribed target identity or routing rule. Learned scalar
+    coefficients write/retain/read local directions; there is no unconditional
+    world-axis action bias. Relative vectors share simulation axes; this is not
+    a claim of strict rotation equivariance of the scalar encoder.
     """
-
-    def __init__(self, obs_dim: int, hidden_dim: int = 32, vector_actor: bool = False, vector_only: bool = False):
+    def __init__(self, obs_dim: int, hidden_dim: int = 32):
         super().__init__()
+        if obs_dim != 20 or hidden_dim < 8:
+            raise ValueError("Expected the 20-channel local observation and hidden_dim >= 8")
         self.obs_dim, self.hidden_dim = obs_dim, hidden_dim
+        scalar_dim = hidden_dim - 4
         self.encode = nn.Sequential(nn.Linear(obs_dim + hidden_dim, hidden_dim), nn.Tanh())
-        self.memory = nn.GRUCell(hidden_dim, hidden_dim)
-        self.actor = nn.Linear(hidden_dim, 2)
-        self.critic = nn.Linear(hidden_dim, 1)
-        self.log_std = nn.Parameter(torch.full((2,), -0.5))
-        nn.init.orthogonal_(self.actor.weight, gain=0.01)
+        self.memory = nn.GRUCell(hidden_dim, scalar_dim)
+        self.vector_write = nn.Linear(scalar_dim, 2 * 10)
+        self.vector_gate = nn.Linear(scalar_dim, 2)
+        self.actor = nn.Linear(scalar_dim, 8)
+        self.critic = nn.Linear(scalar_dim, 1)
+        self.log_std = nn.Parameter(torch.full((2,), -.5))
+        nn.init.orthogonal_(self.vector_write.weight, gain=.05)
+        nn.init.zeros_(self.vector_write.bias)
+        nn.init.zeros_(self.vector_gate.weight)
+        nn.init.constant_(self.vector_gate.bias, 2.)
+        nn.init.orthogonal_(self.actor.weight, gain=.05)
         nn.init.zeros_(self.actor.bias)
-        self.vector_actor = vector_actor
-        if vector_only and not vector_actor:
-            raise ValueError("vector_only requires vector_actor")
-        self.vector_only = vector_only
-        if vector_actor:
-            if obs_dim != 20:
-                raise ValueError("The local vector actor requires the documented 20-dimensional observation")
-            # Every coefficient is learned. The bases are existing LOCAL
-            # observations, not a privileged goal direction or a controller.
-            # This gives the optimizer a shared direction parameter across
-            # layouts instead of learning only a world-axis action bias.
-            self.basis_actor = nn.Linear(hidden_dim, 6)
-            nn.init.zeros_(self.basis_actor.weight)
-            nn.init.zeros_(self.basis_actor.bias)
 
-    def initial_state(self, batch: int, n_agents: int, device=None) -> torch.Tensor:
-        if device is None:
-            device = self.log_std.device
-        return torch.zeros(batch, n_agents, self.hidden_dim, device=device)
+    def initial_state(self, batch: int, n_agents: int, device=None):
+        return torch.zeros(batch, n_agents, self.hidden_dim,
+                           device=self.log_std.device if device is None else device)
 
     def forward(self, obs: torch.Tensor, hidden: torch.Tensor, graph: Graph):
-        neighbor_memory = aggregate(hidden, graph)
-        encoded = self.encode(torch.cat((obs, neighbor_memory), dim=-1))
-        next_hidden = self.memory(encoded.flatten(0, 1), hidden.flatten(0, 1)).view_as(hidden)
-        mean = torch.zeros_like(obs[..., :2]) if self.vector_only else self.actor(next_hidden)
-        if self.vector_actor:
-            bases = torch.stack((obs[..., 0:2], obs[..., 2:4], obs[..., 4:6],
-                                 obs[..., 7:9], obs[..., 10:12], obs[..., 13:15]), dim=-2)
-            mean = mean + (self.basis_actor(next_hidden)[..., None] * bases).sum(-2)
-        return (mean, self.log_std.clamp(-5, 1),
-                self.critic(next_hidden).squeeze(-1), next_hidden)
+        neighbors = aggregate(hidden, graph)
+        encoded = self.encode(torch.cat((obs, neighbors), -1))
+        scalar = self.memory(encoded.flatten(0, 1), hidden[..., :-4].flatten(0, 1))
+        scalar = scalar.view(*hidden.shape[:-1], self.hidden_dim - 4)
+        vectors = hidden[..., -4:].reshape(*hidden.shape[:-1], 2, 2)
+        neighbor_vectors = neighbors[..., -4:].reshape_as(vectors)
+        local = torch.stack((obs[..., :2], obs[..., 2:4], obs[..., 4:6],
+                             obs[..., 7:9], obs[..., 10:12], obs[..., 13:15]), -2)
+        bases = torch.cat((local, vectors, neighbor_vectors), -2)
+        coefficients = self.vector_write(scalar).view(*scalar.shape[:-1], 2, 10).tanh()
+        candidate = (coefficients[..., None] * bases[..., None, :, :]).sum(-2)
+        # Radial, not per-axis clipping; finite learned memory without a
+        # hard-coded goal gradient or reconnection controller.
+        candidate = candidate / candidate.norm(dim=-1, keepdim=True).clamp_min(1)
+        gate = self.vector_gate(scalar).sigmoid()[..., None]
+        next_vectors = gate * vectors + (1 - gate) * candidate
+        next_hidden = torch.cat((scalar, next_vectors.flatten(-2)), -1)
+        action_bases = torch.cat((local, next_vectors), -2)
+        mean = (self.actor(scalar)[..., None] * action_bases).sum(-2)
+        return mean, self.log_std.clamp(-5, 1), self.critic(scalar).squeeze(-1), next_hidden
 
-    def act(self, obs: torch.Tensor, hidden: torch.Tensor, graph: Graph,
-            deterministic: bool = False, generator=None):
-        mean, log_std, value, next_hidden = self(obs, hidden, graph)
-        if deterministic:
-            latent = mean
-        else:
-            noise = (torch.randn_like(mean) if generator is None else
-                     torch.randn(mean.shape, dtype=mean.dtype, device=mean.device, generator=generator))
-            latent = mean + log_std.exp() * noise
-        return (latent.tanh(), latent, squashed_log_prob(mean, log_std, latent),
-                value, next_hidden)
+    def act(self, obs, hidden, graph, deterministic=False, generator=None):
+        mean, log_std, value, memory = self(obs, hidden, graph)
+        noise = 0 if deterministic else torch.randn(mean.shape, dtype=mean.dtype, device=mean.device, generator=generator)
+        latent = mean + log_std.exp() * noise
+        return latent.tanh(), latent, squashed_log_prob(mean, log_std, latent), value, memory
 
-    def evaluate_actions(self, obs: torch.Tensor, hidden: torch.Tensor, graph: Graph,
-                         latent: torch.Tensor):
-        mean, log_std, value, next_hidden = self(obs, hidden, graph)
-        log_prob = squashed_log_prob(mean, log_std, latent)
-        # A reparameterized Monte Carlo estimate of the *squashed* entropy.
+    def evaluate_actions(self, obs, hidden, graph, latent):
+        mean, log_std, value, memory = self(obs, hidden, graph)
         entropy_latent = mean + log_std.exp() * torch.randn_like(mean)
-        entropy = -squashed_log_prob(mean, log_std, entropy_latent)
-        return log_prob, entropy, value, next_hidden
+        return (squashed_log_prob(mean, log_std, latent),
+                -squashed_log_prob(mean, log_std, entropy_latent), value, memory)

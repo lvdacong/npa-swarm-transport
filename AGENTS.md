@@ -1,23 +1,20 @@
-# Project working agreement
+# Working agreement — task v2
 
-The user authorizes Codex to autonomously implement, modify, profile, train, evaluate and fix this project, including changing algorithms/configuration when real evidence warrants it. No artificial approval gates, frozen-file rules, periodic tasks or mandatory repetition budgets are imposed by this repository.
+User-authorized autonomous implementation, profiling, training and evaluation in this repository. No approval gates or artificial frozen-file rules. Protect unrelated running tasks and existing modifications; leave the independent NPA lizard unchanged. Never import the old Swarm modules.
 
-## Goal
+## Current task (supersedes earlier 4096/contact requirements)
 
-Deliver a minimal NPA-inspired local-message RL swarm that finds an unknown heavy object and destination, maintains useful local connections and physically pushes the object into the destination. Formal target is approximately 4096 particles, chosen jointly with sensing radius/density and measured resources. Keep the existing independent lizard project unchanged; do not import old Swarm modules.
+- Default **900 agents**, <=1000 preferred. Jointly tune density, communication/sensing range and measured compute; do not silently use a tiny population to claim success.
+- One unknown-object/unknown-destination search-and-push task; **no mandatory contact curriculum or light-to-heavy curriculum**.
+- No absolute coordinates, IDs, global map or global target vector in policy input. Local relative observations, memory and one-hop messages allowed.
+- No action shield, scripted recruiting, fixed roles, automatic reconnection or deletion/termination of detached agents. Use soft costs and signed geometric progress.
+- Whole-cargo arrival, full swarm connectivity and live endpoint bridge are different measures. A bridge is a particle component attaching within communication radius of both surfaces, not just seeing both.
+- v2 changes physics/population/model/checkpoint schema. Preserve v1 outcomes; replay v1 at `8e07995`, never pass old weights off as v2 or silently relax a resume.
 
-## Design decisions
+## Efficient workflow
 
-- No absolute coordinates/global target vector/map/IDs in NN input. Local relative vectors, proprioception, contacts and learned messages/memory are allowed.
-- No connectivity shield, automated reconnect, scripted agent controller or fixed roles. Physical collisions, walls and actuator bounds remain ordinary environmental dynamics.
-- Start with soft connectivity penalty without terminating disconnected episodes. Report transport, sampled full connectivity and endpoint bridge separately.
-- Contact warm-up, small CPU diagnostics and search evaluation must be named accurately. Keep failures, censored episodes and requested denominators.
-- Prefer a single working implementation and targeted measurements. If hardware-only checks are unavailable, report that directly instead of pretending CPU/software rendering proves hardware results.
+Use the current Issue and docs/LOCAL_HANDOFF.md. Reuse already working Windows/CUDA installations. Cloud-verified CPU work is not to be duplicated by Linux CI. CI is manual Windows only; no automatic matrix or repeat browser suites. Run targeted tests for actual changes, then bounded GPU feedback. Keep success/failure/timeout/error denominators and necessary trajectories; do not generate a large secondary evidence framework.
 
-## Workflow
+Improve actual transport and usable viewing speed, not GPU utilization percentages or test counts. Profile only the observed bottleneck. Do not use cold/profiler timings as steady throughput. Do not mechanically add training seeds or fill budgets without mechanism progress. A first observation window is not a convergence deadline; changes need a reason, not random reward-weight rotation.
 
-Use the current handoff Issue and `docs/LOCAL_HANDOFF.md`. Work through real feedback, fix issues directly, keep raw evidence and report relevant results in that same Issue. A material new unresolved problem may warrant closing the old handoff and publishing a specific replacement; routine fixes do not require new Issues.
-
-All training counts are cumulative. `resume` restores state; `warmstart` is a new run with parent identity. Choose resource-efficient settings from measured throughput and memory. The initial 50-update command is a diagnostic segment, not a directive to fill a budget blindly. Existing unrelated training should be observed before scheduling competing hardware work.
-
-Tests are `python -m pytest -q`; browser smoke is documented in `docs/LOCAL_HANDOFF.md`. Record exact runtime versions and revision. Changes to task semantics or evaluation criteria must be explicit in reports.
+Codex may modify algorithms, rewards and settings based on evidence, then revalidate the changed behavior. Return code, actual hardware, configuration, useful trajectories, throughput and limitations in the same Issue. A successor Issue is warranted only for a material unresolved problem, not routine fixes. No scheduled tasks.

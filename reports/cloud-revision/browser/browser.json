@@ -1,0 +1,6 @@
+{
+  "scope": "untrained 900-particle WebGPU integration, not learned transport",
+  "physical_gpu_validated": false,
+  "status": "FAIL",
+  "error": "Error('Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:33801/\nCall log:\n  - navigating to \"http://127.0.0.1:33801/\", waiting until \"load\"\n')"
+}

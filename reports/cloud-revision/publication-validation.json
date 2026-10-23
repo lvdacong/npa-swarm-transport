@@ -1,0 +1,10 @@
+{
+  "runtime_source_sha256": "28eb0fddbe032597722f4e3f9aeb9e7d259133b1d72088cdd968f7bb57168842",
+  "tests": "45 passed; 4 CUDA skipped",
+  "duration_seconds": 3.27,
+  "javascript_syntax": "PASS",
+  "ci_runs_launched": 0,
+  "changes_since_default900_probe": "EnvConfig alias c=config to c=self.cfg (same object), frontend control-queue race fix; final suite rerun, no performance/convergence rerun",
+  "physical_cuda_validated": false,
+  "new_webgpu_integration_validated": false
+}

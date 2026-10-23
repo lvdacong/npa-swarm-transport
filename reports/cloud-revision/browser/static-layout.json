@@ -1,0 +1,14 @@
+{
+  "scope": "static HTML/CSS layout only; manually populated HUD, no particle rendering or GPU validation",
+  "desktop": {
+    "w": 1440,
+    "scroll": 1440,
+    "menus": 0,
+    "webgpu": false
+  },
+  "mobile": {
+    "w": 390,
+    "scroll": 390
+  },
+  "status": "PASS"
+}

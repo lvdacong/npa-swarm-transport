@@ -1,0 +1,7 @@
+.......ssss......................................                        [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_cuda.py:22: requires a physical CUDA device
+SKIPPED [1] tests/test_cuda.py:38: requires a physical CUDA device
+SKIPPED [1] tests/test_cuda.py:52: requires a physical CUDA device
+SKIPPED [1] tests/test_cuda.py:69: requires a physical CUDA device
+45 passed, 4 skipped in 3.27s

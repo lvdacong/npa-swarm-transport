@@ -1,21 +1,19 @@
 import pytest
-
 from npa_swarm.cli import main
+from npa_swarm.config import EnvConfig,TrainConfig
 
 
-def test_evaluation_engineering_error_has_nonzero_exit(monkeypatch, tmp_path):
-    monkeypatch.setattr("npa_swarm.evaluate.evaluate", lambda *a, **k: {"engineering_evaluation_completed": False, "error": 1})
-    with pytest.raises(SystemExit) as error:
-        main(["evaluate", "--checkpoint", "unused.pt", "--device", "cpu", "--output", str(tmp_path)])
-    assert error.value.code == 1
+def test_minimal_v2_defaults():
+    assert EnvConfig().n_agents==900 and EnvConfig().stage=="search"
+    assert EnvConfig().object_static_friction==0
+    assert TrainConfig().rollout_steps==128 and TrainConfig().bptt_steps==32
 
 
-def test_task_timeout_is_a_result_not_cli_failure(monkeypatch, tmp_path):
-    monkeypatch.setattr("npa_swarm.evaluate.evaluate", lambda *a, **k: {"engineering_evaluation_completed": True, "timeout": 3, "success": 0})
-    main(["evaluate", "--checkpoint", "unused.pt", "--device", "cpu", "--output", str(tmp_path)])
+def test_resume_cannot_silently_override_task(tmp_path):
+    with pytest.raises(SystemExit):
+        main(["train","--resume","missing.pt","--agents","16","--updates","1","--output",str(tmp_path)])
 
 
-def test_resume_rejects_silently_ignored_cli_configuration(tmp_path):
-    with pytest.raises(SystemExit) as error:
-        main(["train", "--resume", "unused.pt", "--agents", "32", "--device", "cpu", "--updates", "1", "--output", str(tmp_path)])
-    assert error.value.code == 2
+def test_bad_config():
+    with pytest.raises(ValueError):EnvConfig(n_agents=1)
+    with pytest.raises(ValueError):TrainConfig(hidden_dim=4)

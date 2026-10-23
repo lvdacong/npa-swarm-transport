@@ -1,0 +1,149 @@
+{
+  "kind": "fixed_action_physics_diagnostic_not_RL",
+  "results": [
+    {
+      "pushers": 1,
+      "substeps": 8,
+      "curve": [
+        {
+          "seconds": 0.1,
+          "cargo_x": 0.006662718951702118,
+          "contacts": 1,
+          "toward_force": 0.9230732917785645
+        },
+        {
+          "seconds": 0.4,
+          "cargo_x": 0.02973964437842369,
+          "contacts": 1,
+          "toward_force": 0.923076868057251
+        },
+        {
+          "seconds": 0.8,
+          "cargo_x": 0.06050887703895569,
+          "contacts": 1,
+          "toward_force": 0.923076868057251
+        },
+        {
+          "seconds": 1.6,
+          "cargo_x": 0.122047558426857,
+          "contacts": 1,
+          "toward_force": 0.923076868057251
+        },
+        {
+          "seconds": 3.0,
+          "cargo_x": 0.22974027693271637,
+          "contacts": 1,
+          "toward_force": 0.923076868057251
+        }
+      ]
+    },
+    {
+      "pushers": 8,
+      "substeps": 8,
+      "curve": [
+        {
+          "seconds": 0.1,
+          "cargo_x": 0.02885783277451992,
+          "contacts": 8,
+          "toward_force": 3.721942186355591
+        },
+        {
+          "seconds": 0.4,
+          "cargo_x": 0.11537124216556549,
+          "contacts": 8,
+          "toward_force": 3.1491446495056152
+        },
+        {
+          "seconds": 0.8,
+          "cargo_x": 0.20624983310699463,
+          "contacts": 6,
+          "toward_force": 2.2887840270996094
+        },
+        {
+          "seconds": 1.6,
+          "cargo_x": 0.31170549988746643,
+          "contacts": 2,
+          "toward_force": 0.9612922072410583
+        },
+        {
+          "seconds": 3.0,
+          "cargo_x": 0.33468493819236755,
+          "contacts": 0,
+          "toward_force": 0.0
+        }
+      ]
+    },
+    {
+      "pushers": 1,
+      "substeps": 16,
+      "curve": [
+        {
+          "seconds": 0.1,
+          "cargo_x": 0.006662964820861816,
+          "contacts": 1,
+          "toward_force": 0.9228873252868652
+        },
+        {
+          "seconds": 0.4,
+          "cargo_x": 0.02973964624106884,
+          "contacts": 1,
+          "toward_force": 0.9230804443359375
+        },
+        {
+          "seconds": 0.8,
+          "cargo_x": 0.06050899624824524,
+          "contacts": 1,
+          "toward_force": 0.923076868057251
+        },
+        {
+          "seconds": 1.6,
+          "cargo_x": 0.12204769253730774,
+          "contacts": 1,
+          "toward_force": 0.923076868057251
+        },
+        {
+          "seconds": 3.0,
+          "cargo_x": 0.22974041104316711,
+          "contacts": 1,
+          "toward_force": 0.923076868057251
+        }
+      ]
+    },
+    {
+      "pushers": 8,
+      "substeps": 16,
+      "curve": [
+        {
+          "seconds": 0.1,
+          "cargo_x": 0.028838517144322395,
+          "contacts": 8,
+          "toward_force": 3.724066972732544
+        },
+        {
+          "seconds": 0.4,
+          "cargo_x": 0.11524688452482224,
+          "contacts": 8,
+          "toward_force": 3.1502866744995117
+        },
+        {
+          "seconds": 0.8,
+          "cargo_x": 0.2058974802494049,
+          "contacts": 6,
+          "toward_force": 2.287310838699341
+        },
+        {
+          "seconds": 1.6,
+          "cargo_x": 0.31076958775520325,
+          "contacts": 2,
+          "toward_force": 0.9550634622573853
+        },
+        {
+          "seconds": 3.0,
+          "cargo_x": 0.33310991525650024,
+          "contacts": 0,
+          "toward_force": 0.0
+        }
+      ]
+    }
+  ]
+}

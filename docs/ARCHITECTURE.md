@@ -1,68 +1,25 @@
-# 最小架构
+# v2 implementation
 
-本项目参考 [NPA 官方项目](https://github.com/TheDevilWillBeBee/NPA) 的共享局部更新与粒子内部状态机制，重新实现 RL 搬运。没有引入 NPA 的渲染损失、66 维感知拼接、蜥蜴权重或旧 Swarm 模块；任务细节见 [TASK.md](TASK.md)。
+`SwarmEnv -> local observations + radius graph -> LocalPolicy -> force -> physics`.
 
-## 一步如何发生
+## Local learned mechanism
 
-1. 环境根据当前位置建立完整半径图，生成 20 维局部观测。
-2. 每个粒子对邻居**上一步**的 32 维记忆取均值；孤立粒子收到零向量。
-3. `Linear(20+32 → 32) + tanh → GRUCell(32)` 结合自身旧记忆，生成新记忆。
-4. 共享 actor 输出二维 Gaussian 均值和可学习标准差，采样后经 `tanh` 得到动作；critic 从同一局部记忆预测每粒子价值。
-5. 环境以该动作推进 8 个物理子步，再计算新观测、奖励、结束标记和连通指标。
+20 observation channels retain velocity, neighbor-relative centroid/mean velocity/degree, locally visible endpoint vectors and visibility, contact normal/contact flag, and locally clipped wall ranges. No global information or connectivity labels are input. Observations cache until the world changes; position/velocity aggregation shares one operation.
 
-信息每个控制步最多传播一条通信边。没有瞬时全群广播，也没有通过神经网络直接改写位置；位置由接触和驱动力推进。粒子存储顺序保持稳定，粒子 ID 仅用于实现和可视化，不输入网络。
+Default memory width 32 contains 28 GRU scalars plus two learned 2D vector slots. Shared learned coefficients write and gate a mixture of six currently available local vectors, old own vector memory, and neighboring old vector memory. The actor learns coefficients of current local vectors and updated vector slots. All initial vectors are zero; no unconditional world-axis action bias, predefined destination channel or routing controller exists. Vector memory permits a direction after a local cue disappears, but its useful meaning must be learned. Each update reads OLD neighbor state, so information travels at most one graph hop per control step.
 
-## 邻域与物理计算
+The sorted-cell radius graph and canonical CUDA CSR aggregation from the local OOM repair are retained. No N×N hidden-message tensor or silent neighbor truncation. Component calculation is exact at sampled states. Reward-only repair gaps use chunked distances, which may need local profiling if disconnection makes them expensive.
 
-`graph.py` 将二维位置划入边长等于查询半径的格子，对格子键排序，然后查询自身及 8 个相邻格。候选对按实际距离过滤，保留全部范围内邻居；不同环境之间不连边，只排序索引、不重排状态。
+## Recurrent PPO
 
-记总节点数为 `M=B×N`，实际候选对数为 `C`，有效有向边数为 `E`。图构建主要代价为排序 / 查询的 `O(M log M)` 加 `O(C)` 候选处理；内存随节点和候选数增长。均匀有界密度时可扩展；极端挤成一团时，完整邻域本身仍可能达到每环境 `O(N²)`。实现不通过静默截断邻居隐藏这一成本。
+Default 128-step rollout, 32-step truncated backpropagation, three epochs, gamma .999. Whole worlds/ordered time are replayed; particle/time samples are not randomly detached from communication histories. Ordinary next-state values reuse the next forward pass. Timeouts explicitly bootstrap the PRE-reset state, true terminals do not, and GAE never crosses an episode boundary. A regression compares this with eager per-step bootstrapping through resets.
 
-消息均值使用 `index_add`，可对消息发送者反传。连通分量使用整数 root hooking 与 pointer jumping，实际检查收敛，不用固定消息跳数猜测连通；GPU 上存在收敛标量同步。碰撞宽相位半径包含一个控制步内两粒子的最大相对位移余量，随后在每个物理子步重算实际重叠。重物接触直接对各粒子计算。
+Full checkpoint v2 contains policy, optimizer, recurrent carry, world, RNG and cumulative counters. Failed load restores RNG. v1 checkpoints are rejected with a message; history remains replayable at the old commit. v2 warmstart is explicitly a new run with lineage. Candidate selection uses realized rollout distance progress, not a smaller absolute initial layout distance. Independent frozen evaluation still determines quality.
 
-物理状态、邻域、网络和优化器可以驻留同一个 torch 设备。布局只在 reset 时用 CPU RNG 产生并搬到设备。动态候选展开、终局判断和日志等仍可能带来同步，因此“支持 CUDA”不等于已获得理想 GPU 利用率。
+## WebGPU-only viewer
 
-## 循环 PPO
+One native inference worker, newest-only immutable binary snapshots, ETag for unchanged data. Publication is capped at 30Hz independently of simulation speed; commands and terminal states publish immediately. Dynamic header and particle display payload use a single device-to-host transfer per publication. The browser creates TypedArray views, reuses two GPU storage buffers and cached bind groups, interpolates in the vertex shader, coalesces frames, and draws on requestAnimationFrame only when changed/interpolating. Sparse GPU timestamps are diagnostic-only.
 
-训练使用 [PPO 的裁剪目标](https://arxiv.org/abs/1707.06347)，默认每次采集 32 个控制步，3 个优化 epoch，8 步截断反向传播。每步保留观察、邻接图、采样动作的 tanh 前变量、旧 log probability、价值、奖励和结束标记。
+This architecture still has **CUDA -> host -> HTTP -> browser GPU** copies. It is not CUDA/WebGPU shared-memory zero-copy. Eliminating that boundary would require a different execution/integration backend; do not build a second simulator merely to claim it. At 900 agents each packet is 28,928 bytes. No per-particle DOM nodes. No Canvas or renderer selector. Unsupported or lost WebGPU is explicit; device loss pauses the local simulation.
 
-- 每个 epoch 按原时间顺序重演完整 rollout 的 GRU 与邻居消息，不打散单粒子 / 时间样本。
-- 只在 BPTT 分块边界 detach 记忆；epoch 内累计各块梯度，末尾更新一次参数。
-- tanh Gaussian 的 log probability 包含变换 Jacobian，熵使用该变换分布的采样估计。
-- GAE 对 timeout 使用 **reset 前终态** 的价值 bootstrap；真实成功终止不 bootstrap。两类结束都会切断跨回合优势传播并清零对应记忆。
-- 更新后用新权重重演当前 rollout，刷新运行记忆。rollout 起点的旧记忆保持为截断边界，不宣称用新权重重算了整段历史。
-
-物理图与环境推进不参与自动微分；策略通过 RL 奖励学习。Actor / critic 共享局部表征，critic 同样没有绝对坐标或额外全局状态。
-
-## 恢复和评价
-
-checkpoint 原子保存网络、Adam、运行记忆、完整环境状态、布局 RNG、Python / NumPy / torch RNG、累计更新和环境步数。`resume` 延续这些状态与计数；`warmstart` 只载入权重，并明确记录父 checkpoint、父阶段及更新数，建立新的训练段。
-
-CPU 上的完整下一次更新恢复已纳入测试。CUDA 的浮点邻域聚合可能不是位级确定的，见 [PyTorch index_add_ 文档](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.index_add_.html)；跨设备状态恢复不自动等于轨迹逐位一致。
-
-评价使用冻结 checkpoint 副本及新的布局种子，保存每控制步粒子位置、重物位置、动作和指标。manifest 同时记录训练源码身份与实际评价源码身份。请求总分母包含失败、timeout、删失、错误和未开始项；局部短测与小人口明确标为诊断。接触预热结果不能当成正式搜索成功。
-
-## 可视化数据通路
-
-`server.py` 只运行选定 checkpoint 的推理，或明确标注的未训练诊断；不会隐式启动训练。浏览器读取最新二进制快照并在 `requestAnimationFrame` 中绘制，现代 GPU 绘制路径复用缓冲区，兼容路径负责回退。生产者速度和绘制速度分别记录，重复绘制同一状态不算新模拟状态。
-
-原生 CUDA 到浏览器之间仍有设备读回、网络传输和浏览器 GPU 上传，**不宣称端到端零拷贝**。浏览器 rAF 频率也不能充当显示器实际呈现 FPS；硬件 adapter、实际交互延迟与稳定性需要本机测量。
-
-## 本机验证后的可选结构
-
-`--vector-actor` 让GRU另外学习6个现有局部向量的系数：自身速度、邻居平均相对位置/速度、局部重物/目的地相对向量、接触法向。`--vector-only` 取消无条件二维输出分支，以避免群体沿固定世界方向漂移；所有系数仍由网络学习。它不加入全局目标、角色或控制脚本，也不宣称整个GRU旋转等变。旧检查点按保存的配置载入。
-
-CUDA均值消息用完整半径图的canonical CSR矩阵乘法，避免每次生成`E×hidden_dim`中间张量；重复边权重经coalesce正确合并。CPU保留scatter参考。局部一跳语义不变，图没有截邻居。CPU/CUDA数值及梯度、打乱/重复边已对照。
-
-`evaluate --stochastic` 固定并记录动作RNG；`serve --stochastic` 使用独立生成器，并在页面显示抽样/均值模式。零更新warmstart仍可能继承训练权重，元信息和页面分别显示本段计数与继承身份。训练源码身份在运行创建时固定，候选`best-distance.pt`只是训练指标选点，必须经冻结评价，不能自动认作最优策略。
-
-## 代码入口
-
-| 文件 | 职责 |
-| --- | --- |
-| `config.py` | 可序列化任务与训练参数 |
-| `graph.py` / `env.py` | 完整局部图、物理、观察、奖励和指标 |
-| `policy.py` / `train.py` | 共享消息 GRU、PPO、恢复 |
-| `evaluate.py` | 冻结评价、原始轨迹和完整分母 |
-| `server.py` / `web/` | 推理快照与浏览器交互 |
-| `cli.py` / `diagnostics.py` | 命令入口、有限探针和系统记录 |
+Controls cycle requested 1×/4×/8×/unpaced (∞); the diagnostics show actual simulated-seconds/wall-second separately. Neither rAF nor draw submission rate is monitor presentation FPS. A low-power adapter preference is a hint, not an AMD device guarantee. Actual browser/torch devices must be recorded on the laptop.

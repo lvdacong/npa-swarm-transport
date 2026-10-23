@@ -1,107 +1,71 @@
-# Codex 本机接续：完成真实 GPU 与学习闭环
+# Codex 本机接续：v2 / 900 粒子
 
-本机接续已执行，当前证据和可直接加载的检查点见 [2026-10-23本机报告](../reports/local-20261023/README.md)。安装、CUDA、性能、恢复和浏览器不必机械重跑。研究剩余问题是：未知两端均能发现后，尚不能招募足够粒子形成搬运合力。contact成功不是正式search成功；后续范围和起点由主Issue收尾链接给出。
+用户已授权本仓库自主修改、优化、训练和复验，无须逐步请示。只保护其他项目的现场；不要动蜥蜴，不追加旧 Swarm 或完整 NPA 复现。
 
-新的研究接续单为 [Issue #2](https://github.com/lvdacong/npa-swarm-transport/issues/2)，其中保留了失败边界、检查点、未使用的holdout和后续验收门槛。
+## 先读这几项变化
 
-用户已授权 Codex 在本项目内自主修改、优化、训练、评价和修复，不需要逐步申请确认。云端已提供完整首版代码和执行入口；本机任务是用实际反馈把它做成，不是机械复跑清单。
+旧 `8e07995` / Issue #2 的 4096、静摩擦 4、contact 预热及 v1 权重要求已被本轮替代。新的起点是 **900、连续阻力、直接完整 search、可学习方向记忆、WebGPU-only**。不是继续 v1 长训；旧工程结果保留，旧 contact 3/3 不计为 v2 成功。v1 检查点不能加载进这个结构；使用新运行目录，不转换旧优化器状态。原日志/权重不删除。
 
-## 目标与边界
+云端没有 CUDA。45 个 CPU 测试通过、4 个 CUDA 测试跳过；真实默认 900/128-rollout/32-BPTT/3-epoch 单次更新跑通。新浏览器导航被云端 Chromium 管理策略拦截；只有静态 HTML/CSS 布局和 JS 语法核验，不是 WebGPU 像素通过。详见 reports/cloud-revision/README.md。本轮没有运行 Actions，工作流已改为手动 Windows 单任务。
 
-独立新仓库 `lvdacong/npa-swarm-transport`。不迁入旧 Swarm 模块；原 NPA 蜥蜴保持原状。正式目标约4096粒子、局部感知与消息记忆、NN不输入绝对坐标、真实接触合力搬运、无连通保护器。首版采用断连软惩罚且继续回合。可以根据证据调整实现、奖励、课程和资源设置，变化在报告中说明即可。
+## 1. 复用环境，先验改动
 
-先读当前主Issue、`README.md`、`docs/TASK.md`、`reports/cloud-20261023/README.md`。Issue中的发布提交是起点；若本机已有后续工作，先核对差异再合流，不覆盖现场。无需重新验收蜥蜴、MNIST或Lego。
-
-## 1. 独立安装与现场采集
-
-在自己的项目目录克隆仓库。以下为 Windows PowerShell，目录名与端口均可自主调整。先读取本机当前GPU负载，安排短测与已有任务的使用时段；正式吞吐与延迟测量在明确设备归属和负载条件下进行。
+先只读检查当前 HEAD、现场修改和其他 GPU 任务；安全获取发布提交后安装 editable 包。原已验证的 Python/Torch/CUDA/驱动能用就复用，不再重装整套环境或跑旧矩阵。
 
 ```powershell
-git clone https://github.com/lvdacong/npa-swarm-transport.git
-Set-Location npa-swarm-transport
-git status --short
-git rev-parse HEAD
-py -3.12 -m venv .venv
-$SwarmPython = Join-Path $PWD '.venv\Scripts\python.exe'
-nvidia-smi
-# 已核对存在的官方 Windows Python 3.12 CUDA wheel。按实际驱动选合适版本；不要求为此全局重装环境。
-& $SwarmPython -m pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu130
-& $SwarmPython -m pip install -e '.[test]'
-& $SwarmPython -m npa_swarm doctor --device cuda:0 --output runs/local/system.json
-& $SwarmPython -m pytest -q --junitxml=runs/local/pytest.xml
+python -m pip install -e ".[test]"
+python -m npa_swarm doctor --device cuda:0 --output reports/local-v2/system.json
+python -m pytest -q tests/test_cuda.py
+python -m npa_swarm probe --device cuda:0 --agents 900 --envs 1 --steps 16 --warmup 3 --train-updates 1 --output runs/v2/probe
 ```
 
-若驱动不支持该CUDA构建，按[PyTorch官方安装选择器](https://pytorch.org/get-started/locally/)使用与现有驱动/GPU兼容的版本。报告实际Python、Torch、CUDA构建、驱动、GPU型号、显存与测试结果。`cuda:0` 是CUDA编号，不能据此推断Windows任务管理器编号或浏览器选择了哪块卡。
+CPU 全回归不必重复 Linux CI。若本机对新代码作了修改，跑对应的定向回归；必要时一次 `python -m pytest -q` 足够。CUDA 浮点容差与逐位恢复分开说明。
 
-测试包含3个真实CUDA用例；本机应该实际运行它们。云端的跳过不是GPU通过。CPU已验证完整状态恢复；CUDA的浮点累加顺序可能不同，区分状态恢复正确与长轨迹逐位相同。
+probe 的 8 步训练只是软件/资源探针，不代表下面默认 128/32 的显存。先让正式命令完成一个真实更新查看显存/耗时，再决定并行环境数。通常先试 1 或 2 个，确有余量再增加，不铺开完整参数矩阵。真实聚团、离群时的图与奖励开销也要看，不能只测初态。
 
-## 2. 有界性能与资源探针
+## 2. 直接训练 search，不做课程
 
 ```powershell
-& $SwarmPython -m npa_swarm probe --agents 4096 --envs 1 --stage search --device cuda:0 --steps 16 --warmup 2 --train-updates 1 --trace --output runs/local/probe4096
+python -m npa_swarm train --device cuda:0 --envs 2 --updates 20 --output runs/v2/search-seed42
+# 需要继续时，额外更新的数量明确记录，配置从检查点恢复：
+python -m npa_swarm train --device cuda:0 --resume runs/v2/search-seed42/last.pt --updates 20 --output runs/v2/search-seed42
 ```
 
-这个入口包含真实图构建、局部GRU、8子步接触物理、连通计算和一个8步PPO更新。保存每项耗时、峰值显存和trace，**不会把未训练动作记作学习效果**。`probe`的8步/1epoch配置是资源探针，正式默认是32步rollout/8步TBPTT/3epoch。
+20 更新只是初始观察窗，不是强制预算或收敛期限。不要因为一次短窗未发现目标就判方法无效，也不要原封不动无期限追加。
 
-若trace/显存说明有余量，再比较2个或4个并行环境，选更好的总world-step吞吐。保持粒子规模和任务语义；低显存占用不等于应该增加粒子或随意改变batch。若GPU被小算子、动态邻域长度或同步拖慢，可直接优化实现并做一个小输入数值对照；不要先展开多个新后端。FP32是可比较起点，不预设AMP/TF32一定更好。
+先追踪：发现两端的模拟时间、发现后接触人数、持续接触时间、净有效推力、真实物体位移和目标距离减少、脱群比例/持续时间、通路。**奖励变高而物体不动不是进展。** 单推能动已经过物理诊断，但招募、保持接触、消息长距离传播仍是训练假设。向量记忆是可学习能力，不是已训练的导航。
 
-关注：模型forward/反传、图分桶/连通、物理子步、主机同步各占多少；`n_agents`、并行环境、rollout长度、实际显存和world/agent-step吞吐都要明确。图不截邻居，极端聚团边数仍可能很大。
+若无进展，按机制定位：探索是否只靠随机抖动；是否尚未碰到物体；是否方向信息未传播/遗忘；还是接触滑脱/推力抵消。不先轮换大量 seeds、奖励权重或后端。不把全球目标方向输入 actor，不加入脚本招募/动作保护/删粒子。必要算法、记忆、奖励、并行参数可自主修改并复验；新运行标明变更，不冒充严格恢复。
 
-## 3. 先让有效合力出现，再做完整搜索
+有实际位移后再保存冻结候选，检查完整回合；`candidate.pt` 仅按训练中实际距离改善保存，不是通过认证的 best model。
+
+## 3. 一条冻结评价链
 
 ```powershell
-& $SwarmPython -m npa_swarm train --stage contact --agents 4096 --envs 1 --device cuda:0 --updates 50 --output runs/local/contact
-& $SwarmPython -m npa_swarm evaluate --checkpoint runs/local/contact/last.pt --stage contact --seeds 100 101 102 --episodes-per-seed 1 --device cuda:0 --output runs/local/contact-eval
-# 需要继续时；updates表示新增次数。
-& $SwarmPython -m npa_swarm train --resume runs/local/contact/last.pt --device cuda:0 --updates 50 --output runs/local/contact
+python -m npa_swarm evaluate --checkpoint runs/v2/search-seed42/last.pt --device cuda:0 --stochastic --seeds 100 101 102 --output reports/local-v2/dev
+python scripts/analyze_trajectories.py reports/local-v2/dev
+python -m npa_swarm evaluate --checkpoint runs/v2/search-seed42/last.pt --device cuda:0 --stochastic --layout diagonal --seeds 103 --output reports/local-v2/diagonal
 ```
 
-50次是首段观察窗，不是收敛期限，也不是必须盲目消耗的预算。看是否产生接触、**有效同向净推力、可重复物体位移和距离下降**，并与未训练策略作一个必要对照。如果只有抱团、回报升高但物体不动，直接检查奖励量级、接触动力学和信用分配，修改后复验。无需先填满种子或继续没有证据的长训。
+先证实完整 search 可成功，再做必要独立训练种子复验；布局 seed 不是训练 seed。1000–1002 仅在候选冻结后作为保留场景，不反复用来调参。保留成功/失败/超时/删失/错误/未开始分母，完整动作、粒子、货物轨迹。不得用 contact、小 N、固定推力、缩短回合代替任务成功。
 
-有可重复的预热进展后，按同样规模转入完整 `search`：
+桥接是同一粒子分量接近两个端点的**通信包络**，不是感知包络；端点不作免费中继。不把桥接与全群连通混为一谈。当前只是控制步采样，不能宣称连续时间从未断开。请人工抽查至少一段“桥断开/重新建立”的轨迹与显示，确认新判据符合画面。
+
+## 4. 精简 WebGPU 与速度
 
 ```powershell
-& $SwarmPython -m npa_swarm train --stage search --agents 4096 --envs 1 --warmstart runs/local/contact/last.pt --device cuda:0 --updates 50 --output runs/local/search
-& $SwarmPython -m npa_swarm evaluate --checkpoint runs/local/search/last.pt --stage search --seeds 100 101 102 --episodes-per-seed 3 --device cuda:0 --output runs/local/search-eval
+python scripts/browser_smoke.py --hardware --headed --executable "C:\Program Files\Google\Chrome\Application\chrome.exe" --output reports/local-v2/browser
+python -m npa_swarm serve --device cuda:0 --checkpoint runs/v2/search-seed42/last.pt --stochastic
 ```
 
-`warmstart`只迁移权重，重置优化器、环境、记忆和计数，记录父检查点；不是原轨迹精确续训。`resume`恢复已保存配置、状态和累计计数，命令不要混入被忽略的配置覆盖。
+Chrome 路径按实际安装调整；Edge 同理。烟测是未训练、CPU 模拟、真实浏览器设备的集成检查。随后用上面 checkpoint 服务实际观看代表性轨迹。没有渲染菜单、Canvas fallback 或大标题，诊断只在 `⋯` 里。页面不可用/设备丢失要报错，不能换 Canvas 后宣称 WebGPU。
 
-先取得一条真实成功路线，再补独立训练种子的复验。评价layout seeds与训练seed是不同概念，不能把同一策略在9个场景的评价称为3训练种子复现。开发评价用100–102；最后留出的场景用1000–1002，事先保留到候选冻结后。任何需要根据holdout改动的情况，明确标成新的开发迭代。
+先检查新 shader 能编译、900 实例有真实像素、播放/暂停/重置/选择/缩放和终局。云端受策略阻塞的烟测**本机首次必须运行并按实际错误修复**；旧 v1 浏览器 10 分钟成功不能替代它。只需一次代表性持续运行，不要求重跑旧 10 分钟矩阵。
 
-完整任务必须保持未知两端初态、真实物理、完整时限和正式规模。小N或缩短`--max-steps`仅用于诊断，评价器会标明。保留全部请求、失败、超时、删失、异常和未开始分母；评价输出含冻结检查点、每步原始轨迹及摘要。
+倍速提高的是模拟目标推进率；记录**实际 simulated-seconds/wall-second**，而不只写按钮 4×。区分三项：物理速度、模拟吞吐、显示提交率。若 4× 达不到，先看当前一控制步耗时及阻塞，不先提高物理 dt；若吞吐足但粒子行动慢，检查策略动作/有效接触，不优化 shader 冒充行为改善。
 
-## 4. 真实浏览器与设备确认
+原生 GPU 与浏览器 adapter 分别记录。900 包体 28,928 bytes，发布最多 30Hz；没有端到端零拷贝。保留 CSR，先检查图/组件/奖励距离、policy、物理子步、反传，只有瓶颈明确才做 compile/融合/精度等改变。不得为更高 GPU 利用率牺牲总体吞吐或交互。
 
-```powershell
-& $SwarmPython -m playwright install chromium
-& $SwarmPython scripts/browser_smoke.py --particles 4096 --renderer canvas --output runs/local/browser
-& $SwarmPython scripts/browser_smoke.py --particles 4096 --renderer webgpu --output runs/local/browser
-& $SwarmPython -m npa_swarm serve --checkpoint runs/local/search/last.pt --device cuda:0 --port 8765
-```
+## 回填与停止
 
-自动化浏览器脚本用于回归，软件adapter结果不替代真实硬件验收。用本机可见Chrome/Edge打开 `http://127.0.0.1:8765`，验证播放/暂停、重置、缩放、粒子选择、中文、模型身份与终局状态。记录浏览器adapter（可能是AMD核显）、原生模拟GPU、渲染模式、唯一状态率、绘制提交率、GPU timer、实际操作体验；不得把rAF/插值帧当作新模拟状态或显示器呈现FPS。
-
-可在训练同时用核显显示，但要确认实际设备，并记录共享CPU、功耗、散热影响。用于验收的性能测量请说明并发负载。无硬件隔离保证；本项目不引入上一项目的复杂租约系统。
-
-完成一次适度持续的可见运行（建议10分钟，出现问题就针对性修复），看资源是否持续增长、控制是否积压、页面隐藏/恢复与device-loss回退是否正确。首轮不需要泛化到多个前端后端或大量浏览器组合。
-
-## 5. 回传与结束条件
-
-```powershell
-& $SwarmPython scripts/collect_evidence.py --root runs/local --output reports/local-evidence --archive
-```
-
-该工具只生成文件摘要和证据包，不自动判研究成功。检查点记录SHA-256，较大的原件可保留在本机并说明位置；代码、摘要、必要日志/图表/失败轨迹链接在同一个主Issue回填。
-
-回传重点：
-
-1. 实际提交/源码摘要、改动原因、硬件/软件、关键测试通过/失败。
-2. 4096下真实训练配置、world/agent吞吐、峰值显存、瓶颈及选择依据。
-3. 发现重物/目的地、形成两端通路、有效推动、最终入区的完整轨迹；搬运成功、采样全程连通和桥保持率各自统计。
-4. 成功与失败的冻结评价分母；独立训练种子与holdout结果，或明确尚未完成。
-5. 物理浏览器adapter、真实操作及持续运行结果；保留软件/硬件区别。
-
-连通当前仅检查控制步末。若要声称每个物理子步都连通，先实现并运行对应测量；不需要为了通过而加动作保护器。
-
-工程闭环通过与任务学会搬运分别报告；不要把最终研究字段固定为true来凑结果。没有主要问题就给出完成结论，不为了次要问题循环发布新Issue。存在重大未解问题时，在旧Issue交代证据与当前状态，再创建范围明确的新接续Issue。
+在新的同一接续 Issue 回传：代码 SHA、简要硬件版本/设备、默认或实际配置、显存和吞吐、第一条完整搬运轨迹、失败边界、评价分母与连通统计、WebGPU 设备及实际倍速。大权重保留本机路径+摘要即可。分开给“工程通过”和“学习通过”。若阶段还没学会，报告实际失败，不用已通过的软件工程结果包装完成。只有重大未解问题才换 Issue，普通修复留在本单，避免循环发布。

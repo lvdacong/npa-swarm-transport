@@ -1,81 +1,33 @@
-# 任务定义
+# Task v2: unknown endpoints, collective push
 
-4096 个同质粒子在二维平面中，通过局部感知、学习得到的邻域消息和内部记忆，发现一件重物及目的地，再通过真实接触合力把重物推入目的地。网络不接收绝对坐标、粒子编号、全局目标方向或全局地图。没有预设角色、轨迹控制器或连通保护器。
+## Fixed first baseline
 
-这是独立的新任务实现；原 NPA 蜥蜴项目保持不动，也没有迁入旧 Swarm 项目的模块。小规模 CPU 用例用于工程诊断，正式人口配置仍为 4096。
+900 overdamped disk agents in a 20×20 arena. Agent radius 0.06; communication radius 0.48; local sensing extends 1.2 beyond endpoint surfaces. The connected initial lattice has spacing 0.144 and random rotation. Random-layout cargo/goal centers are on radius 7.4 with angular separation at least 90°, so their center separation is 10.47–14.8. Both are outside initial sensing. `--layout diagonal` places endpoints at opposite (±7.4, ±7.4) corners, separation 20.93, for a separately reported stress evaluation. No curriculum modifies object difficulty.
 
-## 两个阶段
+No globally observed coordinates, ID, full map, discovered flags, path labels, rewards or privileged target direction enter the actor. Position exists in the simulator and visualization only. Local relative vectors share the simulation axes; absence of absolute position is NOT a claim of a compass-free, strictly rotation-equivariant embodied robot model.
 
-| 阶段 | 初态 | 用途 |
-| --- | --- | --- |
-| `contact` | 连通的接触环及相连粒子群；两端都有真实局部观察者 | 先学习合力推动和传递目的地信息；不能计为搜索任务成功 |
-| `search` | 中央连通粒子群；重物和目的地均在所有粒子的感知范围外 | 正式探索、通信和搬运任务 |
+## Physics and motion
 
-`search` 中，重物方位独立于初始粒子晶格旋转；目的地方位随机，并与重物保持至少 `object_radius + goal_radius + 2 * sense_radius` 的初始距离。首版场景为开放平面及外墙，不加内部障碍。预热转正式任务使用显式 `warmstart`，不混淆两段训练预算与成绩。
+`dt=0.1`, eight substeps, force limit 1, agent drag 1, free speed cap 1, contact stiffness 60. Cargo radius 0.65, drag 12; destination radius 1. No static-friction threshold in the default baseline. Cargo velocity is resultant contact force divided by drag; positions advance through this physical law, not a neural coordinate update. These are simplified overdamped dynamics, not an inertial rigid-body simulator. Reactions and walls remain physical constraints, never connectivity control.
 
-## 默认物理尺度
+A single steady aligned pusher has approximately 1/(12+1) speed in the simple one-contact case. Several aligned pushers can be faster, but must actually maintain contact and avoid cancellation. Merely removing a deadzone does not teach coordination. Default stiffness was reduced with drag to keep the substep integration reasonable; local hardware should preserve numerics when optimizing, not take arbitrary larger physical timesteps to claim speed.
 
-| 参数 | 默认值 |
-| --- | --- |
-| 场地 | `[-10,10] × [-10,10]` |
-| 粒子 / 重物 / 目的地半径 | `0.04 / 0.65 / 1.0` |
-| 通信半径 / 表面感知距离 | `0.32 / 0.8` |
-| 控制步 / 物理子步 | `0.1` 秒 / 8 个 |
-| 每粒子最大驱动力 / 最大速度 | `1.0 / 0.5` |
-| 粒子阻尼 / 重物阻尼 | `2.0 / 15.0` |
-| 接触弹簧刚度 / 重物静摩擦门槛 | `100.0 / 4.0` |
-| 回合上限 | 1200 控制步，即 120 模拟秒 |
+## Rewards (training supervision only)
 
-动力学是**有软接触的过阻尼圆盘模型**：接触力由实际重叠量乘弹簧刚度得到；重物只接受粒子接触反力之和。净接触力超过静摩擦门槛后，超出部分除以重物阻尼得到速度。这里的“重”由摩擦和阻尼实现，没有惯性、朝向、抓取或刚体旋转。
+- Main task: `3 * (previous cargo-goal distance - current distance)`, plus 5 on whole-cargo arrival. This distance reward already existed in v1; the previous static threshold blocked its displacement signal in failed search episodes.
+- Each endpoint's first discovery pays 1 to the team; it is not a persistent sighting bonus.
+- Work credit uses each particle's signed actual contact force dotted with the actual cargo displacement, normalized by total absolute work and multiplied by the signed goal-distance progress. No displacement means zero extra credit, including a cargo blocked by a wall. It is enabled after the goal has been discovered; it does not inject a goal vector into the actor.
+- Detached-agent cost is `0.15 * dt * (1 + min(detached_seconds/5, 1))` per agent outside the largest component. It does not kill, teleport or constrain that agent. Largest-component ties use deterministic label ordering; the actor does not receive labels.
+- Signed reconnection progress is `0.2 * (log1p(old_gap/comm_radius) - log1p(new_gap/comm_radius))`. Gap means nearest distance to the main component's communication envelope, **not MST length or the globally shortest repair route**. Distances are chunked and only calculated in disconnected worlds.
+- After both endpoints were discovered, a signed reduction of the main component's two endpoint gaps is weighted by 0.25, and absent live bridge costs 0.05 per simulated second. This helps connect useful endpoints without requiring the whole swarm to stretch to a predetermined shape.
+- A new spatial coverage cell pays 0.2 ONCE, divided among simultaneous visitors from the main component; detached agents cannot repeatedly farm coverage. Local approach progress is weighted by 0.05 and effort by 0.0005 per second.
 
-粒子输出二维动作，驱动力按圆形幅度上限限制；物理墙壁和碰撞正常作用。它们不检查或修复通信连通性。接触模型允许有限穿透，不宣称高保真机器人动力学。
+These auxiliary differences are practical shaping, not a proof of policy-invariant reward transformation. Watch for stationary clustering, reward farming and bridge/transport tradeoffs. Do not fix them solely by repeatedly increasing penalties.
 
-## 20 维局部观测
+## Connectivity and success
 
-以下索引从 0 开始，对应 `env.py::observe()`。二维相对向量采用共同的模拟坐标轴；这不提供绝对位置，但也不宣称旋转等变或完全没有共同方向参考。
+Agent edges are complete radius-0.48 edges, with no degree cap. A live bridge exists only when the SAME particle component has at least one agent within communication radius of the cargo surface and at least one within that radius of the goal surface. Endpoint nodes do not join otherwise disconnected agent components. Seeing either endpoint at sensing radius 1.2 is not enough.
 
-| 索引 | 分量 | 归一化 / 可见性 |
-| --- | --- | --- |
-| 0–1 | 自身速度 | 除以最大速度 |
-| 2–3 | 通信邻居的平均相对位置 | 除以通信半径；无邻居则 0 |
-| 4–5 | 通信邻居的平均速度 | 除以最大速度；无邻居则 0 |
-| 6 | 邻居数量 | `min(degree / 32, 1)` |
-| 7–8、9 | 重物相对向量、可见标记 | 中心距 ≤ 重物半径 + 感知距离；不可见时向量为 0 |
-| 10–11、12 | 目的地相对向量、可见标记 | 中心距 ≤ 目的地半径 + 感知距离；不可见时向量为 0 |
-| 13–14、15 | 重物指向粒子的接触法向、接触标记 | 没有接触则为 0 |
-| 16–19 | `+x,-x,+y,-y` 四方向局部墙距 | 从粒子表面计算，除以感知距离并截断到 `[0,1]` |
+Arrival requires the complete cargo disk inside the destination (`center distance <= 1-0.65`). Report transport success, whether every sampled control state was connected, and bridge fraction after both discoveries separately. Current connectivity samples are control-step endpoints: no continuous-time guarantee between them. Detached particles remain present and can rejoin. The episode ends on delivery or 1200 control steps, not on detachment.
 
-重物 / 目的地向量分别除以“感知距离 + 对象半径”。消息和内部记忆另有默认 32 维，不属于这 20 维物理观测。Actor 与 critic 都只使用局部观测及该记忆。
-
-## 首版奖励
-
-对第 `i` 个粒子，令 `d` 为重物到目的地的中心距，`l_i` 为粒子到重物的中心距，`L` 为最大连通分量占总粒子的比例，`Δt=0.1`。每步奖励是：
-
-```text
-r_i = 3 × (d_before - d_after)
-      + newly_found_object + newly_found_goal + 5 × transport_success
-      - 0.1 × Δt × ((1 - L) + bridge_gap)
-      + 0.01 × newly_visited_cell_i
-      + 0.05 × (l_i_before - l_i_after) × visible_before_and_after_i
-      - 0.0005 × Δt × ||action_i||²
-```
-
-发现奖励每端每回合仅一次，奖励本身由环境评定。覆盖格边长为感知距离；已访问地图仅用于奖励，不输入网络。同一步首次进入同一新格的粒子各获一次覆盖奖励，之后重复停留没有奖励。局部接近重物的奖励只在前后两步均可见时启用；没有持续接触奖励。
-
-`bridge_gap` 只在两端都曾被发现后启用：当前没有任何一个通信连通分量同时包含重物与目的地的局部观察者时取 1。重物移动后，端点按其**当前位置**更新。初版采用固定软惩罚，不终止、不拉回、不限制断连动作；奖励权重是待本机学习反馈调整的起点，不是效果保证。
-
-## 本机有证据的奖励变体
-
-默认首版公式保持不变。`--force-credit-weight w` 可增加个体真实接触冲量信用：控制步起点物体到目的地的单位方向为`u`，粒子受到的物体接触反力为`F_i`，额外奖励为 `w × found_goal × sum_substep(-F_i · u × sub_dt)`。这是训练奖励，不输入actor；同向亚阈值压力也会得到信用，因此仍需验证真实位移和入区，不能只凭这项回报认定合作。
-
-`--local-transport-reward` 只把物体距离进展发给步前或步后能局部看到物体的粒子；发现、入区、软连通代价仍共享。`--exploration-weight` 控制新覆盖奖励，默认0.01；本机最终search用0.1。物理、未知两端、无保护器和完整入区条件没有因此放宽。
-
-扩大感知、缩短时限等课程会由评价manifest标为诊断，并列出与参考物理尺度的差异。正式search评价仍为4096、感知0.8、1200步；本机真实结果见[报告](../reports/local-20261023/README.md)。
-
-## 完成与连通分别验收
-
-重物整体进入目的地，即中心距 ≤ `1.0 - 0.65 = 0.35`，判搬运完成并结束回合；达到时间上限是 timeout；断连继续运行。分别记录搬运成功率、全程采样连通、失联时间估计、最大连通分量及两端通路保持率，不把其中一项替代另一项。
-
-**连通检查发生在初态和每个控制步末。**“全程连通”指标仅指全部这些采样点；`disconnected_seconds` 是按采样状态累计的估计，不证明子步之间或连续时间始终连通。原始轨迹、失败、删失和未开始请求都由评价器保留。
-
-当前代码和有限 CPU 探针不代表已经学会任务。完整训练、真实 CUDA 吞吐及跨布局表现由本机接续验证。
+900 particles and the revised radius are a starting engineering choice, not a theorem that the task is learnable. Full search success must be shown by training and frozen evaluation. The contact placement remains only for physical/software diagnostics; it is not the prescribed training path.

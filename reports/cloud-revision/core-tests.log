@@ -1,0 +1,18 @@
+........F...............................                                 [100%]
+=================================== FAILURES ===================================
+______________ test_single_push_is_nonzero_and_cooperation_faster ______________
+
+    def test_single_push_is_nonzero_and_cooperation_faster():
+        one=SwarmEnv(EnvConfig(n_agents=16));many=SwarmEnv(EnvConfig(n_agents=16))
+        arrange_push(one,1);arrange_push(many,8)
+        a=torch.zeros_like(one.positions);a[0,0,0]=1
+        b=torch.zeros_like(many.positions);b[0,:8,0]=1
+        for _ in range(30):one.step(a);many.step(b)
+        assert .1 < one.object_pos[0,0] < .4
+>       assert many.object_pos[0,0]>one.object_pos[0,0]*2
+E       assert tensor(0.3347) > (tensor(0.2297) * 2)
+
+tests/test_graph_env.py:91: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_graph_env.py::test_single_push_is_nonzero_and_cooperation_faster - assert tensor(0.3347) > (tensor(0.2297) * 2)
+1 failed, 39 passed in 2.14s
