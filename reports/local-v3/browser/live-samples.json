@@ -1,0 +1,44 @@
+[
+  {
+    "wall": 1792850793969,
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 2,
+    "step": 0,
+    "particles": 900,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 2,
+    "uploads": 1,
+    "actualSpeed": 0,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  {
+    "wall": 1792850823947,
+    "backend": "WebGPU",
+    "adapter": "amd · rdna-3",
+    "sequence": 622,
+    "step": 1200,
+    "particles": 900,
+    "selected": -1,
+    "paused": true,
+    "errors": [],
+    "visible": true,
+    "renderedFrames": 1506,
+    "uploads": 577,
+    "actualSpeed": 4.016358375549316,
+    "snapshotBytes": 28928,
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+]

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="28" time="2.109" timestamp="2026-10-24T22:15:39.513371+08:00" hostname="LAPTOP-ETFQ3NM2"><testcase classname="tests.test_relay" name="test_goal_bearing_spreads_one_hop_and_never_teleports" time="0.695" /><testcase classname="tests.test_relay" name="test_disconnected_agents_never_receive_remote_goal_message" time="0.004" /><testcase classname="tests.test_relay" name="test_policy_uses_causal_bearing_only_as_learned_action_basis" time="0.011" /><testcase classname="tests.test_relay" name="test_translation_preserves_message_and_action" time="0.005" /><testcase classname="tests.test_relay" name="test_moving_agents_keep_bearings_to_static_occluded_endpoints[cpu]" time="0.002" /><testcase classname="tests.test_relay" name="test_moving_agents_keep_bearings_to_static_occluded_endpoints[cuda]" time="0.240" /><testcase classname="tests.test_relay" name="test_retention_changes_only_known_memory_not_hop_latency_or_unseen_nodes" time="0.024" /><testcase classname="tests.test_learning" name="test_squashed_density_and_extremes" time="0.010" /><testcase classname="tests.test_learning" name="test_timeout_bootstraps_terminal_not_next_episode" time="0.001" /><testcase classname="tests.test_learning" name="test_messages_one_hop_and_gradient" time="0.022" /><testcase classname="tests.test_learning" name="test_permutation_equivariance" time="0.008" /><testcase classname="tests.test_learning" name="test_direction_memory_survives_absence_of_local_cue_without_global_bias" time="0.005" /><testcase classname="tests.test_learning" name="test_recurrent_ppo_updates_action_memory_and_messages" time="0.578"><failure message="RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long">def test_recurrent_ppo_updates_action_memory_and_messages():
+&gt;       t=tiny();before=copy.deepcopy(t.policy.state_dict());m=t.update()
+                                                               ^^^^^^^^^^
+
+tests\test_learning.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\npa_swarm\train.py:226: in update
+    rollout = self.collect()
+              ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\torch\utils\_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;npa_swarm.train.Trainer object at 0x0000018AF7409850&gt;
+
+    @torch.no_grad()
+    def collect(self):
+        c = self.cfg
+        observations, graphs, latent, logp, values, rewards, terms, truncs = ([] for _ in range(8))
+        truncated_boot = {}
+        physical = {key: [] for key in (
+            "connected", "largest_fraction", "bridge", "object_distance", "object_speed", "contact_count",
+            "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
+            "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
+        initial_hidden = self.hidden.detach().clone()
+        contact_peaks, contact_active = [], []
+        relay_statistics = {}
+        for t in range(c.rollout_steps):
+            obs, graph = self.env.observe(), self.env.graph
+            action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
+            for key, statistic in relay_diagnostics(self.env, memory).items():
+&gt;               relay_statistics.setdefault(key, []).append(statistic.mean())
+                                                            ^^^^^^^^^^^^^^^^
+E               RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long
+
+src\npa_swarm\train.py:126: RuntimeError</failure></testcase><testcase classname="tests.test_learning" name="test_bootstrap_reuse_matches_eager_reference_including_resets[3]" time="0.011"><failure message="RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long">horizon = 3
+
+    @pytest.mark.parametrize("horizon",[3,100])
+    def test_bootstrap_reuse_matches_eager_reference_including_resets(horizon):
+        t=tiny(episode_steps=horizon);env_state=t.env.state_dict();h=t.hidden.clone();rng=capture_rng()
+&gt;       optimized=t.collect()
+                  ^^^^^^^^^^^
+
+tests\test_learning.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\torch\utils\_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;npa_swarm.train.Trainer object at 0x0000018AF73FB140&gt;
+
+    @torch.no_grad()
+    def collect(self):
+        c = self.cfg
+        observations, graphs, latent, logp, values, rewards, terms, truncs = ([] for _ in range(8))
+        truncated_boot = {}
+        physical = {key: [] for key in (
+            "connected", "largest_fraction", "bridge", "object_distance", "object_speed", "contact_count",
+            "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
+            "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
+        initial_hidden = self.hidden.detach().clone()
+        contact_peaks, contact_active = [], []
+        relay_statistics = {}
+        for t in range(c.rollout_steps):
+            obs, graph = self.env.observe(), self.env.graph
+            action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
+            for key, statistic in relay_diagnostics(self.env, memory).items():
+&gt;               relay_statistics.setdefault(key, []).append(statistic.mean())
+                                                            ^^^^^^^^^^^^^^^^
+E               RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long
+
+src\npa_swarm\train.py:126: RuntimeError</failure></testcase><testcase classname="tests.test_learning" name="test_bootstrap_reuse_matches_eager_reference_including_resets[100]" time="0.009"><failure message="RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long">horizon = 100
+
+    @pytest.mark.parametrize("horizon",[3,100])
+    def test_bootstrap_reuse_matches_eager_reference_including_resets(horizon):
+        t=tiny(episode_steps=horizon);env_state=t.env.state_dict();h=t.hidden.clone();rng=capture_rng()
+&gt;       optimized=t.collect()
+                  ^^^^^^^^^^^
+
+tests\test_learning.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\torch\utils\_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;npa_swarm.train.Trainer object at 0x0000018AA6AD0140&gt;
+
+    @torch.no_grad()
+    def collect(self):
+        c = self.cfg
+        observations, graphs, latent, logp, values, rewards, terms, truncs = ([] for _ in range(8))
+        truncated_boot = {}
+        physical = {key: [] for key in (
+            "connected", "largest_fraction", "bridge", "object_distance", "object_speed", "contact_count",
+            "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
+            "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
+        initial_hidden = self.hidden.detach().clone()
+        contact_peaks, contact_active = [], []
+        relay_statistics = {}
+        for t in range(c.rollout_steps):
+            obs, graph = self.env.observe(), self.env.graph
+            action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
+            for key, statistic in relay_diagnostics(self.env, memory).items():
+&gt;               relay_statistics.setdefault(key, []).append(statistic.mean())
+                                                            ^^^^^^^^^^^^^^^^
+E               RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long
+
+src\npa_swarm\train.py:126: RuntimeError</failure></testcase><testcase classname="tests.test_learning" name="test_resume_next_update_across_reset_is_exact_cpu" time="0.011"><failure message="RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long">tmp_path = WindowsPath('C:/Users/ASUS/AppData/Local/Temp/pytest-of-ASUS/pytest-1655/test_resume_next_update_across0')
+
+    def test_resume_next_update_across_reset_is_exact_cpu(tmp_path):
+&gt;       t=tiny(3);t.update();path=tmp_path/"resume.pt";t.save(path)
+                  ^^^^^^^^^^
+
+tests\test_learning.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\npa_swarm\train.py:226: in update
+    rollout = self.collect()
+              ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\torch\utils\_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;npa_swarm.train.Trainer object at 0x0000018AA6AD1310&gt;
+
+    @torch.no_grad()
+    def collect(self):
+        c = self.cfg
+        observations, graphs, latent, logp, values, rewards, terms, truncs = ([] for _ in range(8))
+        truncated_boot = {}
+        physical = {key: [] for key in (
+            "connected", "largest_fraction", "bridge", "object_distance", "object_speed", "contact_count",
+            "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
+            "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
+        initial_hidden = self.hidden.detach().clone()
+        contact_peaks, contact_active = [], []
+        relay_statistics = {}
+        for t in range(c.rollout_steps):
+            obs, graph = self.env.observe(), self.env.graph
+            action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
+            for key, statistic in relay_diagnostics(self.env, memory).items():
+&gt;               relay_statistics.setdefault(key, []).append(statistic.mean())
+                                                            ^^^^^^^^^^^^^^^^
+E               RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long
+
+src\npa_swarm\train.py:126: RuntimeError</failure></testcase><testcase classname="tests.test_learning" name="test_budget_resume_and_v3_warmstart" time="0.015"><failure message="RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long">tmp_path = WindowsPath('C:/Users/ASUS/AppData/Local/Temp/pytest-of-ASUS/pytest-1655/test_budget_resume_and_v3_warm0')
+
+    def test_budget_resume_and_v3_warmstart(tmp_path):
+        ec=EnvConfig(n_agents=16,stage="contact",episode_steps=3)
+        tc=TrainConfig(hidden_dim=8,rollout_steps=2,bptt_steps=2,ppo_epochs=1)
+&gt;       out=tmp_path/"run";first=train(ec,tc,out,1)
+                                 ^^^^^^^^^^^^^^^^^^
+
+tests\test_learning.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\npa_swarm\train.py:339: in train
+    result = trainer.update()
+             ^^^^^^^^^^^^^^^^
+src\npa_swarm\train.py:226: in update
+    rollout = self.collect()
+              ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\torch\utils\_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;npa_swarm.train.Trainer object at 0x0000018AA6AD2060&gt;
+
+    @torch.no_grad()
+    def collect(self):
+        c = self.cfg
+        observations, graphs, latent, logp, values, rewards, terms, truncs = ([] for _ in range(8))
+        truncated_boot = {}
+        physical = {key: [] for key in (
+            "connected", "largest_fraction", "bridge", "object_distance", "object_speed", "contact_count",
+            "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
+            "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
+        initial_hidden = self.hidden.detach().clone()
+        contact_peaks, contact_active = [], []
+        relay_statistics = {}
+        for t in range(c.rollout_steps):
+            obs, graph = self.env.observe(), self.env.graph
+            action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
+            for key, statistic in relay_diagnostics(self.env, memory).items():
+&gt;               relay_statistics.setdefault(key, []).append(statistic.mean())
+                                                            ^^^^^^^^^^^^^^^^
+E               RuntimeError: mean(): could not infer output dtype. Input dtype must be either a floating point or complex dtype. Got: Long
+
+src\npa_swarm\train.py:126: RuntimeError</failure></testcase><testcase classname="tests.test_learning" name="test_old_schema_rejected_and_failed_load_keeps_rng" time="0.004" /><testcase classname="tests.test_learning" name="test_evaluation_preserves_timeout_and_trajectory" time="0.062" /><testcase classname="tests.test_learning" name="test_evaluation_error_keeps_denominator" time="0.029" /><testcase classname="tests.test_learning" name="test_short_evaluation_is_censored" time="0.029" /><testcase classname="tests.test_learning" name="test_sampled_evaluation_repeats_action_seeds" time="0.069" /><testcase classname="tests.test_learning" name="test_modified_scales_are_explicit_diagnostics" time="0.035" /><testcase classname="tests.test_learning" name="test_source_identity_kept_when_files_change" time="0.011" /><testcase classname="tests.test_learning" name="test_relay_retention_is_checkpointed_and_restored" time="0.022" /><testcase classname="tests.test_cli" name="test_minimal_v2_defaults" time="0.001" /><testcase classname="tests.test_cli" name="test_resume_cannot_silently_override_task" time="0.006" /><testcase classname="tests.test_cli" name="test_bad_config" time="0.001" /></testsuite></testsuites>

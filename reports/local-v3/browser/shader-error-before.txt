@@ -1,0 +1,2 @@
+Actual hardware WGSL compile error: cannot assign to 'let alpha'. Alpha is reduced for detached particles; changed immutable let to var.
+Second actual compile error: fwidth must only be called from uniform control flow. Moved fwidth(local) before the varying role branch, without disabling uniformity validation.

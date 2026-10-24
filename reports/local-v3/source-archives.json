@@ -1,0 +1,26 @@
+[
+  {
+    "path": "runs\\v3\\source-final.zip",
+    "source_sha256": "ec4064cd6907cff0d69343e727c2526c3e012cc0a07498be3d6fdc5175e5835d",
+    "files": 13,
+    "zip_sha256": "1f31687e371e8d9a10d51a6b9c9baa2ea5082d7f42a7a8298d5fdc99e7a96914"
+  },
+  {
+    "path": "runs\\v3\\source-first.zip",
+    "source_sha256": "8ab238ccab6cb84c6cd0244c6f70e9d2a6f0de9d287506446e827a8039ef3214",
+    "files": 13,
+    "zip_sha256": "d825e4ad7251e2f7b775cc647a597acf8ebf119f28c6abad66a4dada2e758540"
+  },
+  {
+    "path": "runs\\v3\\source-marginal.zip",
+    "source_sha256": "6c8f442946f4b8a26fe6e971b24e1ba1d82755ac6797d097929c5245a6882321",
+    "files": 13,
+    "zip_sha256": "443bd311981ccb97f98779f5a0b377f117c4d399caa0b74a48321929b7158c33"
+  },
+  {
+    "path": "runs\\v3\\source-retained.zip",
+    "source_sha256": "41a42aaad096cfd9683954c47741b98a8c5bb3d57217aae0bc6fde5d01c46050",
+    "files": 13,
+    "zip_sha256": "edf8e8e58010280791f4defc63acf87cfc01055468b6087e9339ff2d2fe58f89"
+  }
+]

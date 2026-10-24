@@ -1,0 +1,32 @@
+C:\Users\ASUS\research-repos\npa-swarm-transport\src\npa_swarm\graph.py:82: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\aten\src\ATen\SparseCsrTensorImpl.cpp:51.)
+  check_invariants=False).coalesce().to_sparse_csr()
+{
+  "requested": 3,
+  "completed": 3,
+  "success": 0,
+  "timeout": 3,
+  "censored": 0,
+  "error": 0,
+  "interrupted": 0,
+  "not_started": 0,
+  "transport_success_rate_all_requests": 0.0,
+  "full_connectivity_successes": 0,
+  "episodes_fully_connected": 0,
+  "found_object_requests": 3,
+  "found_goal_requests": 3,
+  "bridge_eligible_steps": 3228,
+  "bridge_connected_steps": 0,
+  "bridge_keep_fraction": 0.0,
+  "diagnostic": false,
+  "stage": "search",
+  "layout": "random",
+  "task_version": 2,
+  "n_agents": 900,
+  "task_config_differences": {},
+  "policy_mode": "sampled_seeded",
+  "seconds": 94.07398540014401,
+  "engineering_evaluation_completed": true,
+  "full_horizon_completed": true,
+  "research_task_passed": false,
+  "note": "Task physics v2, model schema recorded in manifest.checkpoint. Discovery, message arrival and movement are not delivery; keep checkpoint/config denominators separate."
+}

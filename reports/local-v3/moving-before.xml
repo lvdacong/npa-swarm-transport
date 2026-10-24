@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="1.027" timestamp="2026-10-24T21:56:45.482321+08:00" hostname="LAPTOP-ETFQ3NM2"><testcase classname="tests.test_relay" name="test_moving_agents_keep_bearings_to_static_occluded_endpoints[cpu]" time="0.666"><failure message="AssertionError: Tensor-likes are not close!&#10;&#10;Mismatched elements: 8 / 8 (100.0%)&#10;Greatest absolute difference: 0.050000011920928955 at index (1, 0) (up to 1e-06 allowed)&#10;Greatest relative difference: 2.0 at index (3, 1) (up to 0 allowed)">device = 'cpu'
+
+    @pytest.mark.parametrize("device", ["cpu", "cuda"])
+    def test_moving_agents_keep_bearings_to_static_occluded_endpoints(device):
+        if device == "cuda" and not torch.cuda.is_available():
+            pytest.skip("requires CUDA")
+        graph, pos = chain()
+        graph = graph.to(device)
+        obs = observations().to(device)
+        memory = torch.zeros(1, 4, 6, device=device)
+        for _ in range(4):
+            memory = relay_beacons(memory, obs, graph)
+        motion = torch.tensor([[.05,.01],[.02,-.03],[-.03,.02],[-.05,-.01]], device=device)
+        moved = pos.to(device) + motion
+        graph.relative = moved[graph.src] - moved[graph.dst]
+        graph.displacement = motion[None]
+        result = relay_beacons(memory, torch.zeros_like(obs), graph)
+        # No local sightings now. Both endpoints remain static while every agent
+        # moves differently, so old own and old neighbor bearings need odometry.
+        for channel, endpoint in ((1, [-.2, 0.]), (4, [1.1, 0.])):
+            expected = torch.tensor(endpoint, device=device) - moved
+&gt;           torch.testing.assert_close(result[0, :, channel:channel+2], expected, atol=1e-6, rtol=0)
+E           AssertionError: Tensor-likes are not close!
+E           
+E           Mismatched elements: 8 / 8 (100.0%)
+E           Greatest absolute difference: 0.050000011920928955 at index (1, 0) (up to 1e-06 allowed)
+E           Greatest relative difference: 2.0 at index (3, 1) (up to 0 allowed)
+
+tests\test_relay.py:95: AssertionError</failure></testcase><testcase classname="tests.test_relay" name="test_moving_agents_keep_bearings_to_static_occluded_endpoints[cuda]" time="0.325"><failure message="AssertionError: Tensor-likes are not close!&#10;&#10;Mismatched elements: 8 / 8 (100.0%)&#10;Greatest absolute difference: 0.050000011920928955 at index (1, 0) (up to 1e-06 allowed)&#10;Greatest relative difference: 2.0 at index (3, 1) (up to 0 allowed)">device = 'cuda'
+
+    @pytest.mark.parametrize("device", ["cpu", "cuda"])
+    def test_moving_agents_keep_bearings_to_static_occluded_endpoints(device):
+        if device == "cuda" and not torch.cuda.is_available():
+            pytest.skip("requires CUDA")
+        graph, pos = chain()
+        graph = graph.to(device)
+        obs = observations().to(device)
+        memory = torch.zeros(1, 4, 6, device=device)
+        for _ in range(4):
+            memory = relay_beacons(memory, obs, graph)
+        motion = torch.tensor([[.05,.01],[.02,-.03],[-.03,.02],[-.05,-.01]], device=device)
+        moved = pos.to(device) + motion
+        graph.relative = moved[graph.src] - moved[graph.dst]
+        graph.displacement = motion[None]
+        result = relay_beacons(memory, torch.zeros_like(obs), graph)
+        # No local sightings now. Both endpoints remain static while every agent
+        # moves differently, so old own and old neighbor bearings need odometry.
+        for channel, endpoint in ((1, [-.2, 0.]), (4, [1.1, 0.])):
+            expected = torch.tensor(endpoint, device=device) - moved
+&gt;           torch.testing.assert_close(result[0, :, channel:channel+2], expected, atol=1e-6, rtol=0)
+E           AssertionError: Tensor-likes are not close!
+E           
+E           Mismatched elements: 8 / 8 (100.0%)
+E           Greatest absolute difference: 0.050000011920928955 at index (1, 0) (up to 1e-06 allowed)
+E           Greatest relative difference: 2.0 at index (3, 1) (up to 0 allowed)
+
+tests\test_relay.py:95: AssertionError</failure></testcase></testsuite></testsuites>

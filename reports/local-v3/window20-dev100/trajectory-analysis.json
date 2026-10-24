@@ -1,0 +1,60 @@
+{
+  "evaluation": "C:\\Users\\ASUS\\research-repos\\npa-swarm-transport\\reports\\local-v3\\window20-dev100",
+  "checkpoint": {
+    "checkpoint_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+    "updates": 20,
+    "env_steps": 5120,
+    "stage": "search",
+    "source_sha256": "8ab238ccab6cb84c6cd0244c6f70e9d2a6f0de9d287506446e827a8039ef3214",
+    "learned_success_verified": false,
+    "has_trained_weights": true,
+    "lineage": {
+      "kind": "new"
+    }
+  },
+  "requested": 1,
+  "diagnostic": false,
+  "episodes": [
+    {
+      "seed": 100,
+      "episode": 0,
+      "layout_seed": 100,
+      "status": "timeout",
+      "steps": 1200,
+      "initial_distance": 13.782505989074707,
+      "final_distance": 14.038211822509766,
+      "minimum_distance": 13.776779174804688,
+      "progress": -0.2557058334350586,
+      "displacement": 0.26827287673950195,
+      "maximum_displacement": 0.2826971411705017,
+      "path_length": 1.7740774154663086,
+      "mean_contacts": 0.5653621981681932,
+      "maximum_contacts": 6,
+      "sampled_fully_connected": false,
+      "found_object": true,
+      "found_goal": true,
+      "cargo_force_norm_mean": 0.23651559769697827,
+      "cargo_force_norm_max": 1.9760898351669312,
+      "cargo_force_toward_goal_mean": -0.03494418420976991,
+      "cargo_force_toward_goal_max": 1.8216133117675781,
+      "reward_contact_credit_mean": -2.2740451951756373e-07,
+      "reward_contact_credit_max": 1.2032191079924814e-05,
+      "found_object_seconds": 6.6000000000000005,
+      "found_goal_seconds": 5.4,
+      "post_discovery_contact_fraction": 0.3832599118942731,
+      "post_discovery_maximum_contacts": 6,
+      "longest_continuous_contact_seconds": 2.6,
+      "distinct_contact_agents": 135,
+      "bridge_transition_steps": [],
+      "goal_message_near_cargo_agent_fraction": 0.042238722331185204,
+      "goal_message_contact_agent_fraction": 0.0471976401179941,
+      "contact_decisions": 434,
+      "goal_message_contact_decisions": 23,
+      "first_goal_message_near_cargo_seconds": 16.3,
+      "first_goal_message_contact_seconds": 19.200000000000003,
+      "goal_bearing_error_near_cargo": 2.752737512155001e-06,
+      "goal_bearing_alignment_near_cargo": 0.9999999997528829,
+      "targetward_force_when_contact_has_message": -0.27218757853235886
+    }
+  ]
+}

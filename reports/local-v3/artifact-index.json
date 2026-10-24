@@ -1,0 +1,521 @@
+{
+  "generated": "2026-10-24T14:37:27.369317+00:00",
+  "issue": "https://github.com/lvdacong/npa-swarm-transport/issues/4",
+  "root": "C:\\Users\\ASUS\\research-repos\\npa-swarm-transport",
+  "code_commit": "55246260317792d820096bc965762f20c7512b50",
+  "engineering_incremental_passed": true,
+  "learned_transport_passed": false,
+  "checkpoints": [
+    {
+      "path": "runs/v3/marginal-search-seed42/candidate.pt",
+      "sha256": "cd90ba729e9865eb484d7c090ac595d4e1f89e90f33ceda6b7b0380a327e2feb",
+      "bytes": 465837,
+      "updates": 8,
+      "env_steps": 2048,
+      "episodes": 0,
+      "successes": 0,
+      "source_sha256": "6c8f442946f4b8a26fe6e971b24e1ba1d82755ac6797d097929c5245a6882321",
+      "schema": 3,
+      "lineage": {
+        "kind": "warmstart",
+        "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+        "inherited_trained_weights": true,
+        "parent_updates": 20,
+        "parent_stage": "search"
+      },
+      "relay_memory_decay": 0.997,
+      "contact_credit_mode": "marginal"
+    },
+    {
+      "path": "runs/v3/marginal-search-seed42/last.pt",
+      "sha256": "9cbcae3f5c5c2dcc7291b34478f34bc43c09ad0a9ed304cc61cc70c56b459a27",
+      "bytes": 465402,
+      "updates": 20,
+      "env_steps": 5120,
+      "episodes": 4,
+      "successes": 0,
+      "source_sha256": "6c8f442946f4b8a26fe6e971b24e1ba1d82755ac6797d097929c5245a6882321",
+      "schema": 3,
+      "lineage": {
+        "kind": "warmstart",
+        "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+        "inherited_trained_weights": true,
+        "parent_updates": 20,
+        "parent_stage": "search"
+      },
+      "relay_memory_decay": 0.997,
+      "contact_credit_mode": "marginal"
+    },
+    {
+      "path": "runs/v3/retained-search-seed42/candidate.pt",
+      "sha256": "78c14734d5bee7008674b5ca066e736c15ae9b4e9fc853981f293553242fb628",
+      "bytes": 465773,
+      "updates": 9,
+      "env_steps": 2304,
+      "episodes": 0,
+      "successes": 0,
+      "source_sha256": "41a42aaad096cfd9683954c47741b98a8c5bb3d57217aae0bc6fde5d01c46050",
+      "schema": 3,
+      "lineage": {
+        "kind": "warmstart",
+        "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+        "inherited_trained_weights": true,
+        "parent_updates": 20,
+        "parent_stage": "search"
+      },
+      "relay_memory_decay": 0.997,
+      "contact_credit_mode": "work"
+    },
+    {
+      "path": "runs/v3/retained-search-seed42/initial.pt",
+      "sha256": "4af1252e94ee6e903cfe3e787e74a31e31095fde2701baf6c9bb9fd95aa87685",
+      "bytes": 388787,
+      "updates": 0,
+      "env_steps": 0,
+      "episodes": 0,
+      "successes": 0,
+      "source_sha256": "41a42aaad096cfd9683954c47741b98a8c5bb3d57217aae0bc6fde5d01c46050",
+      "schema": 3,
+      "lineage": {
+        "kind": "warmstart",
+        "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+        "inherited_trained_weights": true,
+        "parent_updates": 20,
+        "parent_stage": "search"
+      },
+      "relay_memory_decay": 0.997,
+      "contact_credit_mode": "work"
+    },
+    {
+      "path": "runs/v3/retained-search-seed42/last.pt",
+      "sha256": "e4b2cd16319add97cb66036c79d099b76ee2a82fdaf6825bbb97b620e902a6be",
+      "bytes": 465338,
+      "updates": 20,
+      "env_steps": 5120,
+      "episodes": 4,
+      "successes": 0,
+      "source_sha256": "41a42aaad096cfd9683954c47741b98a8c5bb3d57217aae0bc6fde5d01c46050",
+      "schema": 3,
+      "lineage": {
+        "kind": "warmstart",
+        "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+        "inherited_trained_weights": true,
+        "parent_updates": 20,
+        "parent_stage": "search"
+      },
+      "relay_memory_decay": 0.997,
+      "contact_credit_mode": "work"
+    },
+    {
+      "path": "runs/v3/search-main-seed42/candidate.pt",
+      "sha256": "2fcf82999f5644f9c9faea76c7ba98609678a0bfef2fbe818fbe884acc509cb5",
+      "bytes": 465773,
+      "updates": 5,
+      "env_steps": 1280,
+      "episodes": 0,
+      "successes": 0,
+      "source_sha256": "8ab238ccab6cb84c6cd0244c6f70e9d2a6f0de9d287506446e827a8039ef3214",
+      "schema": 3,
+      "lineage": {
+        "kind": "new"
+      },
+      "relay_memory_decay": 0.97,
+      "contact_credit_mode": "work"
+    },
+    {
+      "path": "runs/v3/search-main-seed42/last.pt",
+      "sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+      "bytes": 465338,
+      "updates": 20,
+      "env_steps": 5120,
+      "episodes": 4,
+      "successes": 0,
+      "source_sha256": "8ab238ccab6cb84c6cd0244c6f70e9d2a6f0de9d287506446e827a8039ef3214",
+      "schema": 3,
+      "lineage": {
+        "kind": "new"
+      },
+      "relay_memory_decay": 0.97,
+      "contact_credit_mode": "work"
+    },
+    {
+      "path": "runs/v3/search-seed42/last.pt",
+      "sha256": "ab08e126d395d020b30526975c4adb9cd2ac0dfc94cda8674c96280196aefb02",
+      "bytes": 388531,
+      "updates": 0,
+      "env_steps": 0,
+      "episodes": 0,
+      "successes": 0,
+      "source_sha256": "d074b0cb7284400330f138e7710b1bfdd3f8784564c79618290c2b4f0ec462a0",
+      "schema": 3,
+      "lineage": {
+        "kind": "new"
+      },
+      "relay_memory_decay": 0.97,
+      "contact_credit_mode": "work"
+    }
+  ],
+  "evaluations": [
+    {
+      "path": "reports/local-v3/frozen-dev",
+      "checkpoint": {
+        "checkpoint_sha256": "cd90ba729e9865eb484d7c090ac595d4e1f89e90f33ceda6b7b0380a327e2feb",
+        "updates": 8,
+        "env_steps": 2048,
+        "stage": "search",
+        "source_sha256": "6c8f442946f4b8a26fe6e971b24e1ba1d82755ac6797d097929c5245a6882321",
+        "model_schema_version": 3,
+        "relay_memory_decay": 0.997,
+        "learned_success_verified": false,
+        "has_trained_weights": true,
+        "lineage": {
+          "kind": "warmstart",
+          "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+          "inherited_trained_weights": true,
+          "parent_updates": 20,
+          "parent_stage": "search"
+        }
+      },
+      "summary": {
+        "requested": 3,
+        "completed": 3,
+        "success": 0,
+        "timeout": 3,
+        "censored": 0,
+        "error": 0,
+        "interrupted": 0,
+        "not_started": 0,
+        "transport_success_rate_all_requests": 0.0,
+        "full_connectivity_successes": 0,
+        "episodes_fully_connected": 0,
+        "found_object_requests": 3,
+        "found_goal_requests": 3,
+        "bridge_eligible_steps": 3228,
+        "bridge_connected_steps": 0,
+        "bridge_keep_fraction": 0.0,
+        "diagnostic": false,
+        "stage": "search",
+        "layout": "random",
+        "task_version": 2,
+        "n_agents": 900,
+        "task_config_differences": {},
+        "policy_mode": "sampled_seeded",
+        "seconds": 94.07398540014401,
+        "engineering_evaluation_completed": true,
+        "full_horizon_completed": true,
+        "research_task_passed": false,
+        "note": "Task physics v2, model schema recorded in manifest.checkpoint. Discovery, message arrival and movement are not delivery; keep checkpoint/config denominators separate."
+      },
+      "trajectories": [
+        {
+          "seed": 100,
+          "layout_seed": 100,
+          "action_seed": 100,
+          "status": "timeout",
+          "trajectory": "episode-0000.npz",
+          "trajectory_sha256": "01a46b5e8d423c56e3113d3692c1de12628b85bedbb3334aae30c3359e2a96e8"
+        },
+        {
+          "seed": 101,
+          "layout_seed": 101,
+          "action_seed": 101,
+          "status": "timeout",
+          "trajectory": "episode-0001.npz",
+          "trajectory_sha256": "5efb3ea9cea16c8f55c44ccadb11f72d5370af1ce1c4cbba5abffebec73ab3f3"
+        },
+        {
+          "seed": 102,
+          "layout_seed": 102,
+          "action_seed": 102,
+          "status": "timeout",
+          "trajectory": "episode-0002.npz",
+          "trajectory_sha256": "cb2039a9e66c77528c21e2b95d0ef04fa32f531819a5583e99d673c27ca5d244"
+        }
+      ]
+    },
+    {
+      "path": "reports/local-v3/frozen-diagonal",
+      "checkpoint": {
+        "checkpoint_sha256": "cd90ba729e9865eb484d7c090ac595d4e1f89e90f33ceda6b7b0380a327e2feb",
+        "updates": 8,
+        "env_steps": 2048,
+        "stage": "search",
+        "source_sha256": "6c8f442946f4b8a26fe6e971b24e1ba1d82755ac6797d097929c5245a6882321",
+        "model_schema_version": 3,
+        "relay_memory_decay": 0.997,
+        "learned_success_verified": false,
+        "has_trained_weights": true,
+        "lineage": {
+          "kind": "warmstart",
+          "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+          "inherited_trained_weights": true,
+          "parent_updates": 20,
+          "parent_stage": "search"
+        }
+      },
+      "summary": {
+        "requested": 1,
+        "completed": 1,
+        "success": 0,
+        "timeout": 1,
+        "censored": 0,
+        "error": 0,
+        "interrupted": 0,
+        "not_started": 0,
+        "transport_success_rate_all_requests": 0.0,
+        "full_connectivity_successes": 0,
+        "episodes_fully_connected": 0,
+        "found_object_requests": 1,
+        "found_goal_requests": 1,
+        "bridge_eligible_steps": 699,
+        "bridge_connected_steps": 0,
+        "bridge_keep_fraction": 0.0,
+        "diagnostic": false,
+        "stage": "search",
+        "layout": "diagonal",
+        "task_version": 2,
+        "n_agents": 900,
+        "task_config_differences": {},
+        "policy_mode": "sampled_seeded",
+        "seconds": 32.785704399924725,
+        "engineering_evaluation_completed": true,
+        "full_horizon_completed": true,
+        "research_task_passed": false,
+        "note": "Task physics v2, model schema recorded in manifest.checkpoint. Discovery, message arrival and movement are not delivery; keep checkpoint/config denominators separate."
+      },
+      "trajectories": [
+        {
+          "seed": 103,
+          "layout_seed": 103,
+          "action_seed": 103,
+          "status": "timeout",
+          "trajectory": "episode-0000.npz",
+          "trajectory_sha256": "1d9439ebed5557b07027a2b6fdb44d054098c192362cc199e943174e0e8c2f60"
+        }
+      ]
+    },
+    {
+      "path": "reports/local-v3/retained20-dev100",
+      "checkpoint": {
+        "checkpoint_sha256": "e4b2cd16319add97cb66036c79d099b76ee2a82fdaf6825bbb97b620e902a6be",
+        "updates": 20,
+        "env_steps": 5120,
+        "stage": "search",
+        "source_sha256": "41a42aaad096cfd9683954c47741b98a8c5bb3d57217aae0bc6fde5d01c46050",
+        "model_schema_version": 3,
+        "relay_memory_decay": 0.997,
+        "learned_success_verified": false,
+        "has_trained_weights": true,
+        "lineage": {
+          "kind": "warmstart",
+          "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+          "inherited_trained_weights": true,
+          "parent_updates": 20,
+          "parent_stage": "search"
+        }
+      },
+      "summary": {
+        "requested": 1,
+        "completed": 1,
+        "success": 0,
+        "timeout": 1,
+        "censored": 0,
+        "error": 0,
+        "interrupted": 0,
+        "not_started": 0,
+        "transport_success_rate_all_requests": 0.0,
+        "full_connectivity_successes": 0,
+        "episodes_fully_connected": 0,
+        "found_object_requests": 1,
+        "found_goal_requests": 1,
+        "bridge_eligible_steps": 986,
+        "bridge_connected_steps": 0,
+        "bridge_keep_fraction": 0.0,
+        "diagnostic": false,
+        "stage": "search",
+        "layout": "random",
+        "task_version": 2,
+        "n_agents": 900,
+        "task_config_differences": {},
+        "policy_mode": "sampled_seeded",
+        "seconds": 19.8314458001405,
+        "engineering_evaluation_completed": true,
+        "full_horizon_completed": true,
+        "research_task_passed": false,
+        "note": "Task physics v2, model schema recorded in manifest.checkpoint. Discovery, message arrival and movement are not delivery; keep checkpoint/config denominators separate."
+      },
+      "trajectories": [
+        {
+          "seed": 100,
+          "layout_seed": 100,
+          "action_seed": 100,
+          "status": "timeout",
+          "trajectory": "episode-0000.npz",
+          "trajectory_sha256": "5ccf83d7bfbd4e34ce7d5478b24f67dfa359b7825b27f7587416dade866d9372"
+        }
+      ]
+    },
+    {
+      "path": "reports/local-v3/retention-ablation100",
+      "checkpoint": {
+        "checkpoint_sha256": "4af1252e94ee6e903cfe3e787e74a31e31095fde2701baf6c9bb9fd95aa87685",
+        "updates": 0,
+        "env_steps": 0,
+        "stage": "search",
+        "source_sha256": "41a42aaad096cfd9683954c47741b98a8c5bb3d57217aae0bc6fde5d01c46050",
+        "model_schema_version": 3,
+        "relay_memory_decay": 0.997,
+        "learned_success_verified": false,
+        "has_trained_weights": true,
+        "lineage": {
+          "kind": "warmstart",
+          "parent_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+          "inherited_trained_weights": true,
+          "parent_updates": 20,
+          "parent_stage": "search"
+        }
+      },
+      "summary": {
+        "requested": 1,
+        "completed": 1,
+        "success": 0,
+        "timeout": 1,
+        "censored": 0,
+        "error": 0,
+        "interrupted": 0,
+        "not_started": 0,
+        "transport_success_rate_all_requests": 0.0,
+        "full_connectivity_successes": 0,
+        "episodes_fully_connected": 0,
+        "found_object_requests": 1,
+        "found_goal_requests": 1,
+        "bridge_eligible_steps": 1142,
+        "bridge_connected_steps": 0,
+        "bridge_keep_fraction": 0.0,
+        "diagnostic": false,
+        "stage": "search",
+        "layout": "random",
+        "task_version": 2,
+        "n_agents": 900,
+        "task_config_differences": {},
+        "policy_mode": "sampled_seeded",
+        "seconds": 21.81024400005117,
+        "engineering_evaluation_completed": true,
+        "full_horizon_completed": true,
+        "research_task_passed": false,
+        "note": "Task physics v2, model schema recorded in manifest.checkpoint. Discovery, message arrival and movement are not delivery; keep checkpoint/config denominators separate."
+      },
+      "trajectories": [
+        {
+          "seed": 100,
+          "layout_seed": 100,
+          "action_seed": 100,
+          "status": "timeout",
+          "trajectory": "episode-0000.npz",
+          "trajectory_sha256": "7f450518d0d4a5f567962b386d1295976afda7e01adc1767688a5d440e6b0ad2"
+        }
+      ]
+    },
+    {
+      "path": "reports/local-v3/window20-dev100",
+      "checkpoint": {
+        "checkpoint_sha256": "46e2761cd7ba95117eda47d04658c78caa670e9feb5ff1498462cd7a818bf3a1",
+        "updates": 20,
+        "env_steps": 5120,
+        "stage": "search",
+        "source_sha256": "8ab238ccab6cb84c6cd0244c6f70e9d2a6f0de9d287506446e827a8039ef3214",
+        "learned_success_verified": false,
+        "has_trained_weights": true,
+        "lineage": {
+          "kind": "new"
+        }
+      },
+      "summary": {
+        "requested": 1,
+        "completed": 1,
+        "success": 0,
+        "timeout": 1,
+        "censored": 0,
+        "error": 0,
+        "interrupted": 0,
+        "not_started": 0,
+        "transport_success_rate_all_requests": 0.0,
+        "full_connectivity_successes": 0,
+        "episodes_fully_connected": 0,
+        "found_object_requests": 1,
+        "found_goal_requests": 1,
+        "bridge_eligible_steps": 1135,
+        "bridge_connected_steps": 0,
+        "bridge_keep_fraction": 0.0,
+        "diagnostic": false,
+        "stage": "search",
+        "layout": "random",
+        "task_version": 2,
+        "n_agents": 900,
+        "task_config_differences": {},
+        "policy_mode": "sampled_seeded",
+        "seconds": 22.05222349986434,
+        "engineering_evaluation_completed": true,
+        "full_horizon_completed": true,
+        "research_task_passed": false,
+        "note": "Task v2 has changed physics/population/bridge semantics. Do not pool with v1; learned quality needs reviewed outcomes."
+      },
+      "trajectories": [
+        {
+          "seed": 100,
+          "layout_seed": 100,
+          "action_seed": 100,
+          "status": "timeout",
+          "trajectory": "episode-0000.npz",
+          "trajectory_sha256": "19a66652b18853b512fb22252e5f436ef015521dd35a478f4b7a67fca8963798"
+        }
+      ]
+    }
+  ],
+  "source_archives": [
+    {
+      "path": "runs\\v3\\source-final.zip",
+      "source_sha256": "ec4064cd6907cff0d69343e727c2526c3e012cc0a07498be3d6fdc5175e5835d",
+      "files": 13,
+      "zip_sha256": "1f31687e371e8d9a10d51a6b9c9baa2ea5082d7f42a7a8298d5fdc99e7a96914"
+    },
+    {
+      "path": "runs\\v3\\source-first.zip",
+      "source_sha256": "8ab238ccab6cb84c6cd0244c6f70e9d2a6f0de9d287506446e827a8039ef3214",
+      "files": 13,
+      "zip_sha256": "d825e4ad7251e2f7b775cc647a597acf8ebf119f28c6abad66a4dada2e758540"
+    },
+    {
+      "path": "runs\\v3\\source-marginal.zip",
+      "source_sha256": "6c8f442946f4b8a26fe6e971b24e1ba1d82755ac6797d097929c5245a6882321",
+      "files": 13,
+      "zip_sha256": "443bd311981ccb97f98779f5a0b377f117c4d399caa0b74a48321929b7158c33"
+    },
+    {
+      "path": "runs\\v3\\source-retained.zip",
+      "source_sha256": "41a42aaad096cfd9683954c47741b98a8c5bb3d57217aae0bc6fde5d01c46050",
+      "files": 13,
+      "zip_sha256": "edf8e8e58010280791f4defc63acf87cfc01055468b6087e9339ff2d2fe58f89"
+    }
+  ],
+  "viewer": {
+    "checkpoint": {
+      "checkpoint_sha256": "6476aaa6b0d3fb063e9fe2bbf4316f7f624c1a5748219201b8c81dc83a929044",
+      "updates": 1,
+      "env_steps": 256,
+      "stage": "search",
+      "source_sha256": "8ab238ccab6cb84c6cd0244c6f70e9d2a6f0de9d287506446e827a8039ef3214",
+      "learned_success_verified": false,
+      "has_trained_weights": true,
+      "lineage": {
+        "kind": "new"
+      },
+      "name": "last.pt"
+    },
+    "active_wall_seconds": 29.992294800002128,
+    "simulated_seconds": 119.99999999999746,
+    "actual_speed": 4.001027623934562,
+    "speed_checkpoint_file_preserved": false,
+    "note": "Viewer loaded update1 before last.pt advanced to update20. Speed metadata and terminal snapshot retained; current last.pt is not the speed model."
+  }
+}
