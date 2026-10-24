@@ -24,6 +24,7 @@ def main(argv=None):
         p.add_argument("--contact-credit-mode",choices=("work","marginal"),default="work")
         p.add_argument("--rear-approach-weight",type=float,default=.8,
                        help="reward-only goal-informed rear sector; 0 keeps legacy v3 credit")
+        p.add_argument("--rear-eligibility",choices=("main","neighbors"),default="main")
         device_args(p)
     doctor=sub.add_parser("doctor"); device_args(doctor);doctor.add_argument("--output")
     perf=sub.add_parser("probe");env_args(perf)
@@ -36,6 +37,7 @@ def main(argv=None):
     training.add_argument("--rollout-steps",type=int,default=128);training.add_argument("--bptt-steps",type=int,default=32)
     training.add_argument("--ppo-epochs",type=int,default=3);training.add_argument("--hidden-dim",type=int,default=32)
     training.add_argument("--learning-rate",type=float,default=3e-4)
+    training.add_argument("--local-batch-fraction",type=float,default=0.)
     training.add_argument("--relay-memory-decay",type=float,default=.997)
     evaluation=sub.add_parser("evaluate");device_args(evaluation)
     evaluation.add_argument("--checkpoint",required=True);evaluation.add_argument("--output",required=True)
@@ -64,7 +66,7 @@ def main(argv=None):
         cfg=EnvConfig(n_agents=args.agents,num_envs=args.envs,stage=args.stage,layout=args.layout,
                       seed=args.seed,episode_steps=args.episode_steps,sense_radius=args.sense_radius,
                       work_credit_weight=args.work_credit_weight,contact_credit_mode=args.contact_credit_mode,
-                      rear_approach_weight=args.rear_approach_weight)
+                      rear_approach_weight=args.rear_approach_weight,rear_eligibility=args.rear_eligibility)
         if args.command=="probe":
             result=probe(cfg,args.output,str(device),args.steps,args.warmup,args.train_updates,args.trace)
         elif args.command=="train":
@@ -72,13 +74,13 @@ def main(argv=None):
             if args.resume and args.warmstart:parser.error("Choose --resume OR --warmstart")
             if args.resume:
                 forbidden={"--agents","--envs","--stage","--layout","--seed","--episode-steps","--sense-radius","--work-credit-weight","--contact-credit-mode","--rear-approach-weight",
-                           "--rollout-steps","--bptt-steps","--ppo-epochs","--hidden-dim","--learning-rate","--relay-memory-decay"}
+                           "--rollout-steps","--bptt-steps","--ppo-epochs","--hidden-dim","--learning-rate","--relay-memory-decay","--rear-eligibility","--local-batch-fraction"}
                 provided=sys.argv[1:] if argv is None else argv
                 if any(token.split("=",1)[0] in forbidden for token in provided):
                     parser.error("Strict resume uses saved configs; omit overrides or start a new run")
             tc=TrainConfig(hidden_dim=args.hidden_dim,rollout_steps=args.rollout_steps,bptt_steps=args.bptt_steps,
                            ppo_epochs=args.ppo_epochs,learning_rate=args.learning_rate,seed=args.seed,
-                           relay_memory_decay=args.relay_memory_decay)
+                           relay_memory_decay=args.relay_memory_decay,local_batch_fraction=args.local_batch_fraction)
             result=train(None if args.resume else cfg,None if args.resume else tc,args.output,args.updates,
                          str(device),resume=args.resume,warmstart=args.warmstart)
         else:

@@ -68,3 +68,8 @@ A new v3 training run may warmstart the preserved A20 weights with the new
 reward and retention but must record its parent hash, new optimizer,
 separate output directory and new evaluation denominators. Historical frozen
 B/C failures must not be reported as successes.
+
+
+## Issue #5 本机修正
+
+新rear势版本3修正远侧错误方向与前侧角向平台；版本1/2仅供旧检查点准确恢复。默认最大分量资格仍main；显式neighbors实验仅允许具有真实邻居的非孤立粒子获rear信用，不改变连通代价/严格桥/完成标准。可选local_batch_fraction混合全体与局部活跃样本PPO及critic目标，默认0，空集/单例回退；它只作用于训练，不改变局部actor观察。实验没有学会搬运，详见reports/local-v4。

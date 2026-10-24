@@ -32,6 +32,8 @@ class EnvConfig:
     # New run: reward-only rear-arc geometry and localized cargo progress.
     # 0 preserves historical v3 rewards for existing checkpoints.
     rear_approach_weight: float = 0.8
+    rear_potential_version: int = 3
+    rear_eligibility: str = "main"
     contact_credit_mode: str = "work"
     exploration_weight: float = 0.2
     seed: int = 42
@@ -45,6 +47,10 @@ class EnvConfig:
             raise ValueError("This runtime implements task v2; use the original revision for v1")
         if self.contact_credit_mode not in ("work", "marginal"):
             raise ValueError("contact_credit_mode must be work or marginal")
+        if self.rear_potential_version not in (1, 2, 3):
+            raise ValueError("rear_potential_version must be 1, 2 or 3")
+        if self.rear_eligibility not in ("main", "neighbors"):
+            raise ValueError("rear_eligibility must be main or neighbors")
         for name in ("arena_half", "agent_radius", "object_radius", "goal_radius", "comm_radius",
                      "sense_radius", "dt", "max_force", "agent_drag", "max_speed", "object_drag", "contact_stiffness"):
             if getattr(self, name) <= 0:
@@ -75,12 +81,15 @@ class TrainConfig:
     max_grad_norm: float = 0.5
     seed: int = 42
     relay_memory_decay: float = 0.997
+    local_batch_fraction: float = 0.0
 
     def __post_init__(self):
         if self.hidden_dim < 8 or min(self.rollout_steps, self.bptt_steps, self.ppo_epochs) < 1:
             raise ValueError("hidden_dim >= 8 and positive rollout/optimization sizes required")
         if self.learning_rate <= 0 or not 0 < self.gamma <= 1 or not 0 <= self.gae_lambda <= 1:
             raise ValueError("Invalid optimizer/return configuration")
+        if not 0 <= self.local_batch_fraction < 1:
+            raise ValueError("local_batch_fraction must be in [0,1)")
         if not 0 < self.relay_memory_decay < 1:
             raise ValueError("relay_memory_decay must decay gradually within (0,1)")
 

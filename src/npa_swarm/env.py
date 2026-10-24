@@ -8,7 +8,7 @@ from .graph import aggregate, components, radius_graph
 OBS_DIM = 20
 
 
-def rear_arc_gap(positions, cargo, destination, radius):
+def rear_arc_gap(positions, cargo, destination, radius, version=3, approach_limit=None):
     """Reward-only distance to rear pushing sector; never an actor input.
 
     A front-side particle moving radially into cargo gets NO rear-approach
@@ -19,8 +19,22 @@ def rear_arc_gap(positions, cargo, destination, radius):
     forward = destination - cargo
     forward = forward / forward.norm(dim=-1, keepdim=True).clamp_min(1e-7)
     cosine = (offset * forward[:, None]).sum(-1) / distance
-    rear_weight = ((0.2 - cosine) / 1.2).clamp(0, 1)
-    return radius * (cosine + 0.4).clamp_min(0) + rear_weight * (distance - radius).abs()
+    radial = (distance - radius).abs()
+    if version == 1:
+        rear_weight = ((0.2 - cosine) / 1.2).clamp(0, 1)
+        return radius * (cosine + 0.4).clamp_min(0) + rear_weight * radial
+    # For eligible cargo witnesses, ceiling > radial. Thus turning toward
+    # the front can never reduce the potential at any sensed distance.
+    # Inside the rear sector, use actual rim distance; front radial motion
+    # receives zero progress. This is only a reward, never an action target.
+    ceiling = 4 * radius if approach_limit is None else approach_limit
+    rear_weight = ((0.2 - cosine) / .6).clamp(0, 1)
+    gap = ceiling * (1 - rear_weight) + rear_weight * radial
+    # Version2's front plateau suppressed angular as well as radial credit.
+    # Keep radial front progress zero, but credit turning toward the rear.
+    if version >= 3:
+        gap = gap + radius * (cosine - .2).clamp_min(0)
+    return gap
 
 
 class SwarmEnv:
@@ -248,6 +262,13 @@ class SwarmEnv:
                                        contact_normal, self._contact[..., None].float(), wall), -1)
         return self._observation
 
+    def rear_membership(self):
+        if self.cfg.rear_eligibility == "main":
+            return self._in_main
+        connected = torch.zeros(self.cfg.num_envs*self.cfg.n_agents, dtype=torch.bool, device=self.device)
+        connected[self.graph.dst] = True
+        return connected.reshape(self.cfg.num_envs, self.cfg.n_agents)
+
     @torch.no_grad()
     def step(self, actions, goal_relay=None):
         c = self.cfg
@@ -260,7 +281,8 @@ class SwarmEnv:
         rear_before = None
         if c.rear_approach_weight:
             rear_before = rear_arc_gap(self.positions, self.object_pos, self.goal_pos,
-                                      c.object_radius + c.agent_radius)
+                                      c.object_radius + c.agent_radius, c.rear_potential_version,
+                                      c.sense_radius + c.object_radius + c.agent_radius)
             if goal_relay is None:
                 relay_strength = torch.zeros_like(rear_before)
             else:
@@ -320,14 +342,24 @@ class SwarmEnv:
         work_credit *= c.work_credit_weight * old_found_goal[:, None]
         rear_reward = torch.zeros_like(repair_reward)
         transport_reward = torch.zeros_like(progress[:, None])
+        informed_active = torch.zeros_like(self._object_visible)
+        rear_sector = torch.zeros_like(informed_active)
         if c.rear_approach_weight:
-            # Only current cargo witnesses in the main graph component with
-            # an actual goal message receive geometrical rear progress.
-            active = rear_witnesses & self._object_visible & self._in_main
+            # Explicit reward eligibility, independent of strict connectivity
+            # evaluation. The neighbor experiment admits non-main connected
+            # groups; isolated particles still receive no rear credit.
+            active = rear_witnesses & self._object_visible & self.rear_membership()
             rear_after = rear_arc_gap(self.positions, self.object_pos, self.goal_pos,
-                                     c.object_radius + c.agent_radius)
+                                     c.object_radius + c.agent_radius, c.rear_potential_version,
+                                     c.sense_radius + c.object_radius + c.agent_radius)
             rear_reward = (c.rear_approach_weight * (rear_before - rear_after)
                            * relay_strength * active)
+            informed_active = active & (relay_strength > 0)
+            offset = self.positions - self.object_pos[:, None]
+            direction = self.goal_pos - self.object_pos
+            cosine = (offset * direction[:, None]).sum(-1) / (
+                offset.norm(dim=-1) * direction.norm(dim=-1)[:, None]).clamp_min(1e-7)
+            rear_sector = informed_active & (cosine < -.4)
             # The cargo moved because of local contacts. Do not attribute its
             # direction to all 900 uninformed actions (bounded scale <=16).
             witnesses = rear_witnesses | self._object_visible
@@ -351,7 +383,13 @@ class SwarmEnv:
                     reward_exploration=exploration.mean(-1), reward_local_progress=local_progress.mean(-1),
                     reward_effort=-effort.mean(-1), reward_contact_credit=work_credit.mean(-1),
                     reward_rear_approach=rear_reward.mean(-1),
-                    reward_transport_local=transport_reward.mean(-1))
+                    reward_transport_local=transport_reward.mean(-1),
+                    rear_active_count=informed_active.sum(-1),
+                    rear_reward_sum=rear_reward.sum(-1), rear_reward_abs_sum=rear_reward.abs().sum(-1),
+                    rear_positive_count=(rear_reward > 1e-7).sum(-1),
+                    rear_negative_count=(rear_reward < -1e-7).sum(-1),
+                    rear_sector_count=rear_sector.sum(-1),
+                    rear_contact_count=(rear_sector & self._contact).sum(-1))
         return self.observe(), reward, success, (self.steps >= c.episode_steps) & ~success, info
 
     @torch.no_grad()
@@ -389,6 +427,8 @@ class SwarmEnv:
         # Missing is exactly "work", never permission to switch to marginal.
         saved_config.setdefault("contact_credit_mode", "work")
         saved_config.setdefault("rear_approach_weight", 0.0)
+        saved_config.setdefault("rear_potential_version", 1)
+        saved_config.setdefault("rear_eligibility", "main")
         if saved_config != asdict(self.cfg):
             raise ValueError("Environment configuration differs from checkpoint")
         for name in self._state_names:

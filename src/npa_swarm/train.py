@@ -17,6 +17,14 @@ from .relay import relay_diagnostics
 SCHEMA_VERSION = 3
 
 
+def checkpoint_train_config(data):
+    config = dict(data["train_config"])
+    # Early schema-3 files predate this option and used .97, irrespective of
+    # the defaults selected for new experiments.
+    config.setdefault("relay_memory_decay", .97)
+    return TrainConfig(**config)
+
+
 def file_sha256(path):
     digest = hashlib.sha256()
     with open(path, "rb") as stream:
@@ -92,6 +100,7 @@ class Rollout:
     done: torch.Tensor
     initial_hidden: torch.Tensor
     metrics: dict
+    rear_active: torch.Tensor | None = None
 
 
 class Trainer:
@@ -116,10 +125,13 @@ class Trainer:
             "connected", "largest_fraction", "bridge", "object_distance", "object_speed", "contact_count",
             "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
             "found_object", "found_goal", "repair_gap_max", "endpoint_gap",
-            "reward_repair", "reward_connectivity", "reward_rear_approach", "reward_transport_local")}
+            "reward_repair", "reward_connectivity", "reward_rear_approach", "reward_transport_local",
+            "rear_active_count", "rear_reward_sum", "rear_reward_abs_sum", "rear_positive_count",
+            "rear_negative_count", "rear_sector_count", "rear_contact_count")}
         initial_hidden = self.hidden.detach().clone()
         contact_peaks, contact_active = [], []
         relay_statistics = {}
+        active_samples = []
         for t in range(c.rollout_steps):
             obs, graph = self.env.observe(), self.env.graph
             action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
@@ -127,6 +139,9 @@ class Trainer:
                 relay_statistics.setdefault(key, []).append(statistic.float().mean())
             next_obs, reward, terminated, truncated, info = self.env.step(
                 action, goal_relay=memory[..., -3])
+            active_samples.append((obs[..., 9] > .5) & (next_obs[..., 9] > .5)
+                                  & self.env.rear_membership() & (memory[..., -3] > 0)
+                                  & bool(self.env.cfg.rear_approach_weight))
             observations.append(obs.detach())
             graphs.append(graph)
             latent.append(z)
@@ -171,13 +186,41 @@ class Trainer:
                 metrics[aliases.get(key, key + "_mean")] = float(torch.stack(collected).mean())
         if physical["reward_progress"]:
             metrics["rollout_distance_delta"] = float(torch.stack(physical["reward_progress"]).sum() / 3)
+        active_total = torch.stack(physical["rear_active_count"]).sum()
+        metrics["rear_active_agent_steps"] = int(active_total * self.env.cfg.num_envs)
+        metrics["rear_reward_active_mean"] = float(torch.stack(physical["rear_reward_sum"]).sum() / active_total.clamp_min(1))
+        metrics["rear_reward_active_abs_mean"] = float(torch.stack(physical["rear_reward_abs_sum"]).sum() / active_total.clamp_min(1))
+        active_t = torch.stack(active_samples)
+        for name, mask in (("rear_active", active_t), ("other", ~active_t)):
+            if bool(mask.any()):
+                advantage = advantages[mask]
+                target, prediction = returns[mask], values_t[mask]
+                metrics.update({name + "_advantage_mean": float(advantage.mean()),
+                                name + "_advantage_std": float(advantage.std(unbiased=False)),
+                                name + "_critic_mse": float((target-prediction).square().mean()),
+                                name + "_return_mean": float(target.mean()),
+                                name + "_value_mean": float(prediction.mean())})
         return Rollout(observations, graphs, torch.stack(latent), torch.stack(logp), values_t,
-                       advantages, returns, term_t | trunc_t, initial_hidden, metrics)
+                       advantages, returns, term_t | trunc_t, initial_hidden, metrics, active_t)
 
     def optimize(self, rollout: Rollout):
         c, total_steps = self.cfg, len(rollout.observations)
         advantages = rollout.advantages
         advantages = (advantages - advantages.mean()) / (advantages.std(unbiased=False) + 1e-8)
+        # Mix uniform PPO with a conditional active-sample objective. Eligibility
+        # is training-only; no role or privileged input is added to the actor.
+        mask = rollout.rear_active
+        # A singleton has zero conditional variance and cannot define a useful
+        # local policy objective; do not allocate half the critic batch to it.
+        active_count = int(mask.sum()) if mask is not None else 0
+        fraction = c.local_batch_fraction if active_count >= 2 else 0.
+        local_adv = torch.zeros_like(advantages)
+        weights = torch.ones_like(advantages)
+        if fraction:
+            selected = rollout.advantages[mask]
+            local_adv[mask] = (selected-selected.mean())/(selected.std(unbiased=False)+1e-8)
+            local_weights = mask.float() * (mask.numel()/mask.sum())
+            weights = (1-fraction) + fraction*local_weights
         stats = {key: torch.zeros((), device=self.device) for key in
                  ("policy_loss", "value_loss", "entropy", "approx_kl", "clip_fraction")}
         for _ in range(c.ppo_epochs):
@@ -192,7 +235,12 @@ class Trainer:
                 raw = ratio * advantages[t]
                 clipped = ratio.clamp(1 - c.clip_ratio, 1 + c.clip_ratio) * advantages[t]
                 policy_loss = -torch.minimum(raw, clipped).mean()
-                value_loss = .5 * (value - rollout.returns[t]).square().mean()
+                if fraction:
+                    local_raw = ratio * local_adv[t]
+                    local_clip = ratio.clamp(1-c.clip_ratio, 1+c.clip_ratio) * local_adv[t]
+                    local_loss = -(torch.minimum(local_raw, local_clip)*local_weights[t]).mean()
+                    policy_loss = (1-fraction)*policy_loss + fraction*local_loss
+                value_loss = .5 * ((value - rollout.returns[t]).square()*weights[t]).mean()
                 entropy_mean = entropy.mean()
                 loss = (policy_loss + c.value_coef * value_loss - c.entropy_coef * entropy_mean) / total_steps
                 chunk_loss = loss if chunk_loss is None else chunk_loss + loss
@@ -218,7 +266,8 @@ class Trainer:
                 _, _, _, hidden = self.policy(obs, hidden, graph)
                 hidden = hidden * (~done).view(-1, 1, 1)
             self.hidden = hidden
-        return {key: float(value) for key, value in stats.items()}
+        return {**{key: float(value) for key, value in stats.items()},
+                "local_batch_fraction_effective": fraction, "local_batch_active_samples": active_count}
 
     def update(self):
         if self.device.type == "cuda":
@@ -262,8 +311,10 @@ class Trainer:
         try:
             env_cfg = dict(data["env_config"])
             env_cfg.setdefault("rear_approach_weight", 0.0)
+            env_cfg.setdefault("rear_potential_version", 1)
+            env_cfg.setdefault("rear_eligibility", "main")
             env = SwarmEnv(EnvConfig(**env_cfg), device=device)
-            trainer = cls(env, TrainConfig(**data["train_config"]))
+            trainer = cls(env, checkpoint_train_config(data))
             trainer.policy.load_state_dict(data["model"])
             trainer.optimizer.load_state_dict(data["optimizer"])
             env.load_state_dict(data["env_state"])
@@ -304,8 +355,10 @@ def load_policy_checkpoint(path, device="cpu"):
     data = _read_checkpoint(path, device)
     env_cfg = dict(data["env_config"])
     env_cfg.setdefault("rear_approach_weight", 0.0)
+    env_cfg.setdefault("rear_potential_version", 1)
+    env_cfg.setdefault("rear_eligibility", "main")
     cfg = EnvConfig(**env_cfg)
-    tc = TrainConfig(**data["train_config"])
+    tc = checkpoint_train_config(data)
     policy = LocalPolicy(data["obs_dim"], tc.hidden_dim, tc.relay_memory_decay).to(device)
     policy.load_state_dict(data["model"])
     policy.eval()

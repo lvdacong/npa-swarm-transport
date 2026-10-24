@@ -1,0 +1,8801 @@
+{
+  "scope": "Frozen update1, continuing saved training worlds for256 steps; no optimizer or checkpoint mutation",
+  "windows": [
+    {
+      "mean_reward": -0.026311134919524193,
+      "rollout_episodes": 0,
+      "rollout_successes": 0,
+      "contact_count_max": 7,
+      "contact_active_fraction": 0.38671875,
+      "relay_decision_step": 191.5,
+      "object_relay_reach_fraction": 0.9157769680023193,
+      "goal_relay_reach_fraction": 0.9748654365539551,
+      "cargo_near_agents": 23.51171875,
+      "goal_relay_near_cargo_agents": 22.67578125,
+      "cargo_contact_agents": 0.7265625,
+      "goal_relay_contact_agents": 0.66015625,
+      "goal_relay_near_cargo_fraction": 0.9070498943328857,
+      "goal_relay_contact_fraction": 0.33203125,
+      "connected_fraction": 0.0,
+      "largest_fraction": 0.34360677003860474,
+      "bridge_fraction": 0.0078125,
+      "object_distance_mean": 14.621757507324219,
+      "object_speed_mean": 0.02322460524737835,
+      "contact_count_mean": 0.7265625,
+      "cargo_force_norm_mean": 0.30049991607666016,
+      "cargo_force_toward_goal_mean": -0.13891471922397614,
+      "reward_progress_mean": -0.0026447363197803497,
+      "reward_contact_credit_mean": -9.67883920566237e-07,
+      "found_object_mean": 1.0,
+      "found_goal_mean": 1.0,
+      "repair_gap_max_mean": 10.954790115356445,
+      "endpoint_gap_mean": 7.038339614868164,
+      "reward_repair_mean": -0.0009921425953507423,
+      "reward_connectivity_mean": -0.02067868411540985,
+      "reward_rear_approach_mean": -1.45012563734781e-06,
+      "reward_transport_local_mean": -0.0023702906910330057,
+      "rear_active_count_mean": 0.22265625,
+      "rear_reward_sum_mean": -0.0013051130808889866,
+      "rear_reward_abs_sum_mean": 0.002674417570233345,
+      "rear_positive_count_mean": 0.06640625,
+      "rear_negative_count_mean": 0.15625,
+      "rear_sector_count_mean": 0.0,
+      "rear_contact_count_mean": 0.0,
+      "rollout_distance_delta": -0.11284208297729492,
+      "rear_active_agent_steps": 57,
+      "rear_reward_active_mean": -0.005861560348421335,
+      "rear_reward_active_abs_mean": 0.012011419050395489
+    },
+    {
+      "mean_reward": -0.02442852593958378,
+      "rollout_episodes": 0,
+      "rollout_successes": 0,
+      "contact_count_max": 5,
+      "contact_active_fraction": 0.5546875,
+      "relay_decision_step": 319.5,
+      "object_relay_reach_fraction": 0.990807294845581,
+      "goal_relay_reach_fraction": 0.9981423616409302,
+      "cargo_near_agents": 37.16015625,
+      "goal_relay_near_cargo_agents": 36.890625,
+      "cargo_contact_agents": 1.15234375,
+      "goal_relay_contact_agents": 1.14453125,
+      "goal_relay_near_cargo_fraction": 0.9796249270439148,
+      "goal_relay_contact_fraction": 0.546875,
+      "connected_fraction": 0.0,
+      "largest_fraction": 0.2354557365179062,
+      "bridge_fraction": 0.0,
+      "object_distance_mean": 14.71438217163086,
+      "object_speed_mean": 0.03702409565448761,
+      "contact_count_mean": 1.16015625,
+      "cargo_force_norm_mean": 0.4600766897201538,
+      "cargo_force_toward_goal_mean": -0.002829567529261112,
+      "reward_progress_mean": 0.0003423839807510376,
+      "reward_contact_credit_mean": 1.0167015318529593e-07,
+      "found_object_mean": 1.0,
+      "found_goal_mean": 1.0,
+      "repair_gap_max_mean": 12.579841613769531,
+      "endpoint_gap_mean": 7.332535266876221,
+      "reward_repair_mean": -0.00012008356861770153,
+      "reward_connectivity_mean": -0.02379719540476799,
+      "reward_rear_approach_mean": -1.1653253750409931e-05,
+      "reward_transport_local_mean": 0.00019724728190340102,
+      "rear_active_count_mean": 10.1953125,
+      "rear_reward_sum_mean": -0.010487928986549377,
+      "rear_reward_abs_sum_mean": 0.14172612130641937,
+      "rear_positive_count_mean": 4.9921875,
+      "rear_negative_count_mean": 5.203125,
+      "rear_sector_count_mean": 0.171875,
+      "rear_contact_count_mean": 0.02734375,
+      "rollout_distance_delta": 0.014608383178710938,
+      "rear_active_agent_steps": 2610,
+      "rear_reward_active_mean": -0.0010287010809406638,
+      "rear_reward_active_abs_mean": 0.01390110608190298
+    }
+  ],
+  "steps": [
+    {
+      "step": [
+        128,
+        128
+      ],
+      "visible": [
+        34,
+        7
+      ],
+      "informed": [
+        34,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4033333361148834,
+        0.5633333325386047
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        129,
+        129
+      ],
+      "visible": [
+        32,
+        7
+      ],
+      "informed": [
+        32,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3955555558204651,
+        0.6111111044883728
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        130,
+        130
+      ],
+      "visible": [
+        34,
+        6
+      ],
+      "informed": [
+        34,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.6555555462837219,
+        0.5755555629730225
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        131,
+        131
+      ],
+      "visible": [
+        33,
+        6
+      ],
+      "informed": [
+        33,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4788888990879059,
+        0.5944444537162781
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        132,
+        132
+      ],
+      "visible": [
+        33,
+        5
+      ],
+      "informed": [
+        33,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4933333396911621,
+        0.5833333730697632
+      ],
+      "active": [
+        28,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.19318029284477234,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        133,
+        133
+      ],
+      "visible": [
+        34,
+        4
+      ],
+      "informed": [
+        34,
+        0
+      ],
+      "informed_main": [
+        30,
+        0
+      ],
+      "visible_main": [
+        30,
+        0
+      ],
+      "main_fraction": [
+        0.7611111402511597,
+        0.5722222328186035
+      ],
+      "active": [
+        29,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.14092865586280823,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        134,
+        134
+      ],
+      "visible": [
+        33,
+        5
+      ],
+      "informed": [
+        33,
+        0
+      ],
+      "informed_main": [
+        29,
+        0
+      ],
+      "visible_main": [
+        29,
+        0
+      ],
+      "main_fraction": [
+        0.694444477558136,
+        0.5600000023841858
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        135,
+        135
+      ],
+      "visible": [
+        31,
+        5
+      ],
+      "informed": [
+        31,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4422222375869751,
+        0.6022222638130188
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        136,
+        136
+      ],
+      "visible": [
+        32,
+        6
+      ],
+      "informed": [
+        32,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.45222222805023193,
+        0.6255555748939514
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        137,
+        137
+      ],
+      "visible": [
+        30,
+        6
+      ],
+      "informed": [
+        30,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.48000001907348633,
+        0.4844444692134857
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        138,
+        138
+      ],
+      "visible": [
+        32,
+        6
+      ],
+      "informed": [
+        32,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.6244444847106934,
+        0.4844444692134857
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        139,
+        139
+      ],
+      "visible": [
+        31,
+        6
+      ],
+      "informed": [
+        31,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.472222238779068,
+        0.42888888716697693
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        140,
+        140
+      ],
+      "visible": [
+        32,
+        7
+      ],
+      "informed": [
+        32,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4511111080646515,
+        0.4244444668292999
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        141,
+        141
+      ],
+      "visible": [
+        32,
+        8
+      ],
+      "informed": [
+        32,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.448888897895813,
+        0.5577777624130249
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        142,
+        142
+      ],
+      "visible": [
+        33,
+        8
+      ],
+      "informed": [
+        33,
+        0
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4000000059604645,
+        0.5566666722297668
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        143,
+        143
+      ],
+      "visible": [
+        33,
+        9
+      ],
+      "informed": [
+        33,
+        1
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3933333456516266,
+        0.5533333420753479
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        144,
+        144
+      ],
+      "visible": [
+        33,
+        10
+      ],
+      "informed": [
+        33,
+        2
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3822222352027893,
+        0.5577777624130249
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        145,
+        145
+      ],
+      "visible": [
+        34,
+        10
+      ],
+      "informed": [
+        34,
+        2
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.38111111521720886,
+        0.49888890981674194
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        146,
+        146
+      ],
+      "visible": [
+        33,
+        12
+      ],
+      "informed": [
+        33,
+        4
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.42000001668930054,
+        0.46666666865348816
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        147,
+        147
+      ],
+      "visible": [
+        32,
+        12
+      ],
+      "informed": [
+        32,
+        5
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.42000001668930054,
+        0.4233333468437195
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        148,
+        148
+      ],
+      "visible": [
+        31,
+        12
+      ],
+      "informed": [
+        31,
+        6
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4244444668292999,
+        0.44111111760139465
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        149,
+        149
+      ],
+      "visible": [
+        29,
+        13
+      ],
+      "informed": [
+        29,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.41777777671813965,
+        0.4011111259460449
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        150,
+        150
+      ],
+      "visible": [
+        28,
+        14
+      ],
+      "informed": [
+        28,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4166666865348816,
+        0.4355555772781372
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        151,
+        151
+      ],
+      "visible": [
+        29,
+        14
+      ],
+      "informed": [
+        29,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.37222224473953247,
+        0.4300000071525574
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        152,
+        152
+      ],
+      "visible": [
+        28,
+        13
+      ],
+      "informed": [
+        28,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.38111111521720886,
+        0.4233333468437195
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        153,
+        153
+      ],
+      "visible": [
+        27,
+        16
+      ],
+      "informed": [
+        27,
+        12
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3777777850627899,
+        0.3333333432674408
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        154,
+        154
+      ],
+      "visible": [
+        27,
+        17
+      ],
+      "informed": [
+        27,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.324444442987442,
+        0.4555555582046509
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        155,
+        155
+      ],
+      "visible": [
+        28,
+        18
+      ],
+      "informed": [
+        28,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3422222435474396,
+        0.42000001668930054
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        156,
+        156
+      ],
+      "visible": [
+        28,
+        17
+      ],
+      "informed": [
+        28,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3455555737018585,
+        0.3933333456516266
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        157,
+        157
+      ],
+      "visible": [
+        28,
+        18
+      ],
+      "informed": [
+        28,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2911111116409302,
+        0.3544444441795349
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        158,
+        158
+      ],
+      "visible": [
+        28,
+        19
+      ],
+      "informed": [
+        28,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17444445192813873,
+        0.36444446444511414
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        159,
+        159
+      ],
+      "visible": [
+        28,
+        19
+      ],
+      "informed": [
+        28,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.22111111879348755,
+        0.30222222208976746
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        160,
+        160
+      ],
+      "visible": [
+        28,
+        18
+      ],
+      "informed": [
+        28,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.22111111879348755,
+        0.397777795791626
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        161,
+        161
+      ],
+      "visible": [
+        27,
+        18
+      ],
+      "informed": [
+        27,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.20444445312023163,
+        0.2888889014720917
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        162,
+        162
+      ],
+      "visible": [
+        28,
+        18
+      ],
+      "informed": [
+        28,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17888888716697693,
+        0.3588888943195343
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        163,
+        163
+      ],
+      "visible": [
+        28,
+        18
+      ],
+      "informed": [
+        28,
+        18
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17444445192813873,
+        0.3566666841506958
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        164,
+        164
+      ],
+      "visible": [
+        27,
+        18
+      ],
+      "informed": [
+        27,
+        18
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1688888967037201,
+        0.3611111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        165,
+        165
+      ],
+      "visible": [
+        27,
+        18
+      ],
+      "informed": [
+        27,
+        18
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.21444444358348846,
+        0.36888888478279114
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        166,
+        166
+      ],
+      "visible": [
+        29,
+        18
+      ],
+      "informed": [
+        29,
+        18
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2177777886390686,
+        0.3655555546283722
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        167,
+        167
+      ],
+      "visible": [
+        31,
+        18
+      ],
+      "informed": [
+        31,
+        18
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.37888890504837036,
+        0.3611111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        168,
+        168
+      ],
+      "visible": [
+        32,
+        18
+      ],
+      "informed": [
+        32,
+        18
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3700000047683716,
+        0.37222224473953247
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        169,
+        169
+      ],
+      "visible": [
+        32,
+        17
+      ],
+      "informed": [
+        32,
+        17
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.29555556178092957,
+        0.3766666650772095
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        170,
+        170
+      ],
+      "visible": [
+        31,
+        16
+      ],
+      "informed": [
+        31,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.46222221851348877,
+        0.3955555558204651
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        171,
+        171
+      ],
+      "visible": [
+        31,
+        16
+      ],
+      "informed": [
+        31,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3777777850627899,
+        0.3844444453716278
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        172,
+        172
+      ],
+      "visible": [
+        32,
+        15
+      ],
+      "informed": [
+        32,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.31111112236976624,
+        0.4122222363948822
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        173,
+        173
+      ],
+      "visible": [
+        32,
+        15
+      ],
+      "informed": [
+        32,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4233333468437195,
+        0.4122222363948822
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        174,
+        174
+      ],
+      "visible": [
+        30,
+        15
+      ],
+      "informed": [
+        30,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.33000001311302185,
+        0.4077777862548828
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        175,
+        175
+      ],
+      "visible": [
+        30,
+        14
+      ],
+      "informed": [
+        30,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.22333334386348724,
+        0.41111111640930176
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        176,
+        176
+      ],
+      "visible": [
+        29,
+        13
+      ],
+      "informed": [
+        29,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2644444406032562,
+        0.3866666853427887
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        177,
+        177
+      ],
+      "visible": [
+        29,
+        9
+      ],
+      "informed": [
+        29,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2666666805744171,
+        0.40222224593162537
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        178,
+        178
+      ],
+      "visible": [
+        30,
+        8
+      ],
+      "informed": [
+        30,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.26777777075767517,
+        0.4000000059604645
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        179,
+        179
+      ],
+      "visible": [
+        31,
+        9
+      ],
+      "informed": [
+        31,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.29666668176651,
+        0.3955555558204651
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        180,
+        180
+      ],
+      "visible": [
+        31,
+        9
+      ],
+      "informed": [
+        31,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.23555555939674377,
+        0.39222222566604614
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        181,
+        181
+      ],
+      "visible": [
+        31,
+        9
+      ],
+      "informed": [
+        31,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.31111112236976624,
+        0.3933333456516266
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        182,
+        182
+      ],
+      "visible": [
+        30,
+        9
+      ],
+      "informed": [
+        30,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2455555647611618,
+        0.397777795791626
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        183,
+        183
+      ],
+      "visible": [
+        29,
+        8
+      ],
+      "informed": [
+        29,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.397777795791626,
+        0.3777777850627899
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        184,
+        184
+      ],
+      "visible": [
+        29,
+        9
+      ],
+      "informed": [
+        29,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.37888890504837036,
+        0.38333335518836975
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        185,
+        185
+      ],
+      "visible": [
+        28,
+        9
+      ],
+      "informed": [
+        28,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4122222363948822,
+        0.38777777552604675
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        186,
+        186
+      ],
+      "visible": [
+        28,
+        9
+      ],
+      "informed": [
+        28,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4099999964237213,
+        0.38777777552604675
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        187,
+        187
+      ],
+      "visible": [
+        27,
+        9
+      ],
+      "informed": [
+        27,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2922222316265106,
+        0.3866666853427887
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        188,
+        188
+      ],
+      "visible": [
+        26,
+        9
+      ],
+      "informed": [
+        26,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4055555760860443,
+        0.37444445490837097
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        189,
+        189
+      ],
+      "visible": [
+        26,
+        9
+      ],
+      "informed": [
+        26,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.34333333373069763,
+        0.3755555748939514
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        190,
+        190
+      ],
+      "visible": [
+        26,
+        8
+      ],
+      "informed": [
+        26,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3177777826786041,
+        0.36000001430511475
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        191,
+        191
+      ],
+      "visible": [
+        25,
+        7
+      ],
+      "informed": [
+        25,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.45000001788139343,
+        0.37444445490837097
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        192,
+        192
+      ],
+      "visible": [
+        26,
+        7
+      ],
+      "informed": [
+        26,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3177777826786041,
+        0.3777777850627899
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        193,
+        193
+      ],
+      "visible": [
+        26,
+        7
+      ],
+      "informed": [
+        26,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3755555748939514,
+        0.3911111354827881
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        194,
+        194
+      ],
+      "visible": [
+        25,
+        7
+      ],
+      "informed": [
+        25,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1711111217737198,
+        0.3733333349227905
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        195,
+        195
+      ],
+      "visible": [
+        25,
+        9
+      ],
+      "informed": [
+        25,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.273333340883255,
+        0.3700000047683716
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        196,
+        196
+      ],
+      "visible": [
+        25,
+        10
+      ],
+      "informed": [
+        25,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2688888907432556,
+        0.4011111259460449
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        197,
+        197
+      ],
+      "visible": [
+        25,
+        10
+      ],
+      "informed": [
+        25,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2666666805744171,
+        0.397777795791626
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        198,
+        198
+      ],
+      "visible": [
+        25,
+        10
+      ],
+      "informed": [
+        25,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.27666667103767395,
+        0.4122222363948822
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        199,
+        199
+      ],
+      "visible": [
+        26,
+        10
+      ],
+      "informed": [
+        26,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.45777779817581177,
+        0.40888890624046326
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        200,
+        200
+      ],
+      "visible": [
+        23,
+        10
+      ],
+      "informed": [
+        23,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.15333333611488342,
+        0.4300000071525574
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        201,
+        201
+      ],
+      "visible": [
+        23,
+        10
+      ],
+      "informed": [
+        23,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2455555647611618,
+        0.5266667008399963
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        202,
+        202
+      ],
+      "visible": [
+        26,
+        10
+      ],
+      "informed": [
+        25,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2266666740179062,
+        0.42222222685813904
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        203,
+        203
+      ],
+      "visible": [
+        25,
+        9
+      ],
+      "informed": [
+        24,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2433333396911621,
+        0.4099999964237213
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        204,
+        204
+      ],
+      "visible": [
+        26,
+        9
+      ],
+      "informed": [
+        24,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2477777898311615,
+        0.43444445729255676
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        205,
+        205
+      ],
+      "visible": [
+        26,
+        10
+      ],
+      "informed": [
+        24,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.23000000417232513,
+        0.4077777862548828
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        206,
+        206
+      ],
+      "visible": [
+        27,
+        9
+      ],
+      "informed": [
+        25,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.33666667342185974,
+        0.3733333349227905
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        207,
+        207
+      ],
+      "visible": [
+        27,
+        9
+      ],
+      "informed": [
+        26,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.25,
+        0.4033333361148834
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        208,
+        208
+      ],
+      "visible": [
+        29,
+        9
+      ],
+      "informed": [
+        29,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2522222399711609,
+        0.4788888990879059
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        209,
+        209
+      ],
+      "visible": [
+        28,
+        9
+      ],
+      "informed": [
+        28,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.32555556297302246,
+        0.42777779698371887
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        210,
+        210
+      ],
+      "visible": [
+        30,
+        10
+      ],
+      "informed": [
+        30,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2622222304344177,
+        0.33000001311302185
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        211,
+        211
+      ],
+      "visible": [
+        33,
+        10
+      ],
+      "informed": [
+        33,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1899999976158142,
+        0.2911111116409302
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        212,
+        212
+      ],
+      "visible": [
+        34,
+        9
+      ],
+      "informed": [
+        34,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1944444477558136,
+        0.39888888597488403
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        213,
+        213
+      ],
+      "visible": [
+        34,
+        9
+      ],
+      "informed": [
+        34,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1599999964237213,
+        0.42000001668930054
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        214,
+        214
+      ],
+      "visible": [
+        33,
+        9
+      ],
+      "informed": [
+        33,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17777778208255768,
+        0.2711111307144165
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        215,
+        215
+      ],
+      "visible": [
+        33,
+        9
+      ],
+      "informed": [
+        33,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.24111111462116241,
+        0.2711111307144165
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        216,
+        216
+      ],
+      "visible": [
+        35,
+        11
+      ],
+      "informed": [
+        35,
+        11
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.19111111760139465,
+        0.2711111307144165
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        217,
+        217
+      ],
+      "visible": [
+        40,
+        11
+      ],
+      "informed": [
+        40,
+        11
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.22111111879348755,
+        0.2711111307144165
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        218,
+        218
+      ],
+      "visible": [
+        41,
+        10
+      ],
+      "informed": [
+        41,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.21888889372348785,
+        0.29777777194976807
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        219,
+        219
+      ],
+      "visible": [
+        43,
+        11
+      ],
+      "informed": [
+        43,
+        11
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.21666666865348816,
+        0.2755555510520935
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        220,
+        220
+      ],
+      "visible": [
+        46,
+        9
+      ],
+      "informed": [
+        46,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.24000000953674316,
+        0.27666667103767395
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        221,
+        221
+      ],
+      "visible": [
+        46,
+        9
+      ],
+      "informed": [
+        46,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.18444444239139557,
+        0.24888889491558075
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        222,
+        222
+      ],
+      "visible": [
+        44,
+        9
+      ],
+      "informed": [
+        44,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.22888889908790588,
+        0.2844444513320923
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        223,
+        223
+      ],
+      "visible": [
+        46,
+        9
+      ],
+      "informed": [
+        46,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.22888889908790588,
+        0.25
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        224,
+        224
+      ],
+      "visible": [
+        48,
+        9
+      ],
+      "informed": [
+        48,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.22888889908790588,
+        0.27222222089767456
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        225,
+        225
+      ],
+      "visible": [
+        47,
+        8
+      ],
+      "informed": [
+        47,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.20000000298023224,
+        0.2711111307144165
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        226,
+        226
+      ],
+      "visible": [
+        49,
+        8
+      ],
+      "informed": [
+        49,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.20333333313465118,
+        0.2711111307144165
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        227,
+        227
+      ],
+      "visible": [
+        48,
+        8
+      ],
+      "informed": [
+        48,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.20222222805023193,
+        0.27666667103767395
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        228,
+        228
+      ],
+      "visible": [
+        50,
+        7
+      ],
+      "informed": [
+        50,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.20222222805023193,
+        0.27444446086883545
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        229,
+        229
+      ],
+      "visible": [
+        51,
+        7
+      ],
+      "informed": [
+        51,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17555555701255798,
+        0.2777777910232544
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        230,
+        230
+      ],
+      "visible": [
+        51,
+        7
+      ],
+      "informed": [
+        51,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.21000000834465027,
+        0.29777777194976807
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        231,
+        231
+      ],
+      "visible": [
+        52,
+        7
+      ],
+      "informed": [
+        52,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2566666603088379,
+        0.25777778029441833
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        232,
+        232
+      ],
+      "visible": [
+        52,
+        7
+      ],
+      "informed": [
+        52,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.41555556654930115,
+        0.2844444513320923
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        233,
+        233
+      ],
+      "visible": [
+        53,
+        7
+      ],
+      "informed": [
+        53,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4188888967037201,
+        0.29666668176651
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        234,
+        234
+      ],
+      "visible": [
+        52,
+        8
+      ],
+      "informed": [
+        52,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.18222223222255707,
+        0.2544444501399994
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        235,
+        235
+      ],
+      "visible": [
+        52,
+        7
+      ],
+      "informed": [
+        52,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1922222226858139,
+        0.30666667222976685
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        236,
+        236
+      ],
+      "visible": [
+        51,
+        7
+      ],
+      "informed": [
+        51,
+        7
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.41333335638046265,
+        0.29333335161209106
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        237,
+        237
+      ],
+      "visible": [
+        51,
+        8
+      ],
+      "informed": [
+        51,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2988888919353485,
+        0.3155555725097656
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        238,
+        238
+      ],
+      "visible": [
+        51,
+        8
+      ],
+      "informed": [
+        51,
+        8
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2611111104488373,
+        0.32777777314186096
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        239,
+        239
+      ],
+      "visible": [
+        52,
+        9
+      ],
+      "informed": [
+        52,
+        9
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.30000001192092896,
+        0.32333335280418396
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        240,
+        240
+      ],
+      "visible": [
+        53,
+        11
+      ],
+      "informed": [
+        53,
+        11
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2566666603088379,
+        0.3222222328186035
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        241,
+        241
+      ],
+      "visible": [
+        53,
+        11
+      ],
+      "informed": [
+        53,
+        11
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2666666805744171,
+        0.30888888239860535
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        242,
+        242
+      ],
+      "visible": [
+        53,
+        13
+      ],
+      "informed": [
+        53,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.35333335399627686,
+        0.30222222208976746
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        243,
+        243
+      ],
+      "visible": [
+        54,
+        13
+      ],
+      "informed": [
+        54,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.33888888359069824,
+        0.3077777922153473
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        244,
+        244
+      ],
+      "visible": [
+        54,
+        14
+      ],
+      "informed": [
+        54,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.38777777552604675,
+        0.2800000011920929
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        245,
+        245
+      ],
+      "visible": [
+        56,
+        15
+      ],
+      "informed": [
+        56,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.38333335518836975,
+        0.2800000011920929
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        246,
+        246
+      ],
+      "visible": [
+        56,
+        15
+      ],
+      "informed": [
+        56,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2688888907432556,
+        0.27888888120651245
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        247,
+        247
+      ],
+      "visible": [
+        56,
+        16
+      ],
+      "informed": [
+        56,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.4188888967037201,
+        0.2922222316265106
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        248,
+        248
+      ],
+      "visible": [
+        56,
+        16
+      ],
+      "informed": [
+        56,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.24000000953674316,
+        0.3100000023841858
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        249,
+        249
+      ],
+      "visible": [
+        55,
+        16
+      ],
+      "informed": [
+        55,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1577777862548828,
+        0.30888888239860535
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        250,
+        250
+      ],
+      "visible": [
+        55,
+        17
+      ],
+      "informed": [
+        55,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.13555556535720825,
+        0.31111112236976624
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        251,
+        251
+      ],
+      "visible": [
+        55,
+        17
+      ],
+      "informed": [
+        55,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.14888888597488403,
+        0.3311111330986023
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        252,
+        252
+      ],
+      "visible": [
+        55,
+        17
+      ],
+      "informed": [
+        55,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.14888888597488403,
+        0.30444446206092834
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        253,
+        253
+      ],
+      "visible": [
+        55,
+        17
+      ],
+      "informed": [
+        55,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.25111111998558044,
+        0.22888889908790588
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        254,
+        254
+      ],
+      "visible": [
+        55,
+        17
+      ],
+      "informed": [
+        55,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.24888889491558075,
+        0.23666667938232422
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        255,
+        255
+      ],
+      "visible": [
+        55,
+        18
+      ],
+      "informed": [
+        55,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2622222304344177,
+        0.24111111462116241
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        256,
+        256
+      ],
+      "visible": [
+        54,
+        18
+      ],
+      "informed": [
+        54,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.26333335041999817,
+        0.24111111462116241
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        257,
+        257
+      ],
+      "visible": [
+        53,
+        18
+      ],
+      "informed": [
+        53,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.27222222089767456,
+        0.21111111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        258,
+        258
+      ],
+      "visible": [
+        52,
+        18
+      ],
+      "informed": [
+        52,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2544444501399994,
+        0.21111111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        259,
+        259
+      ],
+      "visible": [
+        52,
+        17
+      ],
+      "informed": [
+        52,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.25333333015441895,
+        0.28777778148651123
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        260,
+        260
+      ],
+      "visible": [
+        53,
+        17
+      ],
+      "informed": [
+        53,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.28555557131767273,
+        0.2755555510520935
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        261,
+        261
+      ],
+      "visible": [
+        53,
+        17
+      ],
+      "informed": [
+        53,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.28555557131767273,
+        0.2544444501399994
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        262,
+        262
+      ],
+      "visible": [
+        52,
+        18
+      ],
+      "informed": [
+        52,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2755555510520935,
+        0.2522222399711609
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        263,
+        263
+      ],
+      "visible": [
+        53,
+        18
+      ],
+      "informed": [
+        53,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2988888919353485,
+        0.2622222304344177
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        264,
+        264
+      ],
+      "visible": [
+        53,
+        18
+      ],
+      "informed": [
+        53,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.29777777194976807,
+        0.2622222304344177
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        265,
+        265
+      ],
+      "visible": [
+        51,
+        18
+      ],
+      "informed": [
+        51,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3166666626930237,
+        0.25
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        266,
+        266
+      ],
+      "visible": [
+        50,
+        18
+      ],
+      "informed": [
+        50,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2944444417953491,
+        0.2477777898311615
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        267,
+        267
+      ],
+      "visible": [
+        46,
+        17
+      ],
+      "informed": [
+        46,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.32333335280418396,
+        0.2777777910232544
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        268,
+        268
+      ],
+      "visible": [
+        47,
+        17
+      ],
+      "informed": [
+        47,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3100000023841858,
+        0.2800000011920929
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        269,
+        269
+      ],
+      "visible": [
+        43,
+        17
+      ],
+      "informed": [
+        43,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.324444442987442,
+        0.1966666728258133
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        270,
+        270
+      ],
+      "visible": [
+        43,
+        16
+      ],
+      "informed": [
+        43,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3144444525241852,
+        0.2900000214576721
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        271,
+        271
+      ],
+      "visible": [
+        43,
+        16
+      ],
+      "informed": [
+        43,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3155555725097656,
+        0.20555555820465088
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        272,
+        272
+      ],
+      "visible": [
+        41,
+        15
+      ],
+      "informed": [
+        41,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.31333333253860474,
+        0.21111111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        273,
+        273
+      ],
+      "visible": [
+        37,
+        15
+      ],
+      "informed": [
+        37,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.30000001192092896,
+        0.21111111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        274,
+        274
+      ],
+      "visible": [
+        39,
+        13
+      ],
+      "informed": [
+        39,
+        11
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.38111111521720886,
+        0.21111111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        275,
+        275
+      ],
+      "visible": [
+        39,
+        12
+      ],
+      "informed": [
+        39,
+        10
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.28777778148651123,
+        0.21111111342906952
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        276,
+        276
+      ],
+      "visible": [
+        36,
+        13
+      ],
+      "informed": [
+        36,
+        11
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.32555556297302246,
+        0.3355555534362793
+      ],
+      "active": [
+        26,
+        0
+      ],
+      "rear_reward_sum": [
+        0.1108255684375763,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        277,
+        277
+      ],
+      "visible": [
+        34,
+        12
+      ],
+      "informed": [
+        34,
+        10
+      ],
+      "informed_main": [
+        26,
+        0
+      ],
+      "visible_main": [
+        26,
+        0
+      ],
+      "main_fraction": [
+        0.4911111295223236,
+        0.3777777850627899
+      ],
+      "active": [
+        26,
+        0
+      ],
+      "rear_reward_sum": [
+        0.12063837051391602,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        278,
+        278
+      ],
+      "visible": [
+        33,
+        10
+      ],
+      "informed": [
+        33,
+        8
+      ],
+      "informed_main": [
+        26,
+        0
+      ],
+      "visible_main": [
+        26,
+        0
+      ],
+      "main_fraction": [
+        0.3077777922153473,
+        0.3766666650772095
+      ],
+      "active": [
+        24,
+        0
+      ],
+      "rear_reward_sum": [
+        0.07027474045753479,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        279,
+        279
+      ],
+      "visible": [
+        32,
+        8
+      ],
+      "informed": [
+        32,
+        6
+      ],
+      "informed_main": [
+        24,
+        0
+      ],
+      "visible_main": [
+        24,
+        0
+      ],
+      "main_fraction": [
+        0.3633333444595337,
+        0.24444444477558136
+      ],
+      "active": [
+        23,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0359516441822052,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        280,
+        280
+      ],
+      "visible": [
+        31,
+        8
+      ],
+      "informed": [
+        31,
+        6
+      ],
+      "informed_main": [
+        23,
+        0
+      ],
+      "visible_main": [
+        23,
+        0
+      ],
+      "main_fraction": [
+        0.36666667461395264,
+        0.2455555647611618
+      ],
+      "active": [
+        23,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.06950993835926056,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        281,
+        281
+      ],
+      "visible": [
+        32,
+        8
+      ],
+      "informed": [
+        32,
+        6
+      ],
+      "informed_main": [
+        24,
+        0
+      ],
+      "visible_main": [
+        24,
+        0
+      ],
+      "main_fraction": [
+        0.31333333253860474,
+        0.4122222363948822
+      ],
+      "active": [
+        24,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.19795158505439758,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        282,
+        282
+      ],
+      "visible": [
+        32,
+        9
+      ],
+      "informed": [
+        32,
+        7
+      ],
+      "informed_main": [
+        24,
+        0
+      ],
+      "visible_main": [
+        24,
+        0
+      ],
+      "main_fraction": [
+        0.48777779936790466,
+        0.41333335638046265
+      ],
+      "active": [
+        24,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.3390253186225891,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        283,
+        283
+      ],
+      "visible": [
+        32,
+        8
+      ],
+      "informed": [
+        32,
+        6
+      ],
+      "informed_main": [
+        24,
+        0
+      ],
+      "visible_main": [
+        24,
+        0
+      ],
+      "main_fraction": [
+        0.3777777850627899,
+        0.3733333349227905
+      ],
+      "active": [
+        24,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.19932685792446136,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        284,
+        284
+      ],
+      "visible": [
+        32,
+        8
+      ],
+      "informed": [
+        32,
+        6
+      ],
+      "informed_main": [
+        25,
+        0
+      ],
+      "visible_main": [
+        25,
+        0
+      ],
+      "main_fraction": [
+        0.3822222352027893,
+        0.32555556297302246
+      ],
+      "active": [
+        25,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.17995542287826538,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        285,
+        285
+      ],
+      "visible": [
+        34,
+        11
+      ],
+      "informed": [
+        34,
+        9
+      ],
+      "informed_main": [
+        27,
+        0
+      ],
+      "visible_main": [
+        27,
+        0
+      ],
+      "main_fraction": [
+        0.35111111402511597,
+        0.17666667699813843
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        286,
+        286
+      ],
+      "visible": [
+        36,
+        14
+      ],
+      "informed": [
+        36,
+        12
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2222222238779068,
+        0.17666667699813843
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        287,
+        287
+      ],
+      "visible": [
+        37,
+        15
+      ],
+      "informed": [
+        37,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3466666638851166,
+        0.25333333015441895
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        288,
+        288
+      ],
+      "visible": [
+        38,
+        15
+      ],
+      "informed": [
+        38,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.35111111402511597,
+        0.18333333730697632
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        289,
+        289
+      ],
+      "visible": [
+        39,
+        15
+      ],
+      "informed": [
+        39,
+        13
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3566666841506958,
+        0.32555556297302246
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        290,
+        290
+      ],
+      "visible": [
+        40,
+        15
+      ],
+      "informed": [
+        40,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.3177777826786041,
+        0.23777778446674347
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        291,
+        291
+      ],
+      "visible": [
+        41,
+        15
+      ],
+      "informed": [
+        41,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.19111111760139465,
+        0.1577777862548828
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        292,
+        292
+      ],
+      "visible": [
+        41,
+        14
+      ],
+      "informed": [
+        41,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1733333319425583,
+        0.1366666704416275
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        293,
+        293
+      ],
+      "visible": [
+        41,
+        14
+      ],
+      "informed": [
+        41,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1733333319425583,
+        0.162222221493721
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        294,
+        294
+      ],
+      "visible": [
+        40,
+        15
+      ],
+      "informed": [
+        40,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17666667699813843,
+        0.12111111730337143
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        295,
+        295
+      ],
+      "visible": [
+        40,
+        14
+      ],
+      "informed": [
+        40,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17777778208255768,
+        0.14777778089046478
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        296,
+        296
+      ],
+      "visible": [
+        39,
+        14
+      ],
+      "informed": [
+        39,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.15888889133930206,
+        0.10555555671453476
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        297,
+        297
+      ],
+      "visible": [
+        40,
+        14
+      ],
+      "informed": [
+        40,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.15888889133930206,
+        0.08888889104127884
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        298,
+        298
+      ],
+      "visible": [
+        40,
+        14
+      ],
+      "informed": [
+        40,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.12111111730337143,
+        0.15666666626930237
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        299,
+        299
+      ],
+      "visible": [
+        42,
+        15
+      ],
+      "informed": [
+        42,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.12111111730337143,
+        0.18333333730697632
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        300,
+        300
+      ],
+      "visible": [
+        44,
+        16
+      ],
+      "informed": [
+        44,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1599999964237213,
+        0.12777778506278992
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        301,
+        301
+      ],
+      "visible": [
+        44,
+        14
+      ],
+      "informed": [
+        44,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.16111111640930176,
+        0.10111111402511597
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        302,
+        302
+      ],
+      "visible": [
+        45,
+        14
+      ],
+      "informed": [
+        45,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.16777777671813965,
+        0.1344444453716278
+      ],
+      "active": [
+        42,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.34915387630462646,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        303,
+        303
+      ],
+      "visible": [
+        48,
+        15
+      ],
+      "informed": [
+        48,
+        15
+      ],
+      "informed_main": [
+        44,
+        0
+      ],
+      "visible_main": [
+        44,
+        0
+      ],
+      "main_fraction": [
+        0.1688888967037201,
+        0.1344444453716278
+      ],
+      "active": [
+        43,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.3573589026927948,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        304,
+        304
+      ],
+      "visible": [
+        48,
+        15
+      ],
+      "informed": [
+        48,
+        15
+      ],
+      "informed_main": [
+        45,
+        0
+      ],
+      "visible_main": [
+        45,
+        0
+      ],
+      "main_fraction": [
+        0.1688888967037201,
+        0.29777777194976807
+      ],
+      "active": [
+        30,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.1857072412967682,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        305,
+        305
+      ],
+      "visible": [
+        52,
+        14
+      ],
+      "informed": [
+        52,
+        14
+      ],
+      "informed_main": [
+        31,
+        0
+      ],
+      "visible_main": [
+        31,
+        0
+      ],
+      "main_fraction": [
+        0.16777777671813965,
+        0.27888888120651245
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        306,
+        306
+      ],
+      "visible": [
+        54,
+        16
+      ],
+      "informed": [
+        54,
+        16
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1711111217737198,
+        0.17777778208255768
+      ],
+      "active": [
+        50,
+        0
+      ],
+      "rear_reward_sum": [
+        0.005267180502414703,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        307,
+        307
+      ],
+      "visible": [
+        56,
+        16
+      ],
+      "informed": [
+        56,
+        16
+      ],
+      "informed_main": [
+        52,
+        0
+      ],
+      "visible_main": [
+        52,
+        0
+      ],
+      "main_fraction": [
+        0.162222221493721,
+        0.15888889133930206
+      ],
+      "active": [
+        52,
+        0
+      ],
+      "rear_reward_sum": [
+        0.005129275843501091,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        308,
+        308
+      ],
+      "visible": [
+        57,
+        14
+      ],
+      "informed": [
+        57,
+        14
+      ],
+      "informed_main": [
+        53,
+        0
+      ],
+      "visible_main": [
+        53,
+        0
+      ],
+      "main_fraction": [
+        0.15333333611488342,
+        0.12444444745779037
+      ],
+      "active": [
+        52,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.04910912364721298,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        309,
+        309
+      ],
+      "visible": [
+        59,
+        14
+      ],
+      "informed": [
+        59,
+        14
+      ],
+      "informed_main": [
+        55,
+        0
+      ],
+      "visible_main": [
+        55,
+        0
+      ],
+      "main_fraction": [
+        0.15333333611488342,
+        0.2455555647611618
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        310,
+        310
+      ],
+      "visible": [
+        58,
+        15
+      ],
+      "informed": [
+        58,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17555555701255798,
+        0.3444444537162781
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        311,
+        311
+      ],
+      "visible": [
+        60,
+        15
+      ],
+      "informed": [
+        60,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17222222685813904,
+        0.2433333396911621
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        312,
+        312
+      ],
+      "visible": [
+        61,
+        15
+      ],
+      "informed": [
+        61,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1733333319425583,
+        0.2644444406032562
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        313,
+        313
+      ],
+      "visible": [
+        61,
+        14
+      ],
+      "informed": [
+        61,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17888888716697693,
+        0.2666666805744171
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        314,
+        314
+      ],
+      "visible": [
+        63,
+        14
+      ],
+      "informed": [
+        63,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1877777874469757,
+        0.23444445431232452
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        315,
+        315
+      ],
+      "visible": [
+        65,
+        15
+      ],
+      "informed": [
+        65,
+        15
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.18888889253139496,
+        0.23444445431232452
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        316,
+        316
+      ],
+      "visible": [
+        64,
+        14
+      ],
+      "informed": [
+        64,
+        14
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.18888889253139496,
+        0.1688888967037201
+      ],
+      "active": [
+        58,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.029235579073429108,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        317,
+        317
+      ],
+      "visible": [
+        65,
+        14
+      ],
+      "informed": [
+        65,
+        14
+      ],
+      "informed_main": [
+        59,
+        0
+      ],
+      "visible_main": [
+        59,
+        0
+      ],
+      "main_fraction": [
+        0.20000000298023224,
+        0.2888889014720917
+      ],
+      "active": [
+        59,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.15442577004432678,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        318,
+        318
+      ],
+      "visible": [
+        67,
+        15
+      ],
+      "informed": [
+        67,
+        15
+      ],
+      "informed_main": [
+        61,
+        0
+      ],
+      "visible_main": [
+        61,
+        0
+      ],
+      "main_fraction": [
+        0.20000000298023224,
+        0.28777778148651123
+      ],
+      "active": [
+        60,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.04421478882431984,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        319,
+        319
+      ],
+      "visible": [
+        68,
+        15
+      ],
+      "informed": [
+        68,
+        15
+      ],
+      "informed_main": [
+        62,
+        0
+      ],
+      "visible_main": [
+        62,
+        0
+      ],
+      "main_fraction": [
+        0.20000000298023224,
+        0.17777778208255768
+      ],
+      "active": [
+        62,
+        0
+      ],
+      "rear_reward_sum": [
+        0.16512636840343475,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        320,
+        320
+      ],
+      "visible": [
+        71,
+        16
+      ],
+      "informed": [
+        71,
+        16
+      ],
+      "informed_main": [
+        65,
+        0
+      ],
+      "visible_main": [
+        65,
+        0
+      ],
+      "main_fraction": [
+        0.20111112296581268,
+        0.21222223341464996
+      ],
+      "active": [
+        62,
+        0
+      ],
+      "rear_reward_sum": [
+        0.130533367395401,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        321,
+        321
+      ],
+      "visible": [
+        72,
+        16
+      ],
+      "informed": [
+        72,
+        16
+      ],
+      "informed_main": [
+        64,
+        0
+      ],
+      "visible_main": [
+        64,
+        0
+      ],
+      "main_fraction": [
+        0.1966666728258133,
+        0.25777778029441833
+      ],
+      "active": [
+        66,
+        0
+      ],
+      "rear_reward_sum": [
+        0.06345238536596298,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        322,
+        322
+      ],
+      "visible": [
+        74,
+        17
+      ],
+      "informed": [
+        74,
+        17
+      ],
+      "informed_main": [
+        68,
+        0
+      ],
+      "visible_main": [
+        68,
+        0
+      ],
+      "main_fraction": [
+        0.14666667580604553,
+        0.2177777886390686
+      ],
+      "active": [
+        68,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0020459480583667755,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        323,
+        323
+      ],
+      "visible": [
+        76,
+        19
+      ],
+      "informed": [
+        76,
+        19
+      ],
+      "informed_main": [
+        70,
+        0
+      ],
+      "visible_main": [
+        70,
+        0
+      ],
+      "main_fraction": [
+        0.14777778089046478,
+        0.1944444477558136
+      ],
+      "active": [
+        69,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.14061790704727173,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        324,
+        324
+      ],
+      "visible": [
+        78,
+        18
+      ],
+      "informed": [
+        78,
+        18
+      ],
+      "informed_main": [
+        71,
+        0
+      ],
+      "visible_main": [
+        71,
+        0
+      ],
+      "main_fraction": [
+        0.13333334028720856,
+        0.14888888597488403
+      ],
+      "active": [
+        69,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.27067381143569946,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        325,
+        325
+      ],
+      "visible": [
+        78,
+        19
+      ],
+      "informed": [
+        78,
+        19
+      ],
+      "informed_main": [
+        71,
+        0
+      ],
+      "visible_main": [
+        71,
+        0
+      ],
+      "main_fraction": [
+        0.1322222203016281,
+        0.15444444119930267
+      ],
+      "active": [
+        71,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.16436494886875153,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        326,
+        326
+      ],
+      "visible": [
+        80,
+        19
+      ],
+      "informed": [
+        80,
+        19
+      ],
+      "informed_main": [
+        72,
+        0
+      ],
+      "visible_main": [
+        72,
+        0
+      ],
+      "main_fraction": [
+        0.13333334028720856,
+        0.2222222238779068
+      ],
+      "active": [
+        71,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.022617975249886513,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        327,
+        327
+      ],
+      "visible": [
+        80,
+        19
+      ],
+      "informed": [
+        80,
+        19
+      ],
+      "informed_main": [
+        72,
+        0
+      ],
+      "visible_main": [
+        72,
+        0
+      ],
+      "main_fraction": [
+        0.1344444453716278,
+        0.162222221493721
+      ],
+      "active": [
+        70,
+        0
+      ],
+      "rear_reward_sum": [
+        0.08737052977085114,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        328,
+        328
+      ],
+      "visible": [
+        82,
+        18
+      ],
+      "informed": [
+        82,
+        18
+      ],
+      "informed_main": [
+        74,
+        0
+      ],
+      "visible_main": [
+        74,
+        0
+      ],
+      "main_fraction": [
+        0.1344444453716278,
+        0.1666666716337204
+      ],
+      "active": [
+        71,
+        0
+      ],
+      "rear_reward_sum": [
+        0.08157026767730713,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        329,
+        329
+      ],
+      "visible": [
+        81,
+        18
+      ],
+      "informed": [
+        81,
+        18
+      ],
+      "informed_main": [
+        71,
+        0
+      ],
+      "visible_main": [
+        71,
+        0
+      ],
+      "main_fraction": [
+        0.13111111521720886,
+        0.2688888907432556
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        330,
+        330
+      ],
+      "visible": [
+        79,
+        18
+      ],
+      "informed": [
+        79,
+        18
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.09666667133569717,
+        0.2688888907432556
+      ],
+      "active": [
+        25,
+        0
+      ],
+      "rear_reward_sum": [
+        0.08097641915082932,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        331,
+        331
+      ],
+      "visible": [
+        79,
+        18
+      ],
+      "informed": [
+        79,
+        18
+      ],
+      "informed_main": [
+        26,
+        0
+      ],
+      "visible_main": [
+        26,
+        0
+      ],
+      "main_fraction": [
+        0.16111111640930176,
+        0.34111112356185913
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        332,
+        332
+      ],
+      "visible": [
+        79,
+        17
+      ],
+      "informed": [
+        79,
+        17
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.14000000059604645,
+        0.28111112117767334
+      ],
+      "active": [
+        66,
+        0
+      ],
+      "rear_reward_sum": [
+        0.3989681303501129,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        333,
+        333
+      ],
+      "visible": [
+        77,
+        18
+      ],
+      "informed": [
+        77,
+        18
+      ],
+      "informed_main": [
+        67,
+        0
+      ],
+      "visible_main": [
+        67,
+        0
+      ],
+      "main_fraction": [
+        0.185555562376976,
+        0.2477777898311615
+      ],
+      "active": [
+        66,
+        0
+      ],
+      "rear_reward_sum": [
+        0.4393479824066162,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        334,
+        334
+      ],
+      "visible": [
+        76,
+        18
+      ],
+      "informed": [
+        76,
+        18
+      ],
+      "informed_main": [
+        67,
+        0
+      ],
+      "visible_main": [
+        67,
+        0
+      ],
+      "main_fraction": [
+        0.185555562376976,
+        0.2455555647611618
+      ],
+      "active": [
+        64,
+        0
+      ],
+      "rear_reward_sum": [
+        0.5427270531654358,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        335,
+        335
+      ],
+      "visible": [
+        74,
+        18
+      ],
+      "informed": [
+        74,
+        18
+      ],
+      "informed_main": [
+        65,
+        0
+      ],
+      "visible_main": [
+        65,
+        0
+      ],
+      "main_fraction": [
+        0.20888888835906982,
+        0.3766666650772095
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        336,
+        336
+      ],
+      "visible": [
+        71,
+        19
+      ],
+      "informed": [
+        71,
+        19
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1599999964237213,
+        0.2644444406032562
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        337,
+        337
+      ],
+      "visible": [
+        70,
+        19
+      ],
+      "informed": [
+        70,
+        19
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1599999964237213,
+        0.2711111307144165
+      ],
+      "active": [
+        54,
+        0
+      ],
+      "rear_reward_sum": [
+        0.39639851450920105,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        338,
+        338
+      ],
+      "visible": [
+        66,
+        20
+      ],
+      "informed": [
+        66,
+        20
+      ],
+      "informed_main": [
+        55,
+        0
+      ],
+      "visible_main": [
+        55,
+        0
+      ],
+      "main_fraction": [
+        0.20555555820465088,
+        0.2455555647611618
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        339,
+        339
+      ],
+      "visible": [
+        62,
+        21
+      ],
+      "informed": [
+        62,
+        21
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.18666666746139526,
+        0.17222222685813904
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        340,
+        340
+      ],
+      "visible": [
+        60,
+        22
+      ],
+      "informed": [
+        60,
+        22
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1877777874469757,
+        0.17222222685813904
+      ],
+      "active": [
+        26,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.04227544367313385,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        341,
+        341
+      ],
+      "visible": [
+        61,
+        23
+      ],
+      "informed": [
+        61,
+        23
+      ],
+      "informed_main": [
+        27,
+        0
+      ],
+      "visible_main": [
+        27,
+        0
+      ],
+      "main_fraction": [
+        0.15444444119930267,
+        0.3588888943195343
+      ],
+      "active": [
+        28,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.09743805974721909,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        342,
+        342
+      ],
+      "visible": [
+        59,
+        23
+      ],
+      "informed": [
+        59,
+        23
+      ],
+      "informed_main": [
+        29,
+        0
+      ],
+      "visible_main": [
+        29,
+        0
+      ],
+      "main_fraction": [
+        0.15444444119930267,
+        0.21222223341464996
+      ],
+      "active": [
+        27,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.04035639762878418,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        343,
+        343
+      ],
+      "visible": [
+        57,
+        25
+      ],
+      "informed": [
+        57,
+        25
+      ],
+      "informed_main": [
+        28,
+        0
+      ],
+      "visible_main": [
+        28,
+        0
+      ],
+      "main_fraction": [
+        0.15888889133930206,
+        0.3166666626930237
+      ],
+      "active": [
+        27,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.17632515728473663,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        344,
+        344
+      ],
+      "visible": [
+        57,
+        25
+      ],
+      "informed": [
+        57,
+        25
+      ],
+      "informed_main": [
+        28,
+        0
+      ],
+      "visible_main": [
+        28,
+        0
+      ],
+      "main_fraction": [
+        0.18444444239139557,
+        0.29777777194976807
+      ],
+      "active": [
+        27,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.17813436686992645,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        345,
+        345
+      ],
+      "visible": [
+        56,
+        25
+      ],
+      "informed": [
+        56,
+        25
+      ],
+      "informed_main": [
+        27,
+        0
+      ],
+      "visible_main": [
+        27,
+        0
+      ],
+      "main_fraction": [
+        0.1599999964237213,
+        0.32555556297302246
+      ],
+      "active": [
+        26,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.2944687604904175,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        346,
+        346
+      ],
+      "visible": [
+        55,
+        25
+      ],
+      "informed": [
+        55,
+        25
+      ],
+      "informed_main": [
+        26,
+        0
+      ],
+      "visible_main": [
+        26,
+        0
+      ],
+      "main_fraction": [
+        0.15888889133930206,
+        0.13777777552604675
+      ],
+      "active": [
+        26,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.293786883354187,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        347,
+        347
+      ],
+      "visible": [
+        55,
+        26
+      ],
+      "informed": [
+        55,
+        26
+      ],
+      "informed_main": [
+        26,
+        0
+      ],
+      "visible_main": [
+        26,
+        0
+      ],
+      "main_fraction": [
+        0.1599999964237213,
+        0.18444444239139557
+      ],
+      "active": [
+        23,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.3176954984664917,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        348,
+        348
+      ],
+      "visible": [
+        53,
+        25
+      ],
+      "informed": [
+        53,
+        25
+      ],
+      "informed_main": [
+        23,
+        0
+      ],
+      "visible_main": [
+        23,
+        0
+      ],
+      "main_fraction": [
+        0.1577777862548828,
+        0.3166666626930237
+      ],
+      "active": [
+        22,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.4136843681335449,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        349,
+        349
+      ],
+      "visible": [
+        53,
+        26
+      ],
+      "informed": [
+        53,
+        26
+      ],
+      "informed_main": [
+        23,
+        0
+      ],
+      "visible_main": [
+        23,
+        0
+      ],
+      "main_fraction": [
+        0.1577777862548828,
+        0.3033333420753479
+      ],
+      "active": [
+        23,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.45360398292541504,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        350,
+        350
+      ],
+      "visible": [
+        53,
+        25
+      ],
+      "informed": [
+        53,
+        25
+      ],
+      "informed_main": [
+        24,
+        0
+      ],
+      "visible_main": [
+        24,
+        0
+      ],
+      "main_fraction": [
+        0.15888889133930206,
+        0.1133333370089531
+      ],
+      "active": [
+        23,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.4805622100830078,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        351,
+        351
+      ],
+      "visible": [
+        53,
+        25
+      ],
+      "informed": [
+        53,
+        25
+      ],
+      "informed_main": [
+        23,
+        0
+      ],
+      "visible_main": [
+        23,
+        0
+      ],
+      "main_fraction": [
+        0.1577777862548828,
+        0.1322222203016281
+      ],
+      "active": [
+        22,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.4035148024559021,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        352,
+        352
+      ],
+      "visible": [
+        52,
+        26
+      ],
+      "informed": [
+        52,
+        26
+      ],
+      "informed_main": [
+        23,
+        0
+      ],
+      "visible_main": [
+        23,
+        0
+      ],
+      "main_fraction": [
+        0.15666666626930237,
+        0.1066666692495346
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        353,
+        353
+      ],
+      "visible": [
+        51,
+        27
+      ],
+      "informed": [
+        51,
+        27
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.17555555701255798,
+        0.1366666704416275
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        354,
+        354
+      ],
+      "visible": [
+        52,
+        26
+      ],
+      "informed": [
+        52,
+        26
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.18111111223697662,
+        0.18333333730697632
+      ],
+      "active": [
+        22,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.3330451548099518,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        355,
+        355
+      ],
+      "visible": [
+        53,
+        26
+      ],
+      "informed": [
+        53,
+        26
+      ],
+      "informed_main": [
+        22,
+        0
+      ],
+      "visible_main": [
+        22,
+        0
+      ],
+      "main_fraction": [
+        0.21000000834465027,
+        0.23555555939674377
+      ],
+      "active": [
+        49,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.28203022480010986,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        356,
+        356
+      ],
+      "visible": [
+        52,
+        26
+      ],
+      "informed": [
+        52,
+        26
+      ],
+      "informed_main": [
+        49,
+        0
+      ],
+      "visible_main": [
+        49,
+        0
+      ],
+      "main_fraction": [
+        0.2588889002799988,
+        0.2600000202655792
+      ],
+      "active": [
+        48,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.21749132871627808,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        357,
+        357
+      ],
+      "visible": [
+        55,
+        26
+      ],
+      "informed": [
+        55,
+        26
+      ],
+      "informed_main": [
+        49,
+        0
+      ],
+      "visible_main": [
+        49,
+        0
+      ],
+      "main_fraction": [
+        0.2688888907432556,
+        0.25777778029441833
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        358,
+        358
+      ],
+      "visible": [
+        54,
+        27
+      ],
+      "informed": [
+        54,
+        27
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.12555555999279022,
+        0.36444446444511414
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        359,
+        359
+      ],
+      "visible": [
+        54,
+        28
+      ],
+      "informed": [
+        54,
+        28
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1411111205816269,
+        0.4144444465637207
+      ],
+      "active": [
+        21,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.0731615498661995,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        360,
+        360
+      ],
+      "visible": [
+        55,
+        28
+      ],
+      "informed": [
+        55,
+        28
+      ],
+      "informed_main": [
+        22,
+        0
+      ],
+      "visible_main": [
+        22,
+        0
+      ],
+      "main_fraction": [
+        0.20222222805023193,
+        0.41777777671813965
+      ],
+      "active": [
+        22,
+        0
+      ],
+      "rear_reward_sum": [
+        -0.10253400355577469,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        361,
+        361
+      ],
+      "visible": [
+        58,
+        27
+      ],
+      "informed": [
+        58,
+        27
+      ],
+      "informed_main": [
+        22,
+        0
+      ],
+      "visible_main": [
+        22,
+        0
+      ],
+      "main_fraction": [
+        0.1944444477558136,
+        0.40222224593162537
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        362,
+        362
+      ],
+      "visible": [
+        60,
+        27
+      ],
+      "informed": [
+        60,
+        27
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.1455555558204651,
+        0.41111111640930176
+      ],
+      "active": [
+        49,
+        0
+      ],
+      "rear_reward_sum": [
+        0.10251495242118835,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        363,
+        363
+      ],
+      "visible": [
+        62,
+        27
+      ],
+      "informed": [
+        62,
+        27
+      ],
+      "informed_main": [
+        50,
+        0
+      ],
+      "visible_main": [
+        50,
+        0
+      ],
+      "main_fraction": [
+        0.2133333384990692,
+        0.31111112236976624
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        364,
+        364
+      ],
+      "visible": [
+        63,
+        27
+      ],
+      "informed": [
+        63,
+        27
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.2477777898311615,
+        0.4122222363948822
+      ],
+      "active": [
+        52,
+        0
+      ],
+      "rear_reward_sum": [
+        0.21257472038269043,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        365,
+        365
+      ],
+      "visible": [
+        65,
+        27
+      ],
+      "informed": [
+        65,
+        27
+      ],
+      "informed_main": [
+        54,
+        0
+      ],
+      "visible_main": [
+        54,
+        0
+      ],
+      "main_fraction": [
+        0.19111111760139465,
+        0.4611111283302307
+      ],
+      "active": [
+        52,
+        0
+      ],
+      "rear_reward_sum": [
+        0.26552605628967285,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        366,
+        366
+      ],
+      "visible": [
+        66,
+        27
+      ],
+      "informed": [
+        66,
+        27
+      ],
+      "informed_main": [
+        54,
+        0
+      ],
+      "visible_main": [
+        54,
+        0
+      ],
+      "main_fraction": [
+        0.2155555635690689,
+        0.5166666507720947
+      ],
+      "active": [
+        37,
+        0
+      ],
+      "rear_reward_sum": [
+        0.07470974326133728,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        367,
+        367
+      ],
+      "visible": [
+        67,
+        27
+      ],
+      "informed": [
+        67,
+        27
+      ],
+      "informed_main": [
+        38,
+        0
+      ],
+      "visible_main": [
+        38,
+        0
+      ],
+      "main_fraction": [
+        0.198888897895813,
+        0.4744444489479065
+      ],
+      "active": [
+        36,
+        0
+      ],
+      "rear_reward_sum": [
+        0.09394163638353348,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        368,
+        368
+      ],
+      "visible": [
+        65,
+        27
+      ],
+      "informed": [
+        65,
+        27
+      ],
+      "informed_main": [
+        36,
+        0
+      ],
+      "visible_main": [
+        36,
+        0
+      ],
+      "main_fraction": [
+        0.20111112296581268,
+        0.4855555593967438
+      ],
+      "active": [
+        33,
+        0
+      ],
+      "rear_reward_sum": [
+        0.06931286305189133,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        369,
+        369
+      ],
+      "visible": [
+        64,
+        27
+      ],
+      "informed": [
+        64,
+        27
+      ],
+      "informed_main": [
+        35,
+        0
+      ],
+      "visible_main": [
+        35,
+        0
+      ],
+      "main_fraction": [
+        0.21000000834465027,
+        0.4099999964237213
+      ],
+      "active": [
+        31,
+        0
+      ],
+      "rear_reward_sum": [
+        0.07301793247461319,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        370,
+        370
+      ],
+      "visible": [
+        64,
+        27
+      ],
+      "informed": [
+        64,
+        27
+      ],
+      "informed_main": [
+        34,
+        0
+      ],
+      "visible_main": [
+        34,
+        0
+      ],
+      "main_fraction": [
+        0.21444444358348846,
+        0.3522222340106964
+      ],
+      "active": [
+        33,
+        0
+      ],
+      "rear_reward_sum": [
+        0.12316614389419556,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        371,
+        371
+      ],
+      "visible": [
+        66,
+        27
+      ],
+      "informed": [
+        66,
+        27
+      ],
+      "informed_main": [
+        36,
+        0
+      ],
+      "visible_main": [
+        36,
+        0
+      ],
+      "main_fraction": [
+        0.2155555635690689,
+        0.33666667342185974
+      ],
+      "active": [
+        35,
+        0
+      ],
+      "rear_reward_sum": [
+        0.13386112451553345,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        372,
+        372
+      ],
+      "visible": [
+        69,
+        27
+      ],
+      "informed": [
+        69,
+        27
+      ],
+      "informed_main": [
+        39,
+        0
+      ],
+      "visible_main": [
+        39,
+        0
+      ],
+      "main_fraction": [
+        0.2155555635690689,
+        0.34333333373069763
+      ],
+      "active": [
+        36,
+        0
+      ],
+      "rear_reward_sum": [
+        0.09796787798404694,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        373,
+        373
+      ],
+      "visible": [
+        65,
+        27
+      ],
+      "informed": [
+        65,
+        27
+      ],
+      "informed_main": [
+        36,
+        0
+      ],
+      "visible_main": [
+        36,
+        0
+      ],
+      "main_fraction": [
+        0.22555555403232574,
+        0.2900000214576721
+      ],
+      "active": [
+        34,
+        0
+      ],
+      "rear_reward_sum": [
+        0.06671462953090668,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        374,
+        374
+      ],
+      "visible": [
+        63,
+        27
+      ],
+      "informed": [
+        63,
+        27
+      ],
+      "informed_main": [
+        34,
+        0
+      ],
+      "visible_main": [
+        34,
+        0
+      ],
+      "main_fraction": [
+        0.23666667938232422,
+        0.26555556058883667
+      ],
+      "active": [
+        27,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0015886335168033838,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        375,
+        375
+      ],
+      "visible": [
+        62,
+        28
+      ],
+      "informed": [
+        62,
+        28
+      ],
+      "informed_main": [
+        27,
+        0
+      ],
+      "visible_main": [
+        27,
+        0
+      ],
+      "main_fraction": [
+        0.18888889253139496,
+        0.26333335041999817
+      ],
+      "active": [
+        25,
+        0
+      ],
+      "rear_reward_sum": [
+        0.003468750976026058,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        376,
+        376
+      ],
+      "visible": [
+        61,
+        28
+      ],
+      "informed": [
+        61,
+        28
+      ],
+      "informed_main": [
+        26,
+        0
+      ],
+      "visible_main": [
+        26,
+        0
+      ],
+      "main_fraction": [
+        0.1877777874469757,
+        0.20111112296581268
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        377,
+        377
+      ],
+      "visible": [
+        61,
+        28
+      ],
+      "informed": [
+        61,
+        28
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.12777778506278992,
+        0.32111111283302307
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        378,
+        378
+      ],
+      "visible": [
+        59,
+        28
+      ],
+      "informed": [
+        59,
+        28
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.10333333909511566,
+        0.2644444406032562
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        379,
+        379
+      ],
+      "visible": [
+        59,
+        27
+      ],
+      "informed": [
+        59,
+        27
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.19777777791023254,
+        0.20777778327465057
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        380,
+        380
+      ],
+      "visible": [
+        58,
+        27
+      ],
+      "informed": [
+        58,
+        27
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.19777777791023254,
+        0.2822222411632538
+      ],
+      "active": [
+        24,
+        0
+      ],
+      "rear_reward_sum": [
+        0.046514227986335754,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        381,
+        381
+      ],
+      "visible": [
+        59,
+        27
+      ],
+      "informed": [
+        59,
+        27
+      ],
+      "informed_main": [
+        25,
+        0
+      ],
+      "visible_main": [
+        25,
+        0
+      ],
+      "main_fraction": [
+        0.1877777874469757,
+        0.30222222208976746
+      ],
+      "active": [
+        25,
+        0
+      ],
+      "rear_reward_sum": [
+        0.16696439683437347,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        382,
+        382
+      ],
+      "visible": [
+        60,
+        26
+      ],
+      "informed": [
+        60,
+        26
+      ],
+      "informed_main": [
+        25,
+        0
+      ],
+      "visible_main": [
+        25,
+        0
+      ],
+      "main_fraction": [
+        0.198888897895813,
+        0.29777777194976807
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "step": [
+        383,
+        383
+      ],
+      "visible": [
+        59,
+        26
+      ],
+      "informed": [
+        59,
+        26
+      ],
+      "informed_main": [
+        0,
+        0
+      ],
+      "visible_main": [
+        0,
+        0
+      ],
+      "main_fraction": [
+        0.13777777552604675,
+        0.29777777194976807
+      ],
+      "active": [
+        0,
+        0
+      ],
+      "rear_reward_sum": [
+        0.0,
+        0.0
+      ]
+    }
+  ]
+}

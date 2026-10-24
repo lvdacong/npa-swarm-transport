@@ -1,0 +1,21 @@
+{"update": 1, "env_steps": 768, "agent_steps": 691200, "episodes": 0, "successes": 0, "seconds": 30.44731769990176, "world_steps_per_second": 25.223896816450207, "agent_decisions_per_second": 22701.507134805186, "device": "cuda:0", "stage": "search", "n_agents": 900, "cuda_peak_allocated_bytes": 816448512, "cuda_reserved_bytes": 887095296, "cuda_peak_reserved_bytes": 887095296, "mean_reward": -0.004358950536698103, "rollout_episodes": 0, "rollout_successes": 0, "contact_count_max": 1, "contact_active_fraction": 0.0260416679084301, "relay_decision_step": 191.5, "object_relay_reach_fraction": 0.6240249276161194, "goal_relay_reach_fraction": 0.6013396978378296, "cargo_near_agents": 1.16015625, "goal_relay_near_cargo_agents": 0.3125, "cargo_contact_agents": 0.0260416679084301, "goal_relay_contact_agents": 0.00390625, "goal_relay_near_cargo_fraction": 0.1344401091337204, "goal_relay_contact_fraction": 0.00390625, "connected_fraction": 0.0260416679084301, "largest_fraction": 0.8723119497299194, "bridge_fraction": 0.0, "object_distance_mean": 14.587282180786133, "object_speed_mean": 0.0006818647379986942, "contact_count_mean": 0.0260416679084301, "cargo_force_norm_mean": 0.0083150714635849, "cargo_force_toward_goal_mean": -0.0028655470814555883, "reward_progress_mean": -3.748759627342224e-05, "reward_contact_credit_mean": -1.38842954910956e-08, "found_object_mean": 0.7669271230697632, "found_goal_mean": 0.7513021230697632, "repair_gap_max_mean": 5.453738689422607, "endpoint_gap_mean": 5.346573829650879, "reward_repair_mean": -0.00014916919462848455, "reward_connectivity_mean": -0.006603005342185497, "reward_rear_approach_mean": -6.81725396134425e-08, "reward_transport_local_mean": -1.7893314634420676e-06, "rear_active_count_mean": 0.2578125, "rear_reward_sum_mean": -6.135534204076976e-05, "rear_reward_abs_sum_mean": 0.0026439186185598373, "rear_positive_count_mean": 0.1236979216337204, "rear_negative_count_mean": 0.1341145932674408, "rear_sector_count_mean": 0.0, "rear_contact_count_mean": 0.0, "rollout_distance_delta": -0.004798412322998047, "rear_active_agent_steps": 198, "rear_reward_active_mean": -0.0002379843353992328, "rear_reward_active_abs_mean": 0.010255199857056141, "rear_active_advantage_mean": -0.8233836889266968, "rear_active_advantage_std": 0.5114802718162537, "rear_active_critic_mse": 0.9395727515220642, "rear_active_return_mean": -1.7919609546661377, "rear_active_value_mean": -0.9685772061347961, "other_advantage_mean": -0.12749244272708893, "other_advantage_std": 0.5262113809585571, "other_critic_mse": 0.293152779340744, "other_return_mean": -1.1418765783309937, "other_value_mean": -1.014384150505066, "policy_loss": -0.0008975518867373466, "value_loss": 0.2910139858722687, "entropy": 0.44122999906539917, "approx_kl": 0.00012230544234625995, "clip_fraction": 9.645061709306901e-07, "gradient_norm": 0.7960991263389587, "resume": {"checkpoint_sha256": "f2fe0dfd760997bf34a0d154ee311b404c0a7dd5925ad4330e198401514d6505", "source_changed": false, "device_changed": false, "trajectory_bitwise_claimed": false}}
+{
+  "updates": 1,
+  "additional_updates": 1,
+  "env_steps": 768,
+  "episodes": 0,
+  "successes": 0,
+  "checkpoint": "runs\\v4\\rear-balanced\\last.pt",
+  "checkpoint_sha256": "06fb768ad4cfc941ea9f1fda7ff9f43552781dc17977ee422c02be2c642d1b99",
+  "stage": "search",
+  "n_agents": 900,
+  "device": "cuda:0",
+  "research_task_passed": false,
+  "lineage": {
+    "kind": "warmstart",
+    "parent_sha256": "e402fa8ade5b3961c52abff45209a473c894c562fb05f747fa849ca6642e3e18",
+    "inherited_trained_weights": true,
+    "parent_updates": 3,
+    "parent_stage": "search"
+  }
+}

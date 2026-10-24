@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="1.564" timestamp="2026-10-25T00:01:48.644730+08:00" hostname="LAPTOP-ETFQ3NM2"><testcase classname="tests.test_rear_learning" name="test_local_batch_empty_fallback_and_active_update" time="1.520" /></testsuite></testsuites>
