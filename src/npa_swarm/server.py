@@ -25,9 +25,27 @@ def pack_snapshot(env, hidden, info, sequence, paused, revision, step_ms=0., rea
     CUDA -> host -> HTTP -> WebGPU is still not end-to-end zero-copy. No GPU
     readback is performed by the browser and only new snapshots are uploaded.
     """
-    env.observe()  # cached; also supplies degree
-    signals = torch.stack((hidden[0].square().mean(-1).sqrt(), env._degree[0],
-                           env._bridge_members[0].float(), env._in_main[0].float()), -1)
+    # Four existing per-particle floats now convey interpretable states; the
+    # snapshot size and the one CUDA->host transfer are unchanged.
+    # [object relay confidence, goal relay confidence, signed push, bit flags]
+    # flags: 1 main, 2 direct cargo sighting, 4 direct goal sighting,
+    #        8 physical contact, 16 member of a live endpoint bridge.
+    c = env.cfg
+    visible_obj, visible_goal = env._object_visible[0], env._goal_visible[0]
+    object_conf = torch.maximum(hidden[0, :, -6].clamp(0, 1), visible_obj.float())
+    goal_conf = torch.maximum(hidden[0, :, -3].clamp(0, 1), visible_goal.float())
+    # Real instantaneous contact force on cargo, projected toward its goal.
+    # This privileged direction is display-only, never added to NN inputs.
+    distance = env._object_distance_agent[0].clamp_min(1e-8)
+    overlap = (c.object_radius + c.agent_radius - distance).clamp_min(0)
+    contact_force_on_cargo = (env._object_delta[0] / distance[:, None]) * (
+        c.contact_stiffness * overlap)[:, None]
+    goal_direction = (env.goal_pos[0] - env.object_pos[0]) / env._distance[0].clamp_min(1e-8)
+    signed_push = ((contact_force_on_cargo * goal_direction).sum(-1) / c.max_force).clamp(-1, 1)
+    flags = (env._in_main[0].float() + 2 * visible_obj.float() +
+             4 * visible_goal.float() + 8 * env._contact[0].float() +
+             16 * env._bridge_members[0].float())
+    signals = torch.stack((object_conf, goal_conf, signed_push, flags), -1)
     particles = torch.cat((env.positions[0], env.velocities[0], signals), -1)
     keys = ("largest_fraction", "connected", "bridge", "object_distance", "contact_count", "object_speed",
             "steps", "bridge_eligible", "found_object", "found_goal", "endpoint_gap")

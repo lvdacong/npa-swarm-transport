@@ -12,8 +12,10 @@ function parseSnapshot(buffer){
 }
 function transform(){const c=$('scene'),aspect=c.width/c.height,half=(state.frame?.f[7]||10)*1.08/(state.camera.zoom*Math.min(aspect,1));return {sx:1/(half*aspect),sy:1/half};}
 function resize(){const c=$('scene'),r=c.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(c.width!==w||c.height!==h){c.width=w;c.height=h;state.dirty=true;}}
-// The existing instanced disk pipeline is retained. No Canvas fallback or
-// backend selector: unavailable/lost WebGPU is an explicit visible error.
+// Snapshot particle: [xy, velocity, cargo relay, goal relay, signed contact push, flags].
+ // Only visual status is changed; no shader value enters the learned policy.
+ // Instanced disks remain in one pass and only new snapshots are uploaded.
+ // No Canvas fallback or backend selector: WebGPU errors remain explicit.
 const shader=`
 struct Particle {p:vec2f,v:vec2f,signal:vec4f};
 struct Uniforms {view:vec4f,scene:vec4f,radii:vec4f,pick:vec4f,misc:vec4f,camera:vec4f};
@@ -25,12 +27,34 @@ struct Out {@builtin(position) pos:vec4f,@location(0) local:vec2f,@location(1) c
  let corners=array<vec2f,6>(vec2f(-1,-1),vec2f(1,-1),vec2f(-1,1),vec2f(-1,1),vec2f(1,-1),vec2f(1,1));
  let q=corners[vi];var p=vec2f(0);var r=1.;var role=ii;var color=vec4f(.55,.85,.76,1.);
  if(ii==0u){r=u.misc.x;color=vec4f(.23,.36,.39,1.);}
- else if(ii==1u){p=u.scene.zw;r=u.radii.y;color=vec4f(.5,.88,.69,1.);}
- else if(ii==2u){p=u.scene.xy;r=u.radii.x;color=vec4f(.91,.70,.45,1.);}
+ else if(ii==1u){p=u.scene.zw;r=u.radii.y;color=vec4f(.65,.66,.97,1.);}
+ else if(ii==2u){p=u.scene.xy;r=u.radii.x;color=vec4f(.97,.72,.43,1.);}
  else if(ii==3u||ii==4u){p=u.pick.xy;r=select(u.radii.w,u.misc.z,ii==4u);color=vec4f(.38,.71,.79,select(1.,.4,ii==4u));if(u.pick.w<.5){r=0.;}}
- else {let i=ii-5u;let a=previous[i];let b=current[i];p=mix(a.p,b.p,u.view.z);r=max(u.radii.z,u.misc.y);
-  color=select(vec4f(.47,.51,.55,1.),vec4f(.52,.84,.74,1.),b.signal.w>.5);
-  if(u.pick.w>.5&&u32(u.pick.z)==i){color=vec4f(.96,.99,.95,1.);r*=1.6;}role=5u;}
+ else {
+  let i=ii-5u;let a=previous[i];let b=current[i];
+  p=mix(a.p,b.p,u.view.z);r=max(u.radii.z,u.misc.y);
+  let flags=u32(round(b.signal.w));
+  let cargo=clamp(b.signal.x,0.,1.);let goal=clamp(b.signal.y,0.,1.);
+  var tint=vec3f(.38,.68,.67);
+  if(cargo>.02){tint=mix(tint,vec3f(.97,.65,.37),sqrt(cargo)*.88);}
+  if(goal>.02){tint=mix(tint,vec3f(.62,.64,.96),sqrt(goal)*.88);}
+  if(cargo>.06&&goal>.06){tint=mix(tint,vec3f(.67,.96,.85),min(cargo,goal)*.88);}
+  // Actual collision is distinct from merely receiving a target message.
+  if((flags&8u)!=0u){
+    if(b.signal.z>.04){tint=vec3f(.99,.87,.48);}
+    else if(b.signal.z<-.04){tint=vec3f(.99,.44,.48);}
+    else {tint=vec3f(.92,.76,.57);}
+    r*=1.18;
+  } else if((flags&6u)!=0u){
+    // Subtle breath only for firsthand local sightings, not remote messages.
+    r*=1.05+.025*sin(u.view.w*2.4+f32(i)*.17);
+    tint=mix(tint,vec3f(.97,.98,.99),.12);
+  }
+  if((flags&1u)==0u){tint=mix(tint,vec3f(.29,.34,.41),.72);}
+  color=vec4f(tint,1.);
+  if(u.pick.w>.5&&u32(u.pick.z)==i){color=vec4f(.96,.99,.95,1.);r*=1.6;}
+  role=5u;
+}
  var o:Out;o.pos=vec4f((p+q*r-u.camera.xy)*u.view.xy,0.,1.);o.local=q;o.color=color;o.role=role;return o;
 }
 @fragment fn fs(v:Out)->@location(0) vec4f{
@@ -38,7 +62,8 @@ struct Out {@builtin(position) pos:vec4f,@location(0) local:vec2f,@location(1) c
  if(v.role==0u){let world=v.local*u.misc.x;let grid=abs(fract(world*.5+.5)-.5);let aw=max(w*u.misc.x*.5,vec2f(.0001));let line=1.-min(min(grid.x/aw.x,grid.y/aw.y),1.);let border=smoothstep(.992,1.,max(abs(v.local.x),abs(v.local.y)));return vec4f(v.color.rgb,max(line*.13,border*.65));}
  if(d>1.){discard;}let aa=max(dw,.005);let edge=1.-smoothstep(1.-aa,1.,d);
  if(v.role==1u||v.role==3u||v.role==4u){let ring=smoothstep(.96-aa,.96,d);return vec4f(v.color.rgb,edge*mix(.055,.9,ring)*v.color.a);}
- if(v.role==2u){return vec4f(v.color.rgb*(.88+.12*(1.-d)),edge);}return vec4f(v.color.rgb,edge);
+ if(v.role==2u){return vec4f(v.color.rgb*(.85+.15*(1.-d*d)),edge);}
+ return vec4f(v.color.rgb*(.82+.18*(1.-d*d)),edge);
 }`;
 class Renderer{
   constructor(adapter,device){
@@ -79,7 +104,7 @@ class Renderer{
     const frame=state.frame;if(!frame)return false;
     if(this.frame?.sequence!==frame.sequence)this.upload(frame);
     resize();const t=transform(),f=this.frame,old=this.previous.f,u=this.uniformData;
-    u.set([t.sx,t.sy,blend,f.n],0);u.set([old[0]+(f.f[0]-old[0])*blend,old[1]+(f.f[1]-old[1])*blend,f.f[2],f.f[3]],4);
+    u.set([t.sx,t.sy,blend,now*.001],0);u.set([old[0]+(f.f[0]-old[0])*blend,old[1]+(f.f[1]-old[1])*blend,f.f[2],f.f[3]],4);
     u.set([f.f[4],f.f[5],f.f[6],f.f[8]],8);const pick=state.selected>=0&&state.selected<f.n,k=state.selected*8;
     u.set([pick?f.data[k]:0,pick?f.data[k+1]:0,Math.max(0,state.selected),pick?1:0],12);
     u.set([f.f[7],1.15/(this.canvas.height*t.sy),f.f[9],0],16);u.set([state.camera.x,state.camera.y,0,0],20);
@@ -112,7 +137,7 @@ function updateHud(){
   $('found-object').title=f.f[21]>.5?'已发现重物':'尚未发现重物';$('found-goal').title=f.f[22]>.5?'已发现目的地':'尚未发现目的地';
   $('distance').textContent='剩余 '+fmt(Math.max(0,f.f[13]-(f.f[5]-f.f[4])));
   $('connected').textContent='连通 '+fmt(f.f[10]*100,1)+'%';$('connected').className=f.f[11]>.5?'good':'bad';
-  $('connected').title='最大连通分量占比；灰色粒子在主群之外。没有删除或自动重连。';
+  $('connected').title='最大连通分量占比；灰蓝粒子已离开主群。没有删除或自动重连。';
   $('bridge').textContent=f.f[19]<.5?'待发现两端':f.f[12]>.5?'两端已接通':'两端未接通';$('bridge').className=f.f[12]>.5?'good':'';
   $('bridge').title='同一粒子连通分量须分别进入两端的通信范围；看见不等于接通。';
   $('step-ms').textContent=fmt(f.f[16],2)+' ms';$('actual-speed').textContent=fmt(f.f[20],2)+'×';$('endpoint-gap').textContent=fmt(f.f[23],2);
@@ -120,7 +145,16 @@ function updateHud(){
   $('play').disabled=!!terminal||!state.renderer||state.renderer.disposed;
   if(state.selected>=f.n)state.selected=-1;
   const k=state.selected*8;$('selection').hidden=state.selected<0;
-  if(state.selected>=0)$('selection').textContent=`#${state.selected} · 邻居 ${Math.round(f.data[k+5])} · ${f.data[k+7]>.5?'主群内':'主群外'}`;
+  if(state.selected>=0){
+    const particleFlags=Math.round(f.data[k+7]);
+    const hints=[];
+    if(particleFlags&2)hints.push('直视重物');
+    if(particleFlags&4)hints.push('直视目的地');
+    if(particleFlags&8)hints.push(f.data[k+6]>.04?'有效推动':f.data[k+6]<-.04?'反向推动':'接触重物');
+    if(!(particleFlags&1))hints.push('离群');
+    if(particleFlags&16)hints.push('两端通路');
+    $('selection').textContent=`#${state.selected} · 重物信息 ${Math.round(f.data[k+4]*100)}% · 目的地信息 ${Math.round(f.data[k+5]*100)}%`+(hints.length?' · '+hints.join(' · '):'');
+  }
 }
 let etag='',pollTimer,requestController,pollGeneration=0,commandChain=Promise.resolve();
 function restartPolling(){const generation=++pollGeneration;clearTimeout(pollTimer);requestController?.abort();if(state.visible&&!state.stopped)pollTimer=setTimeout(()=>poll(generation),10);}

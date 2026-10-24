@@ -86,3 +86,36 @@ def test_publication_rate_decoupled_from_simulation():
         assert sim.sequence < 50  # no mandatory GPU->CPU frame copy at every simulated step
         assert struct.unpack_from("<I",sim.snapshot,20)[0]&4
     finally:sim.close()
+
+def test_snapshot_visual_channels_match_real_sensor_contact_and_relay():
+    import numpy as np
+    from npa_swarm.policy import LocalPolicy
+    from npa_swarm.server import pack_snapshot
+    cfg = EnvConfig(n_agents=12, stage="contact")
+    env = SwarmEnv(cfg)
+    hidden = LocalPolicy(env.obs_dim).initial_state(1, cfg.n_agents)
+    hidden[0, :, -6] = .35
+    hidden[0, :, -3] = .6
+    def unpack():
+        data = np.frombuffer(pack_snapshot(env, hidden, env.metrics(), 0, True, 0),
+                             dtype="<f4", offset=HEADER_BYTES).reshape(cfg.n_agents, 8)
+        return data
+    data = unpack()
+    assert data.nbytes == cfg.n_agents * 8 * 4
+    np.testing.assert_allclose(data[:,4], torch.maximum(hidden[0,:,-6],env._object_visible[0].float()).numpy())
+    np.testing.assert_allclose(data[:,5], torch.maximum(hidden[0,:,-3],env._goal_visible[0].float()).numpy())
+    flags = data[:,7].astype(np.int32)
+    np.testing.assert_array_equal((flags&1)!=0,env._in_main[0].numpy())
+    np.testing.assert_array_equal((flags&2)!=0,env._object_visible[0].numpy())
+    np.testing.assert_array_equal((flags&4)!=0,env._goal_visible[0].numpy())
+    np.testing.assert_array_equal((flags&8)!=0,env._contact[0].numpy())
+    np.testing.assert_array_equal((flags&16)!=0,env._bridge_members[0].numpy())
+    # Reverse the physical contact side: signed force must reverse, not the policy.
+    env.object_pos.zero_()
+    env.goal_pos[:] = torch.tensor([2.,0.])
+    env.positions[0,0] = torch.tensor([-(cfg.object_radius+cfg.agent_radius-.025),0.])
+    env._refresh()
+    assert unpack()[0,6] > .04
+    env.positions[0,0,0] *= -1
+    env._refresh()
+    assert unpack()[0,6] < -.04
