@@ -24,3 +24,6 @@ v3 research: local beacons are a one-hop geometry-corrected communication primit
 
 
 Next train-only rear-sector reward is simulator-privileged **reward computation**, not an NN observation/action, scripted agent, controller or curriculum. `rear_approach_weight=0` retains old v3 reward semantics; old checkpoints missing this config field must load as 0. Keep physical task unchanged and run only focused hardware validation, never duplicate broad CI.
+
+
+Optional CTDE research run: only centralized value estimator gets privileged state; each actor has unchanged local data + local learned task residual. Frozen inherited navigation is allowed for preserving exploration, NOT a scripted action controller. Use a clean A20 direct-search warmstart; old schema3 modes load as local. No redundant CI.

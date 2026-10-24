@@ -192,6 +192,9 @@ class SwarmEnv:
         c = self.cfg
         self.graph = radius_graph(self.positions, c.comm_radius)
         self.graph.displacement = self.last_displacement
+        # Robot/cargo body radii are known local physical constants, not
+        # hidden target coordinates or a connectivity constraint.
+        self.graph.contact_radius = c.object_radius + c.agent_radius
         # Only constant LOCAL sensor calibrations, not target coordinates.
         self.graph.cue_scales = (c.sense_radius + c.object_radius,
                                  c.sense_radius + c.goal_radius)

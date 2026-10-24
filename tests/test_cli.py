@@ -19,3 +19,11 @@ def test_resume_cannot_silently_override_task(tmp_path, override):
 def test_bad_config():
     with pytest.raises(ValueError):EnvConfig(n_agents=1)
     with pytest.raises(ValueError):TrainConfig(hidden_dim=4)
+
+
+
+def test_ctde_requires_known_search_warmstart(tmp_path):
+    from npa_swarm.cli import main
+    import pytest
+    with pytest.raises(SystemExit):
+        main(["train", "--ctde-task", "--updates", "0", "--output", str(tmp_path/"invalid"), "--device", "cpu"])

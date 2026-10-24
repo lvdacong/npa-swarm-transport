@@ -82,12 +82,19 @@ class TrainConfig:
     seed: int = 42
     relay_memory_decay: float = 0.997
     local_batch_fraction: float = 0.0
+    # "ctde" uses a separate privileged team critic plus a learned, local
+    # context action residual. Historical checkpoints remain "local".
+    learning_mode: str = "local"
 
     def __post_init__(self):
         if self.hidden_dim < 8 or min(self.rollout_steps, self.bptt_steps, self.ppo_epochs) < 1:
             raise ValueError("hidden_dim >= 8 and positive rollout/optimization sizes required")
         if self.learning_rate <= 0 or not 0 < self.gamma <= 1 or not 0 <= self.gae_lambda <= 1:
             raise ValueError("Invalid optimizer/return configuration")
+        if self.learning_mode not in ("local", "ctde"):
+            raise ValueError("learning_mode must be local or ctde")
+        if self.learning_mode == "ctde" and self.local_batch_fraction:
+            raise ValueError("ctde and legacy local_batch_fraction cannot be combined")
         if not 0 <= self.local_batch_fraction < 1:
             raise ValueError("local_batch_fraction must be in [0,1)")
         if not 0 < self.relay_memory_decay < 1:

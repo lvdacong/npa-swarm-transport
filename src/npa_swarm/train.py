@@ -13,6 +13,7 @@ from .config import EnvConfig, TrainConfig
 from .env import SwarmEnv
 from .policy import LocalPolicy
 from .relay import relay_diagnostics
+from .ctde import TeamCritic, world_features, world_reward, actor_advantages
 
 SCHEMA_VERSION = 3
 
@@ -22,6 +23,7 @@ def checkpoint_train_config(data):
     # Early schema-3 files predate this option and used .97, irrespective of
     # the defaults selected for new experiments.
     config.setdefault("relay_memory_decay", .97)
+    config.setdefault("learning_mode", "local")
     return TrainConfig(**config)
 
 
@@ -101,14 +103,35 @@ class Rollout:
     initial_hidden: torch.Tensor
     metrics: dict
     rear_active: torch.Tensor | None = None
+    team_context: torch.Tensor | None = None
+    team_advantages: torch.Tensor | None = None
+    team_returns: torch.Tensor | None = None
+    task_mask: torch.Tensor | None = None
+    task_witness: torch.Tensor | None = None
+    task_fringe: torch.Tensor | None = None
 
 
 class Trainer:
     def __init__(self, env: SwarmEnv, config: TrainConfig, policy=None):
         self.env, self.cfg, self.device = env, config, torch.device(env.device)
         seed_all(config.seed)
-        self.policy = (policy or LocalPolicy(env.obs_dim, config.hidden_dim, config.relay_memory_decay)).to(self.device)
-        self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=config.learning_rate)
+        self.is_ctde = config.learning_mode == "ctde"
+        self.policy = (policy or LocalPolicy(env.obs_dim, config.hidden_dim,
+                                             config.relay_memory_decay,
+                                             task_head=self.is_ctde)).to(self.device)
+        if self.is_ctde:
+            if not self.policy.task_head:
+                raise ValueError("CTDE requires a locally conditioned task head")
+            # Preserve the already learned exploration/navigation behaviour.
+            # Only the small conditional residual learns from sparse contact.
+            for name, parameter in self.policy.named_parameters():
+                parameter.requires_grad_(name.startswith("task_actor."))
+            self.team_critic = TeamCritic().to(self.device)
+            parameters = list(self.policy.task_actor.parameters()) + list(self.team_critic.parameters())
+        else:
+            self.team_critic = None
+            parameters = self.policy.parameters()
+        self.optimizer = torch.optim.Adam(parameters, lr=config.learning_rate)
         self.hidden = self.policy.initial_state(env.cfg.num_envs, env.cfg.n_agents, self.device)
         self.updates = self.env_steps = self.episodes = self.successes = 0
         self.lineage = {"kind": "new"}
@@ -132,13 +155,32 @@ class Trainer:
         contact_peaks, contact_active = [], []
         relay_statistics = {}
         active_samples = []
+        team_contexts, team_values, team_rewards, task_masks = [], [], [], []
+        witness_masks, fringe_masks = [], []
+        timeout_team_values = {}
         for t in range(c.rollout_steps):
             obs, graph = self.env.observe(), self.env.graph
+            if self.is_ctde:
+                context = world_features(self.env)
+                team_contexts.append(context)
+                team_values.append(self.team_critic(context))
             action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
+            if self.is_ctde:
+                # Training loss is focused on agents that currently perceive
+                # cargo. The shared head also generalizes to relayed cargo
+                # bearings outside direct visual range during execution.
+                cargo_witness = (obs[..., 9] > .5) & (memory[..., -6] > .05)
+                degree = obs[..., 6]
+                graph_fringe = (degree > 0) & (degree < .55)
+                witness_masks.append(cargo_witness)
+                fringe_masks.append(graph_fringe)
+                task_masks.append(cargo_witness | graph_fringe)
             for key, statistic in relay_diagnostics(self.env, memory).items():
                 relay_statistics.setdefault(key, []).append(statistic.float().mean())
             next_obs, reward, terminated, truncated, info = self.env.step(
                 action, goal_relay=memory[..., -3])
+            if self.is_ctde:
+                team_rewards.append(world_reward(info, terminated))
             active_samples.append((obs[..., 9] > .5) & (next_obs[..., 9] > .5)
                                   & self.env.rear_membership() & (memory[..., -3] > 0)
                                   & bool(self.env.cfg.rear_approach_weight))
@@ -163,6 +205,9 @@ class Trainer:
                     # steps, the next iteration already computes this value.
                     _, _, boot, _ = self.policy(next_obs, memory, self.env.graph)
                     truncated_boot[t] = boot
+                    if self.is_ctde:
+                        # Bootstrapping timeout BEFORE reset is essential.
+                        timeout_team_values[t] = self.team_critic(world_features(self.env))
                 self.env.reset(done)
             self.env_steps += self.env.cfg.num_envs
         values_t, rewards_t = torch.stack(values), torch.stack(rewards)
@@ -200,10 +245,93 @@ class Trainer:
                                 name + "_critic_mse": float((target-prediction).square().mean()),
                                 name + "_return_mean": float(target.mean()),
                                 name + "_value_mean": float(prediction.mean())})
+        if self.is_ctde:
+            old_team = torch.stack(team_values)
+            final_team = self.team_critic(world_features(self.env))
+            next_team = torch.cat((old_team[1:], final_team[None]), 0)
+            for t, value in timeout_team_values.items():
+                next_team[t] = torch.where(trunc_t[t], value, next_team[t])
+            team_adv, team_ret = compute_gae(
+                torch.stack(team_rewards)[..., None], old_team[..., None],
+                next_team[..., None], term_t, trunc_t, c.gamma, c.gae_lambda)
+            team_context = torch.stack(team_contexts)
+            task_mask = torch.stack(task_masks)
+            metrics["ctde_team_advantage_mean"] = float(team_adv.mean())
+            metrics["ctde_task_witness_steps"] = int(torch.stack(witness_masks).sum())
+            metrics["ctde_graph_fringe_steps"] = int(torch.stack(fringe_masks).sum())
+            return Rollout(observations, graphs, torch.stack(latent), torch.stack(logp),
+                           values_t, advantages, returns, term_t | trunc_t,
+                           initial_hidden, metrics, active_t, team_context,
+                           team_adv.squeeze(-1), team_ret.squeeze(-1), task_mask,
+                           torch.stack(witness_masks), torch.stack(fringe_masks))
         return Rollout(observations, graphs, torch.stack(latent), torch.stack(logp), values_t,
                        advantages, returns, term_t | trunc_t, initial_hidden, metrics, active_t)
 
+    def _optimize_ctde(self, rollout: Rollout):
+        """Train-only team baseline + sparse learned manipulation residual."""
+        c, total_steps = self.cfg, len(rollout.observations)
+        witness, fringe = rollout.task_witness, rollout.task_fringe
+        witness_count, fringe_count = int(witness.sum()), int(fringe.sum())
+        focus = witness | fringe
+        # Only true cargo witnesses use the local difference signal; team
+        # advantage trains the sparse graph-fringe coefficient separately.
+        advantage = actor_advantages(rollout.team_advantages, rollout.advantages, witness)
+        # Each population is normalized on its OWN sample count, so hundreds
+        # of fringe particles never drown five actual cargo witnesses.
+        witness_weight = witness.float() * (witness.numel() / max(witness_count, 1))
+        fringe_weight = fringe.float() * (fringe.numel() / max(fringe_count, 1))
+        if witness_count and fringe_count:
+            weights = .7 * witness_weight + .3 * fringe_weight
+        elif witness_count:
+            weights = witness_weight
+        else:
+            weights = fringe_weight
+        stats = {k: torch.zeros((), device=self.device) for k in
+                 ("policy_loss", "value_loss", "entropy", "approx_kl", "clip_fraction")}
+        for _ in range(c.ppo_epochs):
+            hidden = rollout.initial_hidden.detach()
+            self.optimizer.zero_grad(set_to_none=True)
+            for t in range(total_steps):
+                lp, entropy, _local_v, hidden = self.policy.evaluate_actions(
+                    rollout.observations[t], hidden, rollout.graphs[t],
+                    rollout.latent_actions[t])
+                log_ratio = lp - rollout.old_log_probs[t]
+                ratio = log_ratio.exp()
+                clipped = torch.minimum(
+                    ratio * advantage[t],
+                    ratio.clamp(1-c.clip_ratio, 1+c.clip_ratio) * advantage[t])
+                policy_loss = -(clipped * weights[t]).mean()
+                value = self.team_critic(rollout.team_context[t])
+                value_loss = .5 * (value - rollout.team_returns[t]).square().mean()
+                entropy_mean = (entropy * weights[t]).mean()
+                loss = ((policy_loss + c.value_coef * value_loss -
+                         c.entropy_coef * entropy_mean) / total_steps)
+                loss.backward()
+                # The inherited GRU is frozen and is not conditioned on this
+                # residual. Replaying state need not store a BPTT graph.
+                hidden = hidden.detach()
+                with torch.no_grad():
+                    scale = 1 / (total_steps * c.ppo_epochs)
+                    stats["policy_loss"] += policy_loss.detach() * scale
+                    stats["value_loss"] += value_loss.detach() * scale
+                    stats["entropy"] += entropy_mean.detach() * scale
+                    stats["approx_kl"] += (((ratio-1)-log_ratio)*weights[t]).mean() * scale
+                    stats["clip_fraction"] += (
+                        ((ratio-1).abs() > c.clip_ratio).float()*weights[t]).mean() * scale
+            norm = torch.nn.utils.clip_grad_norm_(
+                list(self.policy.task_actor.parameters()) + list(self.team_critic.parameters()),
+                c.max_grad_norm, error_if_nonfinite=True)
+            self.optimizer.step()
+        stats["gradient_norm"] = norm.detach()
+        return {**{k: float(v) for k, v in stats.items()},
+                "ctde_task_witness_samples": witness_count,
+                "ctde_graph_fringe_samples": fringe_count,
+                "ctde_critic_train_only": True,
+                "ctde_backbone_frozen": True}
+
     def optimize(self, rollout: Rollout):
+        if self.is_ctde:
+            return self._optimize_ctde(rollout)
         c, total_steps = self.cfg, len(rollout.observations)
         advantages = rollout.advantages
         advantages = (advantages - advantages.mean()) / (advantages.std(unbiased=False) + 1e-8)
@@ -296,13 +424,16 @@ class Trainer:
         return result
 
     def save(self, path):
-        atomic_torch_save({"schema_version": SCHEMA_VERSION,
+        payload = {"schema_version": SCHEMA_VERSION,
             "env_config": dataclasses.asdict(self.env.cfg), "train_config": dataclasses.asdict(self.cfg),
             "obs_dim": self.env.obs_dim, "model": self.policy.state_dict(), "optimizer": self.optimizer.state_dict(),
             "hidden": self.hidden, "env_state": self.env.state_dict(), "rng": capture_rng(),
             "updates": self.updates, "env_steps": self.env_steps, "episodes": self.episodes, "successes": self.successes,
             "lineage": self.lineage, "source_sha256": self.runtime_source_sha256, "best_progress": self.best_progress,
-            "torch_version": torch.__version__, "device": str(self.device)}, path)
+            "torch_version": torch.__version__, "device": str(self.device)}
+        if self.is_ctde:
+            payload["team_critic"] = self.team_critic.state_dict()
+        atomic_torch_save(payload, path)
 
     @classmethod
     def load(cls, path, device="cpu"):
@@ -316,6 +447,10 @@ class Trainer:
             env = SwarmEnv(EnvConfig(**env_cfg), device=device)
             trainer = cls(env, checkpoint_train_config(data))
             trainer.policy.load_state_dict(data["model"])
+            if trainer.is_ctde:
+                if "team_critic" not in data:
+                    raise ValueError("CTDE checkpoint lacks team critic")
+                trainer.team_critic.load_state_dict(data["team_critic"])
             trainer.optimizer.load_state_dict(data["optimizer"])
             env.load_state_dict(data["env_state"])
             trainer.hidden = data["hidden"].to(device)
@@ -359,7 +494,8 @@ def load_policy_checkpoint(path, device="cpu"):
     env_cfg.setdefault("rear_eligibility", "main")
     cfg = EnvConfig(**env_cfg)
     tc = checkpoint_train_config(data)
-    policy = LocalPolicy(data["obs_dim"], tc.hidden_dim, tc.relay_memory_decay).to(device)
+    policy = LocalPolicy(data["obs_dim"], tc.hidden_dim, tc.relay_memory_decay,
+                         task_head=(tc.learning_mode == "ctde")).to(device)
     policy.load_state_dict(data["model"])
     policy.eval()
     return policy, cfg, {"checkpoint_sha256": file_sha256(path), "updates": data["updates"],
@@ -388,10 +524,16 @@ def train(env_cfg, train_cfg, output, updates, device="cpu", resume=None, warmst
         trainer = Trainer(SwarmEnv(env_cfg, device=device), train_cfg)
         if warmstart:
             parent = _read_checkpoint(warmstart, device)
-            trainer.policy.load_state_dict(parent["model"])
+            if trainer.is_ctde and checkpoint_train_config(parent).learning_mode == "local":
+                result = trainer.policy.load_state_dict(parent["model"], strict=False)
+                if set(result.missing_keys) != {"task_actor.weight", "task_actor.bias"} or result.unexpected_keys:
+                    raise ValueError("Unexpected parent policy structure for CTDE warmstart")
+            else:
+                trainer.policy.load_state_dict(parent["model"])
             trainer.lineage = {"kind": "warmstart", "parent_sha256": file_sha256(warmstart),
                 "inherited_trained_weights": has_trained_weights(parent), "parent_updates": parent["updates"],
-                "parent_stage": parent["env_config"]["stage"]}
+                "parent_stage": parent["env_config"]["stage"],
+                "parent_learning_mode": checkpoint_train_config(parent).learning_mode}
     trainer.save(output / "last.pt")
     with (output / "metrics.jsonl").open("a", encoding="utf-8") as stream:
         for _ in range(updates):

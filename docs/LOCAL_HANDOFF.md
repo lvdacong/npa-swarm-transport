@@ -113,3 +113,27 @@ Stop and adjust a *specific* problem if it regresses. An absolute world goal
 coordinate is never an actor input. Old frozen failures remain preserved.
 No repeated Linux CI, WebGPU soak, 4096 benchmarks, arbitrary seed sweeps
 or large action matrix.
+
+
+## Next experiment: coordinated learning without another reward tweak
+
+The active handoff Issue specifies the v5 **--ctde-task** experiment.
+Use a preserved A20 search policy as a *warmstart* in a NEW output directory,
+not the failed v4 local-balanced/rear checkpoints. It adds a separate
+centralized training critic and a small task-conditioned **learned**
+residual action head; navigation/backbone is frozen to prevent PPO policy
+collapse during sparse manipulation samples. The centralized state is
+training-only, not actor input, and remains out of the WebGPU path.
+No new environment, no easier resets, no curriculum or scripted controller.
+
+Run targeted CPU tests of task-head zero residual/backbone invariance,
+team-critic gradient, timeout bootstrapping and checkpoint resume. Then
+measure one 900×2 CUDA PPO update and cumulative throughput. First compare
+the fresh zero-update warmstart frozen behavior to saved A20+.997 on the
+SAME development seed; it must not regress exploration. Only then run a
+bounded direct search update window. Critic calibration, nonzero
+manipulation-head gradients, goal-conditioned force, continuous contact,
+bridge and full connectivity matter more than rewards/CI counts.
+Do not repeat old Windows/Linux CI, shader tests, 4096 or extended
+multiseed runs until material behavioral progress. If task witnesses remain
+rare, stop and diagnose rather than train an untouched head indefinitely.

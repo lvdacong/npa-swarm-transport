@@ -73,3 +73,48 @@ B/C failures must not be reported as successes.
 ## Issue #5 本机修正
 
 新rear势版本3修正远侧错误方向与前侧角向平台；版本1/2仅供旧检查点准确恢复。默认最大分量资格仍main；显式neighbors实验仅允许具有真实邻居的非孤立粒子获rear信用，不改变连通代价/严格桥/完成标准。可选local_batch_fraction混合全体与局部活跃样本PPO及critic目标，默认0，空集/单例回退；它只作用于训练，不改变局部actor观察。实验没有学会搬运，详见reports/local-v4。
+
+
+## CTDE task-head experiment (research revision)
+
+Repeated reward shaping and conditional replay weighting failed to keep contact.
+A short-lived local reward cannot compensate for a collapsed base explorer,
+and the earlier rollouts only covered ~2 complete training episodes in v4.
+The new **optional** `--ctde-task` training mode changes learning structure,
+**not** the environment or particle action limits:
+
+- **Training-only centralized team critic.** It sees 12 normalized invariant
+  world metrics (distance, discovery, connectivity, contact and cargo motion).
+  The critic predicts long-term cooperative return, while agent-local GAE
+  residuals give relative action credit. This global state and critic are
+  *never* sent to the actor or browser inference.
+- **Preserve inherited navigation.** The old recurrent local backbone,
+  action head, entropy and message relay are frozen. A tiny zero-initialized
+  4-coefficient *trainable* local task head adds goal-conditioned action
+  residuals using only previously received cargo/goal-relative bearings and
+  a local physical cargo contact radius, plus an independent learned
+  neighbor-centroid coefficient at thin communication fringes. That fourth
+  coefficient is also initialized to zero, and its sign is trained rather
+  than hard-coded; it permits learning graph cohesion without sacrificing
+  center-of-swarm exploration. It is not a scripted pushing
+  controller: there are no prescribed forces, roles or guaranteed connections.
+  With zero residual, the old explorer is mathematically unchanged.
+- **Focus optimization on real witnesses.** PPO policy terms are normalized
+  over samples that actually have a local cargo sighting, rather than 900
+  mostly irrelevant agents. The joint team objective uses actual delivery,
+  signed cargo progress, discovery, bridge/connectivity, and exploration.
+  Rare actor-local GAE residuals remain available, with a *separate*
+  centralized baseline. A completely empty witness batch updates only the
+  team critic. No synthetic successes or new partial resets.
+- It is a **full unknown-endpoint, fixed 900-agent search task throughout**;
+  no contact/wall/force change, contact→search or light-object curriculum,
+  oracle NN inputs, deletion, shield or scripted recruitment.
+
+New mode requires a clear A20 direct-search warmstart from the preserved v3
+model. This only initializes the *old search policy*, NOT a pre-trained
+transport policy. The new task head/critic/optimizer start fresh; history
+and weights are preserved. Legacy schema-3 checkpoints without the new
+train-config `learning_mode` retain the original `local` optimizer and
+action semantics for strict resume and playback. Train in a new directory.
+The CTDE option is a research hypothesis; success remains unknown until
+frozen full-length rollout and connectivity checks.

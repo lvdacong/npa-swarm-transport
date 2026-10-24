@@ -38,6 +38,8 @@ def main(argv=None):
     training.add_argument("--ppo-epochs",type=int,default=3);training.add_argument("--hidden-dim",type=int,default=32)
     training.add_argument("--learning-rate",type=float,default=3e-4)
     training.add_argument("--local-batch-fraction",type=float,default=0.)
+    training.add_argument("--ctde-task",action="store_true",
+                          help="centralized TRAINING critic + learned local task head; requires --warmstart of a known search policy")
     training.add_argument("--relay-memory-decay",type=float,default=.997)
     evaluation=sub.add_parser("evaluate");device_args(evaluation)
     evaluation.add_argument("--checkpoint",required=True);evaluation.add_argument("--output",required=True)
@@ -74,13 +76,16 @@ def main(argv=None):
             if args.resume and args.warmstart:parser.error("Choose --resume OR --warmstart")
             if args.resume:
                 forbidden={"--agents","--envs","--stage","--layout","--seed","--episode-steps","--sense-radius","--work-credit-weight","--contact-credit-mode","--rear-approach-weight",
-                           "--rollout-steps","--bptt-steps","--ppo-epochs","--hidden-dim","--learning-rate","--relay-memory-decay","--rear-eligibility","--local-batch-fraction"}
+                           "--rollout-steps","--bptt-steps","--ppo-epochs","--hidden-dim","--learning-rate","--relay-memory-decay","--rear-eligibility","--local-batch-fraction","--ctde-task"}
                 provided=sys.argv[1:] if argv is None else argv
                 if any(token.split("=",1)[0] in forbidden for token in provided):
                     parser.error("Strict resume uses saved configs; omit overrides or start a new run")
             tc=TrainConfig(hidden_dim=args.hidden_dim,rollout_steps=args.rollout_steps,bptt_steps=args.bptt_steps,
                            ppo_epochs=args.ppo_epochs,learning_rate=args.learning_rate,seed=args.seed,
-                           relay_memory_decay=args.relay_memory_decay,local_batch_fraction=args.local_batch_fraction)
+                           relay_memory_decay=args.relay_memory_decay,local_batch_fraction=args.local_batch_fraction,
+                           learning_mode="ctde" if args.ctde_task else "local")
+            if args.ctde_task and not args.warmstart and not args.resume:
+                parser.error("--ctde-task requires an existing search-behavior warmstart; do not freeze random exploration")
             result=train(None if args.resume else cfg,None if args.resume else tc,args.output,args.updates,
                          str(device),resume=args.resume,warmstart=args.warmstart)
         else:

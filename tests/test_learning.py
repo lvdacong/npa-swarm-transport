@@ -196,3 +196,118 @@ def test_pre_credit_option_v3_resume_keeps_work_semantics(tmp_path):
     loaded.env.cfg.contact_credit_mode = 'marginal'
     with pytest.raises(ValueError, match='configuration differs'):
         loaded.env.load_state_dict(data['env_state'])
+
+
+def test_ctde_local_execution_is_original_when_conditional_head_is_zero():
+    import copy
+    torch.manual_seed(51)
+    base = LocalPolicy(20, 12, relay_memory_decay=.997)
+    augmented = LocalPolicy(20, 12, relay_memory_decay=.997, task_head=True)
+    result = augmented.load_state_dict(copy.deepcopy(base.state_dict()), strict=False)
+    assert set(result.missing_keys) == {"task_actor.weight", "task_actor.bias"}
+    assert not result.unexpected_keys
+    env = SwarmEnv(EnvConfig(n_agents=16, stage="contact"))
+    state = base.initial_state(1, 16)
+    observation, graph = env.observe(), env.graph
+    a, b = base(observation, state, graph), augmented(observation, state, graph)
+    for i in (0, 2, 3):
+        torch.testing.assert_close(a[i], b[i], atol=0, rtol=0)
+
+
+def test_task_head_responds_only_to_locally_available_bearings():
+    p = LocalPolicy(20, 8, task_head=True)
+    baseline = LocalPolicy(20, 8)
+    baseline.load_state_dict({k: v for k, v in p.state_dict().items()
+                              if not k.startswith("task_actor.")})
+    from npa_swarm.graph import Graph
+    src = torch.tensor([], dtype=torch.long)
+    g = Graph(src, src, 1)
+    g.contact_radius = .71
+    empty = torch.zeros(1, 1, 20)
+    h = p.initial_state(1, 1)
+    with torch.no_grad():
+        p.task_actor.bias[:] = torch.tensor([0., 1.1, 0., 0.])
+    # Without cargo knowledge, no fixed-world-axis or privileged goal move.
+    a = p(empty, h, g)[0]
+    b = baseline(empty, h, g)[0]
+    torch.testing.assert_close(a, b, atol=0, rtol=0)
+    # A real witness knows cargo (agent x=0, cargo x=+1) and goal (x=+2).
+    obs = empty.clone()
+    obs[..., 9] = 1
+    obs[..., 12] = 1
+    obs[..., 7] = 1 / g.cue_scales[0]
+    obs[..., 10] = 2 / g.cue_scales[1]
+    a = p(obs, h, g)[0]
+    b = baseline(obs, h, g)[0]
+    assert (a-b)[0, 0, 0] > 0.9 and abs(float((a-b)[0, 0, 1])) < 1e-6
+
+
+def test_ctde_team_critic_and_task_head_learn_without_changing_search_backbone(tmp_path):
+    import copy
+    from npa_swarm.ctde import world_features, actor_advantages
+    cfg = EnvConfig(n_agents=16, stage="contact", episode_steps=6)
+    train_cfg = TrainConfig(hidden_dim=8, rollout_steps=4, bptt_steps=2,
+                            ppo_epochs=1, learning_mode="ctde")
+    trainer = Trainer(SwarmEnv(cfg), train_cfg)
+    assert trainer.team_critic is not None
+    assert world_features(trainer.env).shape == (1, 12)
+    before = {k: v.detach().clone() for k, v in trainer.policy.state_dict().items()}
+    before_critic = copy.deepcopy(trainer.team_critic.state_dict())
+    stat = trainer.update()
+    assert stat["ctde_critic_train_only"] and stat["ctde_backbone_frozen"]
+    assert stat["ctde_task_witness_samples"] >= 0
+    for key, value in trainer.policy.state_dict().items():
+        if not key.startswith("task_actor."):
+            torch.testing.assert_close(value, before[key], atol=0, rtol=0)
+    assert any(not torch.equal(before_critic[k], v) for k,v in trainer.team_critic.state_dict().items())
+    assert all(np.isfinite(v) for v in stat.values() if isinstance(v, float))
+    path = tmp_path / "ctde.pt"
+    trainer.save(path)
+    restored = Trainer.load(path)
+    assert restored.is_ctde and restored.updates == 1
+    assert restored.cfg.learning_mode == "ctde"
+    for a, b in zip(restored.team_critic.parameters(), trainer.team_critic.parameters()):
+        torch.testing.assert_close(a, b, atol=0, rtol=0)
+    mask = torch.zeros(3,2,4,dtype=torch.bool)
+    adv = actor_advantages(torch.randn(3,2), torch.randn(3,2,4), mask)
+    assert torch.isfinite(adv).all()
+
+
+def test_ctde_timeout_world_value_uses_pre_reset_state():
+    env = SwarmEnv(EnvConfig(n_agents=8, stage="contact", episode_steps=2))
+    tc = TrainConfig(hidden_dim=8, rollout_steps=4, ppo_epochs=1, learning_mode="ctde")
+    trainer = Trainer(env, tc)
+    rollout = trainer.collect()
+    assert rollout.team_context.shape == (4,1,12)
+    assert rollout.team_advantages.shape == (4,1)
+    assert rollout.team_returns.shape == (4,1)
+    assert rollout.task_mask.shape == (4,1,8)
+    assert rollout.task_witness.shape == (4,1,8)
+    assert rollout.task_fringe.shape == (4,1,8)
+    assert torch.isfinite(rollout.team_returns).all()
+
+
+def test_ctde_inference_is_local_only_and_old_missing_mode_resumes(tmp_path):
+    from npa_swarm.train import load_policy_checkpoint
+    old=Trainer(SwarmEnv(EnvConfig(n_agents=8,stage="contact",episode_steps=3)),
+                TrainConfig(hidden_dim=8,rollout_steps=2,bptt_steps=2,ppo_epochs=1))
+    path=tmp_path/"legacy.pt"
+    old.save(path)
+    payload=torch.load(path,weights_only=False)
+    del payload["train_config"]["learning_mode"]
+    torch.save(payload,path)
+    resumed=Trainer.load(path)
+    assert resumed.cfg.learning_mode == "local" and resumed.team_critic is None
+    resumed.update()
+    assert resumed.updates == 1
+    new=Trainer(SwarmEnv(EnvConfig(n_agents=8,stage="contact",episode_steps=3)),
+                TrainConfig(hidden_dim=8,rollout_steps=2,bptt_steps=2,ppo_epochs=1,
+                            learning_mode="ctde"))
+    p=tmp_path/"ctde.pt"
+    new.save(p)
+    inference, cfg, metadata=load_policy_checkpoint(p)
+    assert inference.task_head and not hasattr(inference,"team_critic")
+    env=SwarmEnv(cfg)
+    hidden=inference.initial_state(1,cfg.n_agents)
+    action,_,_,_,carry=inference.act(env.observe(),hidden,env.graph,deterministic=True)
+    assert action.shape==(1,8,2) and carry.shape==hidden.shape
