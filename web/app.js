@@ -150,7 +150,7 @@ function updateHud(){
     const hints=[];
     if(particleFlags&2)hints.push('直视重物');
     if(particleFlags&4)hints.push('直视目的地');
-    if(particleFlags&8)hints.push(f.data[k+6]>.04?'有效推动':f.data[k+6]<-.04?'反向推动':'接触重物');
+    if(particleFlags&8)hints.push(f.data[k+6]>.04?'正向施力':f.data[k+6]<-.04?'反向施力':'接触重物');
     if(!(particleFlags&1))hints.push('离群');
     if(particleFlags&16)hints.push('两端通路');
     $('selection').textContent=`#${state.selected} · 重物信息 ${Math.round(f.data[k+4]*100)}% · 目的地信息 ${Math.round(f.data[k+5]*100)}%`+(hints.length?' · '+hints.join(' · '):'');
