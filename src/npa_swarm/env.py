@@ -331,7 +331,11 @@ class SwarmEnv:
 
     @torch.no_grad()
     def load_state_dict(self, state):
-        if state["config"] != asdict(self.cfg):
+        saved_config = dict(state["config"])
+        # Additive reward option: earlier schema-3 states used actual work.
+        # Missing is exactly "work", never permission to switch to marginal.
+        saved_config.setdefault("contact_credit_mode", "work")
+        if saved_config != asdict(self.cfg):
             raise ValueError("Environment configuration differs from checkpoint")
         for name in self._state_names:
             target, saved = getattr(self, name), state[name]

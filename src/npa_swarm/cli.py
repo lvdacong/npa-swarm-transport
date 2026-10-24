@@ -30,7 +30,7 @@ def main(argv=None):
     perf.add_argument("--trace",action="store_true")
     training=sub.add_parser("train");env_args(training)
     training.add_argument("--output",required=True);training.add_argument("--updates",type=int,required=True)
-    training.add_argument("--resume");training.add_argument("--warmstart",help="v2 weights only; not a v1 checkpoint conversion")
+    training.add_argument("--resume");training.add_argument("--warmstart",help="schema-3 weights only; not a v1/v2 checkpoint conversion")
     training.add_argument("--rollout-steps",type=int,default=128);training.add_argument("--bptt-steps",type=int,default=32)
     training.add_argument("--ppo-epochs",type=int,default=3);training.add_argument("--hidden-dim",type=int,default=32)
     training.add_argument("--learning-rate",type=float,default=3e-4)

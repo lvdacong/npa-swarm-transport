@@ -182,3 +182,17 @@ def test_relay_retention_is_checkpointed_and_restored(tmp_path):
     loaded = Trainer.load(path)
     policy, _, metadata = load_policy_checkpoint(path)
     assert loaded.policy.relay_memory_decay == policy.relay_memory_decay == metadata['relay_memory_decay'] == .997
+
+
+def test_pre_credit_option_v3_resume_keeps_work_semantics(tmp_path):
+    trainer = tiny(); path = tmp_path / 'early-v3.pt'; trainer.save(path)
+    data = torch.load(path, weights_only=False)
+    del data['env_config']['contact_credit_mode']
+    del data['env_state']['config']['contact_credit_mode']
+    torch.save(data, path)
+    loaded = Trainer.load(path)
+    assert loaded.env.cfg.contact_credit_mode == 'work'
+    torch.testing.assert_close(loaded.env.positions, trainer.env.positions, rtol=0, atol=0)
+    loaded.env.cfg.contact_credit_mode = 'marginal'
+    with pytest.raises(ValueError, match='configuration differs'):
+        loaded.env.load_state_dict(data['env_state'])
