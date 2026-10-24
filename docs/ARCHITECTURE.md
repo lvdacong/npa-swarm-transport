@@ -28,8 +28,15 @@ Controls cycle requested 1×/4×/8×/unpaced (∞); the diagnostics show actual 
 
 Windows Python 3.12 may implement `monotonic()` using coarse GetTickCount64. Playback therefore uses high-resolution `perf_counter()` and accumulated deadlines, carrying wait overshoot into the following step. Status also records simulated seconds, active wall seconds and their cumulative ratio, excluding pauses and resetting with the scene.
 
-## State-driven WebGPU cues
+## Orthogonal WebGPU visual semantics
 
-The viewer retains the same 32-byte particle record and one device-to-host snapshot transfer. Its four signal floats now mean [cargo relay confidence, destination relay confidence, actual signed projected physical contact force normalized by actuator, exact integer bit flags]. Flags: bit0 largest component, bit1 direct cargo sighting, bit2 direct destination sighting, bit3 physical contact, bit4 membership in live two-endpoint bridge. Direct witnesses are displayed at full confidence; relays fade according to their **actual** stored message state. The scene uses amber for cargo messages, periwinkle for destination messages, mint for both, golden yellow for helpful contact force, coral for force against the destination and desaturated slate for detached particles. A subtle radius pulse identifies **direct sightings only**. A concise legend appears in the existing optional diagnostics, not as a new mode or a persistent text overlay. Picking a particle shows its real confidence, contact direction, direct sensor flags and connectivity. These colours are visualization only; privileged force/goal comparison is never fed to NN policy, reward, or physics. WebGPU instancing / interpolated snapshots / binary size stay unchanged; hardware shader compilation and actual performance need real-browser verification.
+These are composable channels, not exclusive particle roles:
+- **Core fill** encodes received cargo-message confidence (neutral teal -> amber).
+- **Outer outline** encodes destination-message confidence (independent violet ring); knowing **both** means amber core **with** violet ring, never a third state.
+- **Physical contact corona** encodes actual individual signed contact force toward the goal: continuous gold for positive projection, segmented coral for negative; faint neutral glow for near-zero projection. It does **not** prove cargo motion.
+- **White glint** marks firsthand local sensing; relayed messages never acquire it.
+- **Opacity** falls outside the largest live component (the agent remains simulated).
 
-Important: the colour of a contacting particle visualizes its **individual instantaneous signed contact force**, not the net cargo force, cargo displacement, or a completed RL task. Opposing particles can cancel. Success remains the whole cargo inside the goal disk.
+The existing four packed signal floats are reused: [cargo confidence, goal confidence, signed force, state flags]. No new per-agent bytes, GPU/CPU transfer, actor input, UI mode, or render pass. The one instanced WebGPU draw shades the layers together; picking a particle still exposes the numeric readings. The existing optional diagnostics panel has a compact four-channel guide, never a new permanent HUD.
+
+Reference raster was visually inspected with a 900-agent overview, magnified mixed states, plus desktop and mobile panel layouts. These are reference renderings, **not** actual hardware-WebGPU screenshots. Real shader compilation and GPU display performance need one targeted Chrome/Edge check; no task, physics, reward or training code changed.

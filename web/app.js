@@ -12,59 +12,111 @@ function parseSnapshot(buffer){
 }
 function transform(){const c=$('scene'),aspect=c.width/c.height,half=(state.frame?.f[7]||10)*1.08/(state.camera.zoom*Math.min(aspect,1));return {sx:1/(half*aspect),sy:1/half};}
 function resize(){const c=$('scene'),r=c.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(c.width!==w||c.height!==h){c.width=w;c.height=h;state.dirty=true;}}
-// Snapshot particle: [xy, velocity, cargo relay, goal relay, signed contact push, flags].
- // Only visual status is changed; no shader value enters the learned policy.
- // Instanced disks remain in one pass and only new snapshots are uploaded.
- // No Canvas fallback or backend selector: WebGPU errors remain explicit.
+// Orthogonal visual semantics: cargo=core, goal=ring, contact=corona,
+ // direct sensing=glint, disconnected=opacity. All read existing snapshot data.
+ // Shader-only rendering; no extra passes, buffers, or policy inputs.
 const shader=`
 struct Particle {p:vec2f,v:vec2f,signal:vec4f};
 struct Uniforms {view:vec4f,scene:vec4f,radii:vec4f,pick:vec4f,misc:vec4f,camera:vec4f};
 @group(0) @binding(0) var<uniform> u:Uniforms;
 @group(0) @binding(1) var<storage,read> previous:array<Particle>;
 @group(0) @binding(2) var<storage,read> current:array<Particle>;
-struct Out {@builtin(position) pos:vec4f,@location(0) local:vec2f,@location(1) color:vec4f,@location(2) @interpolate(flat) role:u32};
-@vertex fn vs(@builtin(vertex_index) vi:u32,@builtin(instance_index) ii:u32)->Out{
- let corners=array<vec2f,6>(vec2f(-1,-1),vec2f(1,-1),vec2f(-1,1),vec2f(-1,1),vec2f(1,-1),vec2f(1,1));
- let q=corners[vi];var p=vec2f(0);var r=1.;var role=ii;var color=vec4f(.55,.85,.76,1.);
- if(ii==0u){r=u.misc.x;color=vec4f(.23,.36,.39,1.);}
- else if(ii==1u){p=u.scene.zw;r=u.radii.y;color=vec4f(.65,.66,.97,1.);}
- else if(ii==2u){p=u.scene.xy;r=u.radii.x;color=vec4f(.97,.72,.43,1.);}
- else if(ii==3u||ii==4u){p=u.pick.xy;r=select(u.radii.w,u.misc.z,ii==4u);color=vec4f(.38,.71,.79,select(1.,.4,ii==4u));if(u.pick.w<.5){r=0.;}}
- else {
-  let i=ii-5u;let a=previous[i];let b=current[i];
-  p=mix(a.p,b.p,u.view.z);r=max(u.radii.z,u.misc.y);
-  let flags=u32(round(b.signal.w));
-  let cargo=clamp(b.signal.x,0.,1.);let goal=clamp(b.signal.y,0.,1.);
-  var tint=vec3f(.38,.68,.67);
-  if(cargo>.02){tint=mix(tint,vec3f(.97,.65,.37),sqrt(cargo)*.88);}
-  if(goal>.02){tint=mix(tint,vec3f(.62,.64,.96),sqrt(goal)*.88);}
-  if(cargo>.06&&goal>.06){tint=mix(tint,vec3f(.67,.96,.85),min(cargo,goal)*.88);}
-  // Actual collision is distinct from merely receiving a target message.
-  if((flags&8u)!=0u){
-    if(b.signal.z>.04){tint=vec3f(.99,.87,.48);}
-    else if(b.signal.z<-.04){tint=vec3f(.99,.44,.48);}
-    else {tint=vec3f(.92,.76,.57);}
-    r*=1.18;
-  } else if((flags&6u)!=0u){
-    // Subtle breath only for firsthand local sightings, not remote messages.
-    r*=1.05+.025*sin(u.view.w*2.4+f32(i)*.17);
-    tint=mix(tint,vec3f(.97,.98,.99),.12);
+struct Out {
+  @builtin(position) pos:vec4f,
+  @location(0) local:vec2f,
+  @location(1) color:vec4f,
+  @location(2) @interpolate(flat) role:u32,
+  @location(3) @interpolate(flat) info:vec4f
+};
+@vertex fn vs(@builtin(vertex_index) vi:u32,@builtin(instance_index) ii:u32)->Out {
+  let corners=array<vec2f,6>(vec2f(-1.,-1.),vec2f(1.,-1.),vec2f(-1.,1.),vec2f(-1.,1.),vec2f(1.,-1.),vec2f(1.,1.));
+  let q=corners[vi];var p=vec2f(0.);var r=1.;var role=ii;
+  var color=vec4f(.55,.85,.76,1.);var info=vec4f(0.);
+  if(ii==0u){r=u.misc.x;color=vec4f(.23,.36,.39,1.);}
+  else if(ii==1u){p=u.scene.zw;r=u.radii.y;color=vec4f(.62,.60,.96,1.);}
+  else if(ii==2u){p=u.scene.xy;r=u.radii.x;color=vec4f(.98,.68,.33,1.);}
+  else if(ii==3u||ii==4u){p=u.pick.xy;r=select(u.radii.w,u.misc.z,ii==4u);
+    color=vec4f(.38,.71,.79,select(1.,.4,ii==4u));if(u.pick.w<.5){r=0.;}}
+  else {
+    let i=ii-5u;
+    let a=previous[i];let b=current[i];
+    p=mix(a.p,b.p,u.view.z);
+    info=b.signal;
+    let touch=(u32(round(info.w))&8u)!=0u;
+    r=max(u.radii.z,u.misc.y)*select(1.46,2.18,touch);
+    role=5u;
   }
-  if((flags&1u)==0u){tint=mix(tint,vec3f(.29,.34,.41),.72);}
-  color=vec4f(tint,1.);
-  if(u.pick.w>.5&&u32(u.pick.z)==i){color=vec4f(.96,.99,.95,1.);r*=1.6;}
-  role=5u;
+  var o:Out;
+  o.pos=vec4f((p+q*r-u.camera.xy)*u.view.xy,0.,1.);
+  o.local=q;o.color=color;o.role=role;o.info=info;
+  return o;
 }
- var o:Out;o.pos=vec4f((p+q*r-u.camera.xy)*u.view.xy,0.,1.);o.local=q;o.color=color;o.role=role;return o;
+@fragment fn fs(v:Out)->@location(0) vec4f {
+  let d=length(v.local);
+  let dw=max(fwidth(d),.008);
+  if(v.role==0u){
+    let w=fwidth(v.local);
+    let world=v.local*u.misc.x;
+    let grid=abs(fract(world*.5+.5)-.5);
+    let aw=max(w*u.misc.x*.5,vec2f(.0001));
+    let line=1.-min(min(grid.x/aw.x,grid.y/aw.y),1.);
+    let border=smoothstep(.992,1.,max(abs(v.local.x),abs(v.local.y)));
+    return vec4f(v.color.rgb,max(line*.13,border*.65));
+  }
+  if(d>1.){discard;}
+  let aa=max(dw*.5,.006);
+  if(v.role==1u||v.role==3u||v.role==4u){
+    let edge=1.-smoothstep(1.-aa,1.,d);
+    let ring=smoothstep(.96-aa,.96,d);
+    return vec4f(v.color.rgb,edge*mix(.055,.9,ring)*v.color.a);
+  }
+  if(v.role==2u){
+    let edge=1.-smoothstep(1.-aa,1.,d);
+    return vec4f(v.color.rgb*(.85+.15*(1.-d*d)),edge);
+  }
+  // Orthogonal layers: cargo confidence = core fill; goal = outer
+  // violet outline; physical contact = independent corona; detached = alpha.
+  let flags=u32(round(v.info.w));
+  let touch=(flags&8u)!=0u;
+  let live=(flags&1u)!=0u;
+  let direct=(flags&6u)!=0u;
+  let bodyR=select(1./1.46,1./2.18,touch);
+  let cargo=clamp(v.info.x,0.,1.);
+  let goal=clamp(v.info.y,0.,1.);
+  let signedPush=clamp(v.info.z,-1.,1.);
+  let coreColor=mix(vec3f(.36,.66,.69),vec3f(.98,.68,.33),sqrt(cargo)*.94);
+  let core=1.-smoothstep(bodyR-aa*.8,bodyR+aa*.55,d);
+  let ringDist=abs(d-(bodyR+.145));
+  let band=max(.058,dw*.40);
+  let outline=(1.-smoothstep(band-aa*.50,band+aa*.55,ringDist))*pow(goal,.65)*.98;
+  var corona=0.;var haloColor=vec3f(.79,.83,.85);
+  if(touch){
+    let power=clamp(abs(signedPush),0.,1.);
+    haloColor=select(vec3f(1.,.43,.48),vec3f(1.,.83,.46),signedPush>=.045);
+    if(power<.045){haloColor=vec3f(.7,.8,.82);}
+    let shoulder=smoothstep(bodyR+.20,bodyR+.34,d);
+    let falloff=1.-smoothstep(.85,1.02,d);
+    var shape=1.;
+    if(signedPush<-.045){
+      let angle=atan2(v.local.y,v.local.x+1e-6);
+      shape=.16+.84*smoothstep(-.25,.35,sin(angle*4.));
+    }
+    corona=shoulder*falloff*shape*(.24+.42*power);
+  }
+  let coreLayer=core;
+  let rimLayer=outline*(1.-coreLayer);
+  let haloLayer=corona*(1.-coreLayer)*(1.-outline);
+  let alpha=coreLayer+rimLayer+haloLayer;
+  var rgb=(coreColor*coreLayer+vec3f(.64,.60,.99)*rimLayer+haloColor*haloLayer)/max(alpha,1e-5);
+  if(direct){
+    let glint=length(v.local-vec2f(-bodyR*.27,-bodyR*.26));
+    let sparkle=(1.-smoothstep(.06,.16,glint))*(.74+.16*sin(u.view.w*2.2));
+    rgb=mix(rgb,vec3f(1.,.98,.93),sparkle*coreLayer);
+  }
+  if(!live){alpha*=.34;}
+  return vec4f(rgb,alpha);
 }
-@fragment fn fs(v:Out)->@location(0) vec4f{
- let w=fwidth(v.local);let d=length(v.local);let dw=fwidth(d);
- if(v.role==0u){let world=v.local*u.misc.x;let grid=abs(fract(world*.5+.5)-.5);let aw=max(w*u.misc.x*.5,vec2f(.0001));let line=1.-min(min(grid.x/aw.x,grid.y/aw.y),1.);let border=smoothstep(.992,1.,max(abs(v.local.x),abs(v.local.y)));return vec4f(v.color.rgb,max(line*.13,border*.65));}
- if(d>1.){discard;}let aa=max(dw,.005);let edge=1.-smoothstep(1.-aa,1.,d);
- if(v.role==1u||v.role==3u||v.role==4u){let ring=smoothstep(.96-aa,.96,d);return vec4f(v.color.rgb,edge*mix(.055,.9,ring)*v.color.a);}
- if(v.role==2u){return vec4f(v.color.rgb*(.85+.15*(1.-d*d)),edge);}
- return vec4f(v.color.rgb*(.82+.18*(1.-d*d)),edge);
-}`;
+`;
 class Renderer{
   constructor(adapter,device){
     this.device=device;this.canvas=$('scene');this.context=this.canvas.getContext('webgpu');this.disposed=false;this.inFlight=0;
