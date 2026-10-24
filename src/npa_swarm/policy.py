@@ -22,11 +22,14 @@ class LocalPolicy(nn.Module):
     when disconnected. The network learns whether/how to act on directions:
     no scripted pushing or reconnection, global map, ID or absolute coordinate.
     """
-    def __init__(self, obs_dim: int, hidden_dim: int = 32):
+    def __init__(self, obs_dim: int, hidden_dim: int = 32, relay_memory_decay: float = .97):
         super().__init__()
         if obs_dim != 20 or hidden_dim < 8:
             raise ValueError("Expected 20-channel observation and hidden_dim >= 8")
         self.obs_dim, self.hidden_dim = obs_dim, hidden_dim
+        if not 0 < relay_memory_decay < 1:
+            raise ValueError("relay_memory_decay must be within (0,1)")
+        self.relay_memory_decay = relay_memory_decay
         self.state_dim = hidden_dim + 6
         scalar_dim = hidden_dim - 4
         self.encode = nn.Sequential(nn.Linear(obs_dim + hidden_dim + 6, hidden_dim), nn.Tanh())
@@ -55,7 +58,8 @@ class LocalPolicy(nn.Module):
             raise ValueError(f"Policy state last dimension must be {self.state_dim}")
         scalar_dim = self.hidden_dim - 4
         neighbors = aggregate(hidden, graph)
-        beacons = relay_beacons(hidden[..., -6:], obs, graph).reshape(*obs.shape[:-1], 2, 3)
+        beacons = relay_beacons(hidden[..., -6:], obs, graph,
+                                memory_decay=self.relay_memory_decay).reshape(*obs.shape[:-1], 2, 3)
         directions = F.normalize(beacons[..., 1:], dim=-1, eps=1e-8) * beacons[..., 0:1]
         beacon_input = torch.cat((beacons[..., 0:1], directions), dim=-1).flatten(-2)
         encoded = self.encode(torch.cat((obs, neighbors[..., :self.hidden_dim], beacon_input), -1))

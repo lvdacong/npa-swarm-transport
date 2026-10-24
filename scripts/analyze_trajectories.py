@@ -50,6 +50,26 @@ def analyze(root):
                                    < manifest["env_config"]["object_radius"] + manifest["env_config"]["agent_radius"]).any(0).sum()))
                 bridge = np.asarray([m["bridge"][0] for m in metrics], dtype=bool)
                 row["bridge_transition_steps"] = (np.flatnonzero(bridge[1:] != bridge[:-1]) + 1).tolist()
+                relay = [(i, m) for i, m in enumerate(metrics) if "cargo_near_agents" in m]
+                if relay:
+                    near = sum(m["cargo_near_agents"][0] for _, m in relay)
+                    contact = sum(m["cargo_contact_agents"][0] for _, m in relay)
+                    reached = sum(m["goal_relay_near_cargo_agents"][0] for _, m in relay)
+                    reached_contact = sum(m["goal_relay_contact_agents"][0] for _, m in relay)
+                    row.update(goal_message_near_cargo_agent_fraction=reached / near if near else None,
+                               goal_message_contact_agent_fraction=reached_contact / contact if contact else None,
+                               contact_decisions=sum(m["cargo_contact_agents"][0] > 0 for _, m in relay),
+                               goal_message_contact_decisions=sum(m["goal_relay_contact_agents"][0] > 0 for _, m in relay))
+                    for label, key in (("near_cargo", "goal_relay_near_cargo_agents"),
+                                       ("contact", "goal_relay_contact_agents")):
+                        first = next(((i, m) for i, m in relay if m[key][0] > 0), None)
+                        row["first_goal_message_" + label + "_seconds"] = (
+                            first[1].get("relay_decision_step", [first[0] - 1])[0] * dt if first else None)
+                    if reached:
+                        for key in ("goal_bearing_error_near_cargo", "goal_bearing_alignment_near_cargo"):
+                            row[key] = sum(m[key][0] * m["goal_relay_near_cargo_agents"][0] for _, m in relay) / reached
+                    pushing = [m["cargo_force_toward_goal"][0] for _, m in relay if m["goal_relay_contact_agents"][0] > 0]
+                    row["targetward_force_when_contact_has_message"] = float(np.mean(pushing)) if pushing else None
         rows.append(row)
     return {"evaluation": str(root.resolve()), "checkpoint": manifest["checkpoint"],
             "requested": manifest["requested"], "diagnostic": manifest["diagnostic"], "episodes": rows}

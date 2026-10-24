@@ -1,5 +1,6 @@
 """Reward-only actual-work credit; no threshold deadzone, no static-force bonus."""
 import torch
+import pytest
 from npa_swarm.config import EnvConfig
 from npa_swarm.env import SwarmEnv
 
@@ -11,8 +12,10 @@ def arranged(weight):
     return env
 
 
-def test_work_credit_changes_reward_not_physics_or_observation():
+@pytest.mark.parametrize("mode", ["work", "marginal"])
+def test_work_credit_changes_reward_not_physics_or_observation(mode):
     base,shaped=arranged(0),arranged(1)
+    shaped.cfg.contact_credit_mode = mode
     a=torch.zeros_like(base.positions);a[0,0,0]=1
     x,y=base.step(a),shaped.step(a)
     for left,right in ((x[0],y[0]),(base.positions,shaped.positions),(base.object_pos,shaped.object_pos)):
@@ -61,3 +64,37 @@ def test_population_scaled_work_credit_retains_mean_at_different_population():
         means.append(info["reward_contact_credit"])
         torch.testing.assert_close(info["reward_contact_credit"], info["reward_progress"] / 3, atol=1e-6, rtol=1e-4)
     torch.testing.assert_close(means[0], means[1], atol=1e-6, rtol=1e-4)
+
+
+@pytest.mark.parametrize("device", ["cpu", "cuda"])
+def test_marginal_credit_changes_only_reward_and_separates_cancelled_contacts(device):
+    if device == "cuda" and not torch.cuda.is_available():
+        pytest.skip("requires physical CUDA")
+    from npa_swarm.physics import integrate
+    from dataclasses import replace
+    c = EnvConfig(n_agents=2, substeps=1, contact_credit_mode="marginal")
+    p = torch.tensor([[[-.7, 0.], [.7, 0.]]], device=device)
+    o = torch.zeros(1, 2, device=device)
+    goal = torch.tensor([[2., 0.]], device=device)
+    edges = torch.empty(0, dtype=torch.long, device=device)
+    a = integrate(p, o, goal, torch.zeros_like(p), edges, edges, c)
+    b = integrate(p, o, goal, torch.zeros_like(p), edges, edges, replace(c, contact_credit_mode="work"))
+    for x, y in zip(a[:4], b[:4]):
+        torch.testing.assert_close(x, y, rtol=0, atol=0)
+    assert torch.equal(a[2], o)  # exact cancellation, no net motion
+    assert a[4][0, 0] > 0 and a[4][0, 1] < 0
+    torch.testing.assert_close(a[4].sum(), torch.zeros((), device=device), atol=2e-6, rtol=0)
+    assert torch.count_nonzero(b[4]) == 0
+
+
+def test_marginal_credit_respects_unknown_goal_and_blocked_wall():
+    env = arranged(3); env.cfg.contact_credit_mode = "marginal"
+    a = torch.zeros_like(env.positions); a[0, 0, 0] = 1
+    env.found_goal[:] = False
+    assert env.step(a)[4]["reward_contact_credit"] == 0
+    env = arranged(3); env.cfg.contact_credit_mode = "marginal"
+    shift = env.cfg.arena_half - env.cfg.object_radius
+    env.positions[0, 0, 0] += shift; env.object_pos[0, 0] = shift
+    env.goal_pos[:] = torch.tensor([9.8, 0]); env._refresh()
+    for _ in range(3):
+        assert env.step(a)[4]["reward_contact_credit"] == 0

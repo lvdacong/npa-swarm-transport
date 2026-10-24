@@ -21,6 +21,7 @@ def main(argv=None):
         p.add_argument("--episode-steps",type=int,default=1200)
         p.add_argument("--sense-radius",type=float,default=1.2)
         p.add_argument("--work-credit-weight",type=float,default=1.,help="actual moving-work credit; population-mean experiment uses N")
+        p.add_argument("--contact-credit-mode",choices=("work","marginal"),default="work")
         device_args(p)
     doctor=sub.add_parser("doctor"); device_args(doctor);doctor.add_argument("--output")
     perf=sub.add_parser("probe");env_args(perf)
@@ -33,6 +34,7 @@ def main(argv=None):
     training.add_argument("--rollout-steps",type=int,default=128);training.add_argument("--bptt-steps",type=int,default=32)
     training.add_argument("--ppo-epochs",type=int,default=3);training.add_argument("--hidden-dim",type=int,default=32)
     training.add_argument("--learning-rate",type=float,default=3e-4)
+    training.add_argument("--relay-memory-decay",type=float,default=.97)
     evaluation=sub.add_parser("evaluate");device_args(evaluation)
     evaluation.add_argument("--checkpoint",required=True);evaluation.add_argument("--output",required=True)
     evaluation.add_argument("--seeds",nargs="+",type=int,default=[100,101,102]);evaluation.add_argument("--episodes-per-seed",type=int,default=1)
@@ -59,20 +61,21 @@ def main(argv=None):
     else:
         cfg=EnvConfig(n_agents=args.agents,num_envs=args.envs,stage=args.stage,layout=args.layout,
                       seed=args.seed,episode_steps=args.episode_steps,sense_radius=args.sense_radius,
-                      work_credit_weight=args.work_credit_weight)
+                      work_credit_weight=args.work_credit_weight,contact_credit_mode=args.contact_credit_mode)
         if args.command=="probe":
             result=probe(cfg,args.output,str(device),args.steps,args.warmup,args.train_updates,args.trace)
         elif args.command=="train":
             from .train import train
             if args.resume and args.warmstart:parser.error("Choose --resume OR --warmstart")
             if args.resume:
-                forbidden={"--agents","--envs","--stage","--layout","--seed","--episode-steps","--sense-radius","--work-credit-weight",
-                           "--rollout-steps","--bptt-steps","--ppo-epochs","--hidden-dim","--learning-rate"}
+                forbidden={"--agents","--envs","--stage","--layout","--seed","--episode-steps","--sense-radius","--work-credit-weight","--contact-credit-mode",
+                           "--rollout-steps","--bptt-steps","--ppo-epochs","--hidden-dim","--learning-rate","--relay-memory-decay"}
                 provided=sys.argv[1:] if argv is None else argv
                 if any(token.split("=",1)[0] in forbidden for token in provided):
                     parser.error("Strict resume uses saved configs; omit overrides or start a new run")
             tc=TrainConfig(hidden_dim=args.hidden_dim,rollout_steps=args.rollout_steps,bptt_steps=args.bptt_steps,
-                           ppo_epochs=args.ppo_epochs,learning_rate=args.learning_rate,seed=args.seed)
+                           ppo_epochs=args.ppo_epochs,learning_rate=args.learning_rate,seed=args.seed,
+                           relay_memory_decay=args.relay_memory_decay)
             result=train(None if args.resume else cfg,None if args.resume else tc,args.output,args.updates,
                          str(device),resume=args.resume,warmstart=args.warmstart)
         else:

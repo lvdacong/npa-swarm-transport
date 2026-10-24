@@ -141,6 +141,6 @@ def evaluate(checkpoint, output, seeds=(100, 101, 102), episodes_per_seed=1,
         "seconds": time.perf_counter() - start,
         "engineering_evaluation_completed": not (counts["error"] + counts["interrupted"] + counts["not_started"]),
         "full_horizon_completed": completed == len(requests), "research_task_passed": False,
-        "note": "Task v2 has changed physics/population/bridge semantics. Do not pool with v1; learned quality needs reviewed outcomes."}
+        "note": "Task physics v2, model schema recorded in manifest.checkpoint. Discovery, message arrival and movement are not delivery; keep checkpoint/config denominators separate."}
     _json_dump(output / "summary.json", summary)
     return summary

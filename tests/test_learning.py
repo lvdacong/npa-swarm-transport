@@ -174,3 +174,11 @@ def test_source_identity_kept_when_files_change(tmp_path,monkeypatch):
     monkeypatch.setattr("npa_swarm.train.source_sha256",lambda:"changed-on-disk")
     path=tmp_path/"p.pt";t.save(path)
     assert torch.load(path,weights_only=False)["source_sha256"]==identity
+
+
+def test_relay_retention_is_checkpointed_and_restored(tmp_path):
+    t = Trainer(SwarmEnv(EnvConfig(n_agents=16)), TrainConfig(hidden_dim=8, relay_memory_decay=.997))
+    path = tmp_path / 'retention.pt'; t.save(path)
+    loaded = Trainer.load(path)
+    policy, _, metadata = load_policy_checkpoint(path)
+    assert loaded.policy.relay_memory_decay == policy.relay_memory_decay == metadata['relay_memory_decay'] == .997

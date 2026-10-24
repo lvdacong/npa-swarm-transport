@@ -29,6 +29,7 @@ class EnvConfig:
     bridge_weight: float = 0.05
     bridge_progress_weight: float = 0.25
     work_credit_weight: float = 1.0
+    contact_credit_mode: str = "work"
     exploration_weight: float = 0.2
     seed: int = 42
 
@@ -39,6 +40,8 @@ class EnvConfig:
             raise ValueError("Invalid stage or layout")
         if self.task_version != 2:
             raise ValueError("This runtime implements task v2; use the original revision for v1")
+        if self.contact_credit_mode not in ("work", "marginal"):
+            raise ValueError("contact_credit_mode must be work or marginal")
         for name in ("arena_half", "agent_radius", "object_radius", "goal_radius", "comm_radius",
                      "sense_radius", "dt", "max_force", "agent_drag", "max_speed", "object_drag", "contact_stiffness"):
             if getattr(self, name) <= 0:
@@ -68,12 +71,15 @@ class TrainConfig:
     entropy_coef: float = 0.005
     max_grad_norm: float = 0.5
     seed: int = 42
+    relay_memory_decay: float = 0.97
 
     def __post_init__(self):
         if self.hidden_dim < 8 or min(self.rollout_steps, self.bptt_steps, self.ppo_epochs) < 1:
             raise ValueError("hidden_dim >= 8 and positive rollout/optimization sizes required")
         if self.learning_rate <= 0 or not 0 < self.gamma <= 1 or not 0 <= self.gae_lambda <= 1:
             raise ValueError("Invalid optimizer/return configuration")
+        if not 0 < self.relay_memory_decay < 1:
+            raise ValueError("relay_memory_decay must decay gradually within (0,1)")
 
     def to_dict(self):
         return asdict(self)

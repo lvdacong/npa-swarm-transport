@@ -3,7 +3,7 @@ import torch
 
 
 @torch.no_grad()
-def relay_beacons(old, obs, graph, decay=0.97):
+def relay_beacons(old, obs, graph, decay=0.97, memory_decay=None):
     """Return [B,N,6]: (object_conf, object_dx, object_dy, goal_conf, goal_dx, goal_dy).
 
     Only local sightings source a field; otherwise updates read last-step
@@ -42,7 +42,7 @@ def relay_beacons(old, obs, graph, decay=0.97):
                     else torch.zeros(total, 2, 2, device=old.device, dtype=old.dtype))
         incoming_vec = torch.where(valid[..., None], prior[selected_src, target, 1:] + relative,
                                    incoming_vec)
-    own_conf = prior[..., 0] * decay
+    own_conf = prior[..., 0] * (decay if memory_decay is None else memory_decay)
     own_vec = prior[..., 1:]
     prefer_neighbor = (neighbor_conf > 0) & (neighbor_conf >= own_conf - 1e-7)
     conf = torch.where(prefer_neighbor, neighbor_conf, own_conf)
@@ -63,7 +63,8 @@ def relay_diagnostics(env, memory, geometry=False):
     near = env._object_distance_agent <= env.cfg.object_radius + env.cfg.sense_radius
     contact = env._contact
     counts = torch.stack((obj, goal, near, near & goal, contact, contact & goal), -1).float().sum(1)
-    result = dict(object_relay_reach_fraction=counts[:, 0] / env.cfg.n_agents,
+    result = dict(relay_decision_step=env.steps.clone(),
+                  object_relay_reach_fraction=counts[:, 0] / env.cfg.n_agents,
                   goal_relay_reach_fraction=counts[:, 1] / env.cfg.n_agents,
                   cargo_near_agents=counts[:, 2], goal_relay_near_cargo_agents=counts[:, 3],
                   cargo_contact_agents=counts[:, 4], goal_relay_contact_agents=counts[:, 5],

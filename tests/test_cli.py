@@ -9,9 +9,11 @@ def test_minimal_v2_defaults():
     assert TrainConfig().rollout_steps==128 and TrainConfig().bptt_steps==32
 
 
-def test_resume_cannot_silently_override_task(tmp_path):
+@pytest.mark.parametrize("override", [["--agents", "16"], ["--relay-memory-decay", ".997"],
+                                     ["--contact-credit-mode", "marginal"]])
+def test_resume_cannot_silently_override_task(tmp_path, override):
     with pytest.raises(SystemExit):
-        main(["train","--resume","missing.pt","--agents","16","--updates","1","--output",str(tmp_path)])
+        main(["train","--resume","missing.pt",*override,"--updates","1","--output",str(tmp_path)])
 
 
 def test_bad_config():

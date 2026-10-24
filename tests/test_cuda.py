@@ -74,8 +74,9 @@ def test_cuda_sparse_mean_duplicates_values_gradients():
     torch.testing.assert_close(y.grad.cpu(),x.grad,atol=2e-6,rtol=2e-5)
     m=gg._mean_matrix
     torch.sparse_csr_tensor(m.crow_indices(),m.col_indices(),m.values(),size=m.shape,check_invariants=True)
-def test_captured_physics_matches_eager_with_contacts_walls_and_edge_buckets():
-    cfg = EnvConfig(n_agents=48, num_envs=2, stage="contact")
+@pytest.mark.parametrize("credit_mode", ["work", "marginal"])
+def test_captured_physics_matches_eager_with_contacts_walls_and_edge_buckets(credit_mode):
+    cfg = EnvConfig(n_agents=48, num_envs=2, stage="contact", contact_credit_mode=credit_mode)
     eager, captured = SwarmEnv(cfg, "cuda"), SwarmEnv(cfg, "cuda")
     eager.use_cuda_graph_physics = False
     # Cargo against a wall in one world, with both forward and backward work.

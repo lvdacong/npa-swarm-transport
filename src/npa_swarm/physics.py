@@ -40,11 +40,25 @@ def integrate(positions, object_pos, goal_pos, actuator, src, dst, c):
         object_pos.clamp_(-c.arena_half + c.object_radius, c.arena_half - c.object_radius)
         object_vel.masked_fill_(before_cargo_wall != object_pos, 0)
         if c.work_credit_weight:
-            displacement = object_pos - before_cargo
-            work = (-contact_force * displacement[:, None]).sum(-1)
-            progress = ((goal_pos - before_cargo).norm(dim=-1)
-                        - (goal_pos - object_pos).norm(dim=-1))
-            work_credit += work / work.abs().sum(-1, keepdim=True).clamp_min(1e-8) * progress[:, None]
+            if c.contact_credit_mode == "marginal":
+                # Reward-only, one-substep counterfactual: remove this contact
+                # force, retaining every other force and the exact drag/walls.
+                # Unlike normalized actual work this can distinguish opposing
+                # contacts when their net force cancels. Never an actor input.
+                without = cargo_force[:, None] + contact_force
+                norm = without.norm(dim=-1, keepdim=True)
+                velocity_without = (without / norm.clamp_min(1e-8)
+                                    * (norm - c.object_static_friction).clamp_min(0) / c.object_drag)
+                position_without = (before_cargo[:, None] + velocity_without * sub_dt).clamp(
+                    -c.arena_half + c.object_radius, c.arena_half - c.object_radius)
+                work_credit += ((goal_pos[:, None] - position_without).norm(dim=-1)
+                                - (goal_pos - object_pos).norm(dim=-1)[:, None])
+            else:
+                displacement = object_pos - before_cargo
+                work = (-contact_force * displacement[:, None]).sum(-1)
+                progress = ((goal_pos - before_cargo).norm(dim=-1)
+                            - (goal_pos - object_pos).norm(dim=-1))
+                work_credit += work / work.abs().sum(-1, keepdim=True).clamp_min(1e-8) * progress[:, None]
     return positions, velocities, object_pos, object_vel, work_credit
 
 

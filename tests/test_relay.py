@@ -93,3 +93,21 @@ def test_moving_agents_keep_bearings_to_static_occluded_endpoints(device):
     for channel, endpoint in ((1, [-.2, 0.]), (4, [1.1, 0.])):
         expected = torch.tensor(endpoint, device=device) - moved
         torch.testing.assert_close(result[0, :, channel:channel+2], expected, atol=1e-6, rtol=0)
+
+
+def test_retention_changes_only_known_memory_not_hop_latency_or_unseen_nodes():
+    graph = Graph(torch.tensor([], dtype=torch.long), torch.tensor([], dtype=torch.long), 2)
+    known = torch.zeros(1, 2, 6); known[0, 0, 3:] = torch.tensor([1., 2., 1.])
+    old, retained = known.clone(), known.clone()
+    obs = torch.zeros(1, 2, 20)
+    for _ in range(100):
+        old = relay_beacons(old, obs, graph)
+        retained = relay_beacons(retained, obs, graph, memory_decay=.997)
+    assert old[0, 0, 3] < .05 < retained[0, 0, 3] < 1
+    assert torch.count_nonzero(retained[0, 1]) == 0
+    chain_graph, _ = chain(); state = torch.zeros(1, 4, 6)
+    state = relay_beacons(state, observations(), chain_graph, memory_decay=.997)
+    assert (state[0, :3, 3] == 0).all()
+    state = relay_beacons(state, observations(), chain_graph, memory_decay=.997)
+    torch.testing.assert_close(state[0, 2, 3], torch.tensor(.97))
+    assert (state[0, :2, 3] == 0).all()

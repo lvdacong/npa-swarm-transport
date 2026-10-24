@@ -98,7 +98,7 @@ class Trainer:
     def __init__(self, env: SwarmEnv, config: TrainConfig, policy=None):
         self.env, self.cfg, self.device = env, config, torch.device(env.device)
         seed_all(config.seed)
-        self.policy = (policy or LocalPolicy(env.obs_dim, config.hidden_dim)).to(self.device)
+        self.policy = (policy or LocalPolicy(env.obs_dim, config.hidden_dim, config.relay_memory_decay)).to(self.device)
         self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=config.learning_rate)
         self.hidden = self.policy.initial_state(env.cfg.num_envs, env.cfg.n_agents, self.device)
         self.updates = self.env_steps = self.episodes = self.successes = 0
@@ -123,7 +123,7 @@ class Trainer:
             obs, graph = self.env.observe(), self.env.graph
             action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
             for key, statistic in relay_diagnostics(self.env, memory).items():
-                relay_statistics.setdefault(key, []).append(statistic.mean())
+                relay_statistics.setdefault(key, []).append(statistic.float().mean())
             next_obs, reward, terminated, truncated, info = self.env.step(action)
             observations.append(obs.detach())
             graphs.append(graph)
@@ -299,11 +299,13 @@ def has_trained_weights(data):
 def load_policy_checkpoint(path, device="cpu"):
     data = _read_checkpoint(path, device)
     cfg = EnvConfig(**data["env_config"])
-    policy = LocalPolicy(data["obs_dim"], data["train_config"]["hidden_dim"]).to(device)
+    tc = TrainConfig(**data["train_config"])
+    policy = LocalPolicy(data["obs_dim"], tc.hidden_dim, tc.relay_memory_decay).to(device)
     policy.load_state_dict(data["model"])
     policy.eval()
     return policy, cfg, {"checkpoint_sha256": file_sha256(path), "updates": data["updates"],
         "env_steps": data["env_steps"], "stage": cfg.stage, "source_sha256": data["source_sha256"],
+        "model_schema_version": data["schema_version"], "relay_memory_decay": tc.relay_memory_decay,
         "learned_success_verified": False, "has_trained_weights": has_trained_weights(data), "lineage": data.get("lineage", {})}
 
 
