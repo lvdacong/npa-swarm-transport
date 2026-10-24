@@ -15,9 +15,13 @@ class Graph:
     dst: torch.Tensor
     num_nodes: int = 0
     _mean_matrix: torch.Tensor | None = field(default=None, repr=False)
+    relative: torch.Tensor | None = field(default=None, repr=False)
+    cue_scales: tuple[float, float] = (1.85, 2.2)
 
     def to(self, device):
-        return Graph(self.src.to(device), self.dst.to(device), self.num_nodes)
+        return Graph(self.src.to(device), self.dst.to(device), self.num_nodes,
+                     relative=None if self.relative is None else self.relative.to(device),
+                     cue_scales=self.cue_scales)
 
 
 @torch.no_grad()
@@ -51,7 +55,7 @@ def radius_graph(positions: torch.Tensor, radius: float) -> Graph:
     dst = torch.div(query, 9, rounding_mode="floor")
     delta = flat[src] - flat[dst]
     keep = (src != dst) & (delta.square().sum(-1) <= radius * radius)
-    return Graph(src[keep], dst[keep], total)
+    return Graph(src[keep], dst[keep], total, relative=delta[keep])
 
 
 def aggregate(hidden: torch.Tensor, graph: Graph) -> torch.Tensor:

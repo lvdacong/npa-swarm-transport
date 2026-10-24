@@ -69,3 +69,7 @@ Chrome 路径按实际安装调整；Edge 同理。烟测是未训练、CPU 模�
 ## 回填与停止
 
 在新的同一接续 Issue 回传：代码 SHA、简要硬件版本/设备、默认或实际配置、显存和吞吐、第一条完整搬运轨迹、失败边界、评价分母与连通统计、WebGPU 设备及实际倍速。大权重保留本机路径+摘要即可。分开给“工程通过”和“学习通过”。若阶段还没学会，报告实际失败，不用已通过的软件工程结果包装完成。只有重大未解问题才换 Issue，普通修复留在本单，避免循环发布。
+
+## v3 relay experiment — targeted addendum
+
+Start from the published relay revision (not any prior v2 checkpoint). Keep the last v2 failed trajectories/checkpoint as immutable baseline; v3 needs a **fresh direct search run** because the message architecture has changed (schema 3). No contact curriculum, no scripted controller, no action shield. First use the existing CUDA environment and a short two-world smoke/training window; check finite gradients, saved-state resume and actual world-step throughput. Pay special attention to the new two reductions and extra edge-relative vectors: if they cut throughput materially, optimize them before longer training. Do **not** repeat old Windows/Linux CI or the hardware-browser soak unless a relevant code change breaks that path. On actual search trajectories log how many nodes acquire cargo/goal relay confidence, distance progress and signed goal-directed cargo force, bridge after discovery, contact persistence and training reward terms. Only then choose a bounded continuation. Preserve failure denominators and independent seeds; stop/rethink when learning gets worse, rather than boosting reward globally or mechanically training longer. Work and report within the active handoff Issue.

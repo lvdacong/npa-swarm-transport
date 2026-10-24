@@ -161,6 +161,9 @@ class SwarmEnv:
     def _refresh(self):
         c = self.cfg
         self.graph = radius_graph(self.positions, c.comm_radius)
+        # Only constant LOCAL sensor calibrations, not target coordinates.
+        self.graph.cue_scales = (c.sense_radius + c.object_radius,
+                                 c.sense_radius + c.goal_radius)
         self._labels = components(self.graph, c.num_envs, c.n_agents)
         total = c.num_envs * c.n_agents
         counts = torch.zeros(total, device=self.device, dtype=torch.long)

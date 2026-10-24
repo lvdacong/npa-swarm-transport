@@ -1,0 +1,72 @@
+"""Local route messages are strictly causal and geometrically relative."""
+import torch
+from npa_swarm.graph import Graph
+from npa_swarm.relay import relay_beacons
+from npa_swarm.policy import LocalPolicy
+
+
+def chain():
+    pos = torch.tensor([[0.,0.],[.3,0.],[.6,0.],[.9,0.]])
+    edges = [(i,i+1) for i in range(3)] + [(i+1,i) for i in range(3)]
+    src = torch.tensor([a for a,b in edges])
+    dst = torch.tensor([b for a,b in edges])
+    return Graph(src,dst,4,relative=pos[src]-pos[dst]),pos
+
+
+def observations():
+    obs = torch.zeros(1,4,20)
+    obs[0,3,12] = 1
+    obs[0,3,10] = .2 / 2.2
+    obs[0,0,9] = 1
+    obs[0,0,7] = -.2 / 1.85
+    return obs
+
+
+def test_goal_bearing_spreads_one_hop_and_never_teleports():
+    graph,_ = chain()
+    obs = observations()
+    beacons = torch.zeros(1,4,6)
+    for t in range(4):
+        beacons = relay_beacons(beacons,obs,graph)
+        assert (beacons[0,:max(0,3-t),3]==0).all()
+    assert beacons[0,0,3] > .9 ** 3
+    torch.testing.assert_close(beacons[0,0,4:6],torch.tensor([1.1,0.]),atol=1e-5,rtol=0)
+
+
+def test_disconnected_agents_never_receive_remote_goal_message():
+    graph,_ = chain()
+    graph.src = torch.tensor([0,1,2,3])
+    graph.dst = torch.tensor([1,0,3,2])
+    graph.relative = torch.tensor([[-.3,0],[.3,0],[-.3,0],[.3,0]])
+    beacons = torch.zeros(1,4,6)
+    for _ in range(12):
+        beacons = relay_beacons(beacons,observations(),graph)
+    assert (beacons[0,:2,3] == 0).all()
+    assert (beacons[0,2:,3] > 0).all()
+
+
+def test_policy_uses_causal_bearing_only_as_learned_action_basis():
+    graph,_ = chain()
+    policy = LocalPolicy(20,8)
+    with torch.no_grad():
+        policy.actor.weight.zero_()
+        policy.actor.bias.zero_()
+        policy.actor.bias[-1] = 1.
+    memory = policy.initial_state(1,4)
+    obs = observations()
+    for t in range(4):
+        mean,_,_,memory = policy(obs,memory,graph)
+        if t < 3: assert mean[0,0].abs().max() == 0
+    assert mean[0,0,0] > 0 and mean[0,0,1] == 0
+    assert torch.isfinite(memory).all()
+
+
+def test_translation_preserves_message_and_action():
+    graph, pos = chain()
+    p = LocalPolicy(20,8)
+    obs = observations()
+    state = p.initial_state(1,4)
+    shifted = Graph(graph.src,graph.dst,4,relative=(pos+42)[graph.src]-(pos+42)[graph.dst])
+    a=p(obs,state,graph);b=p(obs,state,shifted)
+    for x,y in zip(a,b):
+        torch.testing.assert_close(x,y,rtol=0,atol=2e-6)

@@ -18,3 +18,6 @@ Use the current Issue and docs/LOCAL_HANDOFF.md. Reuse already working Windows/C
 Improve actual transport and usable viewing speed, not GPU utilization percentages or test counts. Profile only the observed bottleneck. Do not use cold/profiler timings as steady throughput. Do not mechanically add training seeds or fill budgets without mechanism progress. A first observation window is not a convergence deadline; changes need a reason, not random reward-weight rotation.
 
 Codex may modify algorithms, rewards and settings based on evidence, then revalidate the changed behavior. Return code, actual hardware, configuration, useful trajectories, throughput and limitations in the same Issue. A successor Issue is warranted only for a material unresolved problem, not routine fixes. No scheduled tasks.
+
+
+v3 research: local beacons are a one-hop geometry-corrected communication primitive, never privileged world observations or a scripted controller. All neural action coefficients remain learned. New model schema 3 requires a new search run; do not overwrite the preserved v2 checkpoints. Prefer targeted CUDA and relay tests, no large CI matrix.

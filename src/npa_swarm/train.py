@@ -13,7 +13,7 @@ from .config import EnvConfig, TrainConfig
 from .env import SwarmEnv
 from .policy import LocalPolicy
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 
 def file_sha256(path):
@@ -117,9 +117,12 @@ class Trainer:
             "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
         initial_hidden = self.hidden.detach().clone()
         contact_peaks, contact_active = [], []
+        object_relay_reach, goal_relay_reach = [], []
         for t in range(c.rollout_steps):
             obs, graph = self.env.observe(), self.env.graph
             action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
+            object_relay_reach.append((memory[..., -6] > .05).float().mean())
+            goal_relay_reach.append((memory[..., -3] > .05).float().mean())
             next_obs, reward, terminated, truncated, info = self.env.step(action)
             observations.append(obs.detach())
             graphs.append(graph)
@@ -157,7 +160,9 @@ class Trainer:
         metrics = {"mean_reward": float(rewards_t.mean()), "rollout_episodes": episode_count,
                    "rollout_successes": success_count,
                    "contact_count_max": int(torch.stack(contact_peaks).max()),
-                   "contact_active_fraction": float(torch.stack(contact_active).mean())}
+                   "contact_active_fraction": float(torch.stack(contact_active).mean()),
+                   "object_relay_reach_fraction": float(torch.stack(object_relay_reach).mean()),
+                   "goal_relay_reach_fraction": float(torch.stack(goal_relay_reach).mean())}
         aliases = {"connected": "connected_fraction", "largest_fraction": "largest_fraction", "bridge": "bridge_fraction"}
         for key, collected in physical.items():
             if collected:
@@ -259,7 +264,7 @@ class Trainer:
             trainer.optimizer.load_state_dict(data["optimizer"])
             env.load_state_dict(data["env_state"])
             trainer.hidden = data["hidden"].to(device)
-            expected = (env.cfg.num_envs, env.cfg.n_agents, trainer.cfg.hidden_dim)
+            expected = (env.cfg.num_envs, env.cfg.n_agents, trainer.policy.state_dim)
             if tuple(trainer.hidden.shape) != expected or not bool(torch.isfinite(trainer.hidden).all()):
                 raise ValueError("Invalid recurrent memory")
             for field in ("updates", "env_steps", "episodes", "successes"):
@@ -282,7 +287,7 @@ class Trainer:
 def _read_checkpoint(path, device):
     data = torch.load(path, map_location=device, weights_only=False)
     if data.get("schema_version") != SCHEMA_VERSION:
-        raise ValueError("Task/policy v2 requires a new run. Replay v1 checkpoints at 8e07995; do not silently resume them here.")
+        raise ValueError("Task/policy v3 requires a new run; v1/v2 weights are incompatible, preserve them separately.")
     return data
 
 

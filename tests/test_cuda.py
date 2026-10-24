@@ -24,7 +24,7 @@ def test_cuda_radius_graph_and_policy_backward_match_cpu():
     cg,gg=radius_graph(pos,.29),radius_graph(pos.cuda(),.29)
     assert torch.equal((cg.src*128+cg.dst).sort().values,(gg.src*128+gg.dst).sort().values.cpu())
     torch.manual_seed(12);cp=LocalPolicy(20,16);gp=copy.deepcopy(cp).cuda()
-    ob=torch.randn(2,64,20,generator=gen);h=torch.randn(2,64,16,generator=gen)
+    ob=torch.randn(2,64,20,generator=gen);h=torch.randn(2,64,cp.state_dim,generator=gen)
     a,b=cp(ob,h,cg),gp(ob.cuda(),h.cuda(),gg)
     for k in (0,2,3):torch.testing.assert_close(b[k].cpu(),a[k],atol=2e-5,rtol=2e-4)
     sum(a[k].square().mean() for k in (0,2,3)).backward()

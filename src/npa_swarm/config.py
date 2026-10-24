@@ -56,7 +56,7 @@ class EnvConfig:
 
 @dataclass
 class TrainConfig:
-    hidden_dim: int = 32  # 28 recurrent scalars and two learned vector memories
+    hidden_dim: int = 32  # 28 trainable channels + 6 local endpoint relay channels
     rollout_steps: int = 128
     bptt_steps: int = 32
     ppo_epochs: int = 3

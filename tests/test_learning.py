@@ -47,7 +47,7 @@ def test_messages_one_hop_and_gradient():
 
 def test_permutation_equivariance():
     torch.manual_seed(11);x=torch.rand(2,12,2);p=LocalPolicy(20,8)
-    obs,h=torch.randn(2,12,20),torch.randn(2,12,8);order=torch.randperm(12)
+    obs,h=torch.randn(2,12,20),torch.randn(2,12,p.state_dim);order=torch.randperm(12)
     a=p(obs,h,radius_graph(x,.6));b=p(obs[:,order],h[:,order],radius_graph(x[:,order],.6))
     for k in (0,2,3):torch.testing.assert_close(b[k],a[k][:,order],atol=1e-6,rtol=1e-5)
 
@@ -55,14 +55,14 @@ def test_permutation_equivariance():
 def test_direction_memory_survives_absence_of_local_cue_without_global_bias():
     p=LocalPolicy(20,8);g=Graph(torch.tensor([],dtype=torch.long),torch.tensor([],dtype=torch.long),1)
     obs=torch.zeros(1,1,20);obs[...,6]=.4;obs[...,16:]=1
-    h=torch.randn(1,1,8);h[...,-4:]=0
+    h=p.initial_state(1,1);h[...,:p.hidden_dim-4]=torch.randn(1,1,p.hidden_dim-4)
     with torch.no_grad():
         p.actor.weight.zero_();p.actor.bias.fill_(1)
         p.vector_write.weight.zero_();p.vector_write.bias.zero_()
     mean,_,_,_=p(obs,h,g);assert torch.count_nonzero(mean)==0
-    h[...,-4:-2]=torch.tensor([.7,.2])
+    h[...,p.hidden_dim-4:p.hidden_dim-2]=torch.tensor([.7,.2])
     mean,_,_,carry=p(obs,h,g)
-    assert mean.norm()>0 and carry[...,-4:].norm()>0
+    assert mean.norm()>0 and carry[...,p.hidden_dim-4:p.hidden_dim].norm()>0
     # This is architectural capability, not proof that training learns a destination.
 
 
@@ -108,7 +108,7 @@ def test_resume_next_update_across_reset_is_exact_cpu(tmp_path):
     assert actual["mean_reward"]==expected["mean_reward"] and actual["policy_loss"]==expected["policy_loss"]
 
 
-def test_budget_resume_and_v2_warmstart(tmp_path):
+def test_budget_resume_and_v3_warmstart(tmp_path):
     ec=EnvConfig(n_agents=16,stage="contact",episode_steps=3)
     tc=TrainConfig(hidden_dim=8,rollout_steps=2,bptt_steps=2,ppo_epochs=1)
     out=tmp_path/"run";first=train(ec,tc,out,1)
