@@ -54,8 +54,8 @@ struct Out {
 @fragment fn fs(v:Out)->@location(0) vec4f {
   let d=length(v.local);
   let dw=max(fwidth(d),.008);
+  let w=fwidth(v.local);
   if(v.role==0u){
-    let w=fwidth(v.local);
     let world=v.local*u.misc.x;
     let grid=abs(fract(world*.5+.5)-.5);
     let aw=max(w*u.misc.x*.5,vec2f(.0001));
@@ -106,7 +106,7 @@ struct Out {
   let coreLayer=core;
   let rimLayer=outline*(1.-coreLayer);
   let haloLayer=corona*(1.-coreLayer)*(1.-outline);
-  let alpha=coreLayer+rimLayer+haloLayer;
+  var alpha=coreLayer+rimLayer+haloLayer;
   var rgb=(coreColor*coreLayer+vec3f(.64,.60,.99)*rimLayer+haloColor*haloLayer)/max(alpha,1e-5);
   if(direct){
     let glint=length(v.local-vec2f(-bodyR*.27,-bodyR*.26));

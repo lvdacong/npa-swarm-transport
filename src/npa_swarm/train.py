@@ -12,6 +12,7 @@ import torch
 from .config import EnvConfig, TrainConfig
 from .env import SwarmEnv
 from .policy import LocalPolicy
+from .relay import relay_diagnostics
 
 SCHEMA_VERSION = 3
 
@@ -117,12 +118,12 @@ class Trainer:
             "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
         initial_hidden = self.hidden.detach().clone()
         contact_peaks, contact_active = [], []
-        object_relay_reach, goal_relay_reach = [], []
+        relay_statistics = {}
         for t in range(c.rollout_steps):
             obs, graph = self.env.observe(), self.env.graph
             action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
-            object_relay_reach.append((memory[..., -6] > .05).float().mean())
-            goal_relay_reach.append((memory[..., -3] > .05).float().mean())
+            for key, statistic in relay_diagnostics(self.env, memory).items():
+                relay_statistics.setdefault(key, []).append(statistic.mean())
             next_obs, reward, terminated, truncated, info = self.env.step(action)
             observations.append(obs.detach())
             graphs.append(graph)
@@ -160,9 +161,8 @@ class Trainer:
         metrics = {"mean_reward": float(rewards_t.mean()), "rollout_episodes": episode_count,
                    "rollout_successes": success_count,
                    "contact_count_max": int(torch.stack(contact_peaks).max()),
-                   "contact_active_fraction": float(torch.stack(contact_active).mean()),
-                   "object_relay_reach_fraction": float(torch.stack(object_relay_reach).mean()),
-                   "goal_relay_reach_fraction": float(torch.stack(goal_relay_reach).mean())}
+                   "contact_active_fraction": float(torch.stack(contact_active).mean())}
+        metrics.update({key: float(torch.stack(values).mean()) for key, values in relay_statistics.items()})
         aliases = {"connected": "connected_fraction", "largest_fraction": "largest_fraction", "bridge": "bridge_fraction"}
         for key, collected in physical.items():
             if collected:

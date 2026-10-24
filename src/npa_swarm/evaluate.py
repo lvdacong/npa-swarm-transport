@@ -9,6 +9,7 @@ import traceback
 import numpy as np
 import torch
 from .env import SwarmEnv
+from .relay import relay_diagnostics
 from .train import file_sha256, load_policy_checkpoint, seed_all, source_sha256
 
 
@@ -89,7 +90,9 @@ def evaluate(checkpoint, output, seeds=(100, 101, 102), episodes_per_seed=1,
             metrics.append(_metrics(env.metrics()))
             for _ in range(horizon):
                 action, _, _, _, hidden = policy.act(env.observe(), hidden, env.graph, deterministic=deterministic)
+                message_info = relay_diagnostics(env, hidden, geometry=True)
                 _, _, terminated, truncated, info = env.step(action)
+                info.update(message_info)
                 packet = torch.cat((env.positions[0].flatten(), env.object_pos[0], action[0].flatten())).cpu().numpy()
                 positions.append(packet[:cfg.n_agents*2].reshape(cfg.n_agents, 2).copy())
                 objects.append(packet[cfg.n_agents*2:cfg.n_agents*2+2].copy())

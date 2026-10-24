@@ -14,7 +14,7 @@ class SwarmEnv:
         "positions", "velocities", "object_pos", "object_vel", "goal_pos", "steps",
         "found_object", "found_goal", "visited", "episode_return", "ever_disconnected",
         "disconnected_seconds", "min_largest_fraction", "bridge_eligible_steps", "bridge_steps",
-        "detached_age",
+        "detached_age", "last_displacement",
     )
 
     def __init__(self, config: EnvConfig, device="cpu"):
@@ -28,6 +28,7 @@ class SwarmEnv:
         b, n = c.num_envs, c.n_agents
         self.positions = torch.zeros(b, n, 2, device=self.device)
         self.velocities = torch.zeros_like(self.positions)
+        self.last_displacement = torch.zeros_like(self.positions)
         self.object_pos = torch.zeros(b, 2, device=self.device)
         self.object_vel = torch.zeros_like(self.object_pos)
         self.goal_pos = torch.zeros_like(self.object_pos)
@@ -107,7 +108,7 @@ class SwarmEnv:
             self.positions[i] = pos.to(self.device)
             self.object_pos[i] = cargo.to(self.device)
             self.goal_pos[i] = goal.to(self.device)
-            for name in ("velocities", "object_vel", "steps", "found_object", "found_goal", "visited",
+            for name in ("velocities", "last_displacement", "object_vel", "steps", "found_object", "found_goal", "visited",
                          "episode_return", "ever_disconnected", "disconnected_seconds",
                          "bridge_eligible_steps", "bridge_steps", "detached_age"):
                 getattr(self, name)[i].zero_()
@@ -161,6 +162,7 @@ class SwarmEnv:
     def _refresh(self):
         c = self.cfg
         self.graph = radius_graph(self.positions, c.comm_radius)
+        self.graph.displacement = self.last_displacement
         # Only constant LOCAL sensor calibrations, not target coordinates.
         self.graph.cue_scales = (c.sense_radius + c.object_radius,
                                  c.sense_radius + c.goal_radius)
@@ -239,6 +241,7 @@ class SwarmEnv:
         actions = actions.to(self.device).clamp(-1, 1)
         actuator = actions / actions.norm(dim=-1, keepdim=True).clamp_min(1) * c.max_force
         old_distance = self._distance.clone()
+        old_positions = self.positions.clone()
         old_local_distance, old_visible = self._object_distance_agent, self._object_visible
         old_found_obj, old_found_goal = self.found_object.clone(), self.found_goal.clone()
         old_repair = torch.log1p(self._repair_gap / c.comm_radius)
@@ -262,6 +265,7 @@ class SwarmEnv:
         for target, value in zip((self.positions, self.velocities, self.object_pos, self.object_vel), outputs[:4]):
             target.copy_(value)
         work_credit = outputs[4].clone()
+        self.last_displacement = self.positions - old_positions
         self.steps += 1
         self._refresh()
         self.found_object |= self._object_visible.any(-1)

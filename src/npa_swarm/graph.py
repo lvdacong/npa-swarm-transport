@@ -17,11 +17,13 @@ class Graph:
     _mean_matrix: torch.Tensor | None = field(default=None, repr=False)
     relative: torch.Tensor | None = field(default=None, repr=False)
     cue_scales: tuple[float, float] = (1.85, 2.2)
+    displacement: torch.Tensor | None = field(default=None, repr=False)
 
     def to(self, device):
         return Graph(self.src.to(device), self.dst.to(device), self.num_nodes,
                      relative=None if self.relative is None else self.relative.to(device),
-                     cue_scales=self.cue_scales)
+                     cue_scales=self.cue_scales,
+                     displacement=None if self.displacement is None else self.displacement.to(device))
 
 
 @torch.no_grad()

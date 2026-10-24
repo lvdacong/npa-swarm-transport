@@ -89,6 +89,7 @@ def test_publication_rate_decoupled_from_simulation():
 
 def test_snapshot_visual_channels_match_real_sensor_contact_and_relay():
     import numpy as np
+    from npa_swarm.env import SwarmEnv
     from npa_swarm.policy import LocalPolicy
     from npa_swarm.server import pack_snapshot
     cfg = EnvConfig(n_agents=12, stage="contact")

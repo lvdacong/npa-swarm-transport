@@ -1,5 +1,12 @@
 # v2 implementation
 
+Local v3 correction: each stored beacon bearing is first adjusted by its
+sender's integrated displacement since the preceding control state, then
+transferred through the current edge-relative displacement. This uses local
+odometry only. It does not refresh moving remote cargo or expose absolute
+coordinates; fresh cargo sightings still require causal message propagation.
+The displacement is retained in checkpoints and rollout graphs.
+
 `SwarmEnv -> local observations + radius graph -> LocalPolicy -> force -> physics`.
 
 ## Local learned mechanism

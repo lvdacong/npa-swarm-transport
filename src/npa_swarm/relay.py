@@ -15,6 +15,12 @@ def relay_beacons(old, obs, graph, decay=0.97):
         raise ValueError("Expected [B,N,6] beacons and matching local observations")
     total = b * n
     prior = old.detach().reshape(total, 2, 3)
+    if graph.displacement is not None:
+        # Previous memory is relative to the previous body position. Apply
+        # only each sender's own integrated motion before using current edges.
+        # Moving remote cargo remains stale until a new sighting propagates.
+        motion = graph.displacement.reshape(total, 1, 2)
+        prior = torch.cat((prior[..., :1], prior[..., 1:] - motion), -1)
     src, dst = graph.src, graph.dst
     edge_count = src.numel()
     neighbor_conf = torch.zeros(total, 2, device=old.device, dtype=old.dtype)
@@ -48,3 +54,27 @@ def relay_beacons(old, obs, graph, decay=0.97):
     vector = torch.where(local_visible[..., None], local_vec, vector)
     alive = conf >= .02
     return torch.cat((conf[..., None], torch.where(alive[..., None], vector, 0.0)), -1).reshape(b, n, 6)
+
+
+@torch.no_grad()
+def relay_diagnostics(env, memory, geometry=False):
+    """Decision-time diagnostics only. No result is fed to the controller."""
+    obj, goal = memory[..., -6] > .05, memory[..., -3] > .05
+    near = env._object_distance_agent <= env.cfg.object_radius + env.cfg.sense_radius
+    contact = env._contact
+    counts = torch.stack((obj, goal, near, near & goal, contact, contact & goal), -1).float().sum(1)
+    result = dict(object_relay_reach_fraction=counts[:, 0] / env.cfg.n_agents,
+                  goal_relay_reach_fraction=counts[:, 1] / env.cfg.n_agents,
+                  cargo_near_agents=counts[:, 2], goal_relay_near_cargo_agents=counts[:, 3],
+                  cargo_contact_agents=counts[:, 4], goal_relay_contact_agents=counts[:, 5],
+                  goal_relay_near_cargo_fraction=counts[:, 3] / counts[:, 2].clamp_min(1),
+                  goal_relay_contact_fraction=counts[:, 5] / counts[:, 4].clamp_min(1))
+    if geometry:
+        known_near = near & goal
+        actual = env.goal_pos[:, None] - env.positions
+        estimated = memory[..., -2:]
+        error = (actual - estimated).norm(dim=-1)
+        cosine = (actual * estimated).sum(-1) / (actual.norm(dim=-1) * estimated.norm(dim=-1)).clamp_min(1e-8)
+        result.update(goal_bearing_error_near_cargo=(error * known_near).sum(-1) / counts[:, 3].clamp_min(1),
+                      goal_bearing_alignment_near_cargo=(cosine * known_near).sum(-1) / counts[:, 3].clamp_min(1))
+    return result

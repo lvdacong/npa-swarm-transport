@@ -8,6 +8,7 @@ import time
 import numpy as np
 import torch
 import npa_swarm.env as module
+import npa_swarm.policy as policy_module
 from npa_swarm.config import EnvConfig
 from npa_swarm.env import SwarmEnv
 from npa_swarm.train import load_policy_checkpoint
@@ -67,6 +68,7 @@ def main():
                     instrument(module, 'components', 'components'),
                     instrument(env, '_repair_distances', 'repair_gaps'),
                     instrument(env, '_refresh', 'refresh_including_nested'),
+                    instrument(policy_module, 'relay_beacons', 'relay_beacons'),
                     instrument(policy, 'act', 'policy'),
                     instrument(env, 'step', 'step_including_nested')]
             try:

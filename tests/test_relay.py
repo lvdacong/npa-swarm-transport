@@ -1,5 +1,6 @@
 """Local route messages are strictly causal and geometrically relative."""
 import torch
+import pytest
 from npa_swarm.graph import Graph
 from npa_swarm.relay import relay_beacons
 from npa_swarm.policy import LocalPolicy
@@ -70,3 +71,25 @@ def test_translation_preserves_message_and_action():
     a=p(obs,state,graph);b=p(obs,state,shifted)
     for x,y in zip(a,b):
         torch.testing.assert_close(x,y,rtol=0,atol=2e-6)
+
+
+@pytest.mark.parametrize("device", ["cpu", "cuda"])
+def test_moving_agents_keep_bearings_to_static_occluded_endpoints(device):
+    if device == "cuda" and not torch.cuda.is_available():
+        pytest.skip("requires CUDA")
+    graph, pos = chain()
+    graph = graph.to(device)
+    obs = observations().to(device)
+    memory = torch.zeros(1, 4, 6, device=device)
+    for _ in range(4):
+        memory = relay_beacons(memory, obs, graph)
+    motion = torch.tensor([[.05,.01],[.02,-.03],[-.03,.02],[-.05,-.01]], device=device)
+    moved = pos.to(device) + motion
+    graph.relative = moved[graph.src] - moved[graph.dst]
+    graph.displacement = motion[None]
+    result = relay_beacons(memory, torch.zeros_like(obs), graph)
+    # No local sightings now. Both endpoints remain static while every agent
+    # moves differently, so old own and old neighbor bearings need odometry.
+    for channel, endpoint in ((1, [-.2, 0.]), (4, [1.1, 0.])):
+        expected = torch.tensor(endpoint, device=device) - moved
+        torch.testing.assert_close(result[0, :, channel:channel+2], expected, atol=1e-6, rtol=0)
