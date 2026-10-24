@@ -98,3 +98,62 @@ def test_marginal_credit_respects_unknown_goal_and_blocked_wall():
     env.goal_pos[:] = torch.tensor([9.8, 0]); env._refresh()
     for _ in range(3):
         assert env.step(a)[4]["reward_contact_credit"] == 0
+
+def test_rear_arc_gap_rejects_front_approach_and_respects_geometry():
+    from npa_swarm.env import rear_arc_gap
+    r=.71
+    cargo=torch.zeros(1,2)
+    goal=torch.tensor([[2.,0.]])
+    front=torch.tensor([[[1.2,0.],[1.1,0.]]])
+    rear=torch.tensor([[[-1.2,0.],[-1.1,0.]]])
+    a=rear_arc_gap(front,cargo,goal,r)[0]
+    b=rear_arc_gap(rear,cargo,goal,r)[0]
+    assert float(a[0]-a[1])==pytest.approx(0.,abs=1e-6)
+    assert float(b[0]-b[1])==pytest.approx(.1,abs=1e-6)
+    side=torch.tensor([[[0.,1.2],[-.8,.7]]])
+    progress=rear_arc_gap(side,cargo,goal,r)[0]
+    assert progress[1]<progress[0]
+    offset=torch.tensor([[3.2,-5.7]])
+    torch.testing.assert_close(rear_arc_gap(side+offset,cargo+offset,goal+offset,r),
+                               rear_arc_gap(side,cargo,goal,r),atol=1e-6,rtol=1e-6)
+    assert torch.isfinite(rear_arc_gap(cargo[:,None],cargo,goal,r)).all()
+
+
+def test_informed_rear_reward_changes_only_credit_not_physics():
+    cfg=EnvConfig(n_agents=8,work_credit_weight=0,exploration_weight=0,rear_approach_weight=.8)
+    informed,blind=SwarmEnv(cfg),SwarmEnv(cfg)
+    pos=torch.tensor([[-1.54,-.09],[-1.40,-.09],[-1.26,-.09],[-1.12,-.09],
+                      [-1.54,.09],[-1.40,.09],[-1.26,.09],[-1.12,.09]])
+    for world in (informed,blind):
+        world.positions[0]=pos
+        world.object_pos.zero_()
+        world.goal_pos[:]=torch.tensor([2.,0.])
+        world._refresh()
+        world.found_goal[:]=True
+    actions=torch.zeros_like(informed.positions)
+    actions[...,0]=1.
+    x=informed.step(actions,goal_relay=torch.ones(1,8))
+    y=blind.step(actions,goal_relay=torch.zeros(1,8))
+    torch.testing.assert_close(informed.positions,blind.positions,atol=0,rtol=0)
+    torch.testing.assert_close(informed.object_pos,blind.object_pos,atol=0,rtol=0)
+    assert float(x[4]["reward_rear_approach"])>0
+    assert float(y[4]["reward_rear_approach"])==0
+    assert float((x[1]-y[1]).sum())>0
+    assert not x[2].any() and not y[2].any()
+
+
+def test_legacy_v3_checkpoint_retains_original_reward_when_field_missing(tmp_path):
+    from npa_swarm.config import TrainConfig
+    from npa_swarm.train import Trainer
+    env=SwarmEnv(EnvConfig(n_agents=8,rear_approach_weight=0))
+    trainer=Trainer(env,TrainConfig(hidden_dim=8,rollout_steps=2,bptt_steps=2,ppo_epochs=1))
+    checkpoint=tmp_path/"oldv3.pt"
+    trainer.save(checkpoint)
+    data=torch.load(checkpoint,map_location="cpu",weights_only=False)
+    del data["env_config"]["rear_approach_weight"]
+    del data["env_state"]["config"]["rear_approach_weight"]
+    torch.save(data,checkpoint)
+    resumed=Trainer.load(checkpoint)
+    assert resumed.env.cfg.rear_approach_weight==0
+    resumed.update()
+    assert resumed.updates==1

@@ -91,7 +91,8 @@ def evaluate(checkpoint, output, seeds=(100, 101, 102), episodes_per_seed=1,
             for _ in range(horizon):
                 action, _, _, _, hidden = policy.act(env.observe(), hidden, env.graph, deterministic=deterministic)
                 message_info = relay_diagnostics(env, hidden, geometry=True)
-                _, _, terminated, truncated, info = env.step(action)
+                _, _, terminated, truncated, info = env.step(
+                    action, goal_relay=hidden[..., -3])
                 info.update(message_info)
                 packet = torch.cat((env.positions[0].flatten(), env.object_pos[0], action[0].flatten())).cpu().numpy()
                 positions.append(packet[:cfg.n_agents*2].reshape(cfg.n_agents, 2).copy())

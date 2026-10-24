@@ -86,7 +86,8 @@ def probe(cfg: EnvConfig, output, device="auto", steps=16, warmup=2, train_updat
                     action, _, _, _, hidden = policy.act(env.observe(), hidden, env.graph)
                 sync(); middle = time.perf_counter()
                 with torch.profiler.record_function("physics_graph_observation"):
-                    _, _, terminated, truncated, _ = env.step(action)
+                    _, _, terminated, truncated, _ = env.step(
+                        action, goal_relay=hidden[..., -3])
                 sync(); end = time.perf_counter()
                 if i >= warmup:
                     times.append(end-begin); policy_times.append(middle-begin); physics_times.append(end-middle)

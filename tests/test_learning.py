@@ -85,7 +85,7 @@ def test_bootstrap_reuse_matches_eager_reference_including_resets(horizon):
     with torch.no_grad():
         for _ in range(t.cfg.rollout_steps):
             a,z,lp,v,m=t.policy.act(env.observe(),h,env.graph)
-            ob,r,term,trunc,_=env.step(a)
+            ob,r,term,trunc,_=env.step(a,goal_relay=m[...,-3])
             _,_,nv,_=t.policy(ob,m,env.graph)
             rewards.append(r);values.append(v);next_values.append(nv);terms.append(term);truncs.append(trunc);latent.append(z)
             done=term|trunc;h=m*(~done).view(-1,1,1)

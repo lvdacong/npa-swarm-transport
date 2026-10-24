@@ -166,7 +166,8 @@ class Simulation:
                         action, _, _, _, self.hidden = self.policy.act(
                             self.env.observe(), self.hidden, self.env.graph, deterministic=not self.stochastic,
                             generator=self.action_generator if self.stochastic else None)
-                        _, _, terminated, truncated, self.info = self.env.step(action)
+                        _, _, terminated, truncated, self.info = self.env.step(
+                            action, goal_relay=self.hidden[..., -3])
                         # The termination query synchronizes the executed step;
                         # no redundant synchronize() + many scalar CPU copies.
                         ended = bool((terminated | truncated).any())

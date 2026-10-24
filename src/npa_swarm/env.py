@@ -8,6 +8,21 @@ from .graph import aggregate, components, radius_graph
 OBS_DIM = 20
 
 
+def rear_arc_gap(positions, cargo, destination, radius):
+    """Reward-only distance to rear pushing sector; never an actor input.
+
+    A front-side particle moving radially into cargo gets NO rear-approach
+    credit. Rearward alignment plus approach to contact rim both matter.
+    """
+    offset = positions - cargo[:, None]
+    distance = offset.norm(dim=-1).clamp_min(1e-7)
+    forward = destination - cargo
+    forward = forward / forward.norm(dim=-1, keepdim=True).clamp_min(1e-7)
+    cosine = (offset * forward[:, None]).sum(-1) / distance
+    rear_weight = ((0.2 - cosine) / 1.2).clamp(0, 1)
+    return radius * (cosine + 0.4).clamp_min(0) + rear_weight * (distance - radius).abs()
+
+
 class SwarmEnv:
     obs_dim = OBS_DIM
     _state_names = (
@@ -234,7 +249,7 @@ class SwarmEnv:
         return self._observation
 
     @torch.no_grad()
-    def step(self, actions):
+    def step(self, actions, goal_relay=None):
         c = self.cfg
         if tuple(actions.shape) != (c.num_envs, c.n_agents, 2):
             raise ValueError("Actions must be [num_envs,n_agents,2]")
@@ -242,6 +257,19 @@ class SwarmEnv:
         actuator = actions / actions.norm(dim=-1, keepdim=True).clamp_min(1) * c.max_force
         old_distance = self._distance.clone()
         old_positions = self.positions.clone()
+        rear_before = None
+        if c.rear_approach_weight:
+            rear_before = rear_arc_gap(self.positions, self.object_pos, self.goal_pos,
+                                      c.object_radius + c.agent_radius)
+            if goal_relay is None:
+                relay_strength = torch.zeros_like(rear_before)
+            else:
+                if tuple(goal_relay.shape) != (c.num_envs, c.n_agents):
+                    raise ValueError("Goal relay must have shape [num_envs, n_agents]")
+                # Informed local actors can act on this signal; privileged
+                # cargo->goal geometry affects only the training reward.
+                relay_strength = (goal_relay.detach().to(self.device) / .2).clamp(0, 1)
+            rear_witnesses = self._object_visible.clone()
         old_local_distance, old_visible = self._object_distance_agent, self._object_visible
         old_found_obj, old_found_goal = self.found_object.clone(), self.found_goal.clone()
         old_repair = torch.log1p(self._repair_gap / c.comm_radius)
@@ -290,15 +318,40 @@ class SwarmEnv:
                           * (old_visible & self._object_visible)) * .05
         effort = .0005 * actions.square().sum(-1) * c.dt
         work_credit *= c.work_credit_weight * old_found_goal[:, None]
-        team_reward = discovery + success.float() * 5 + progress + endpoint_reward - bridge_cost
-        reward = team_reward[:, None] + exploration + local_progress + repair_reward + work_credit - detachment_cost - effort
+        rear_reward = torch.zeros_like(repair_reward)
+        transport_reward = torch.zeros_like(progress[:, None])
+        if c.rear_approach_weight:
+            # Only current cargo witnesses in the main graph component with
+            # an actual goal message receive geometrical rear progress.
+            active = rear_witnesses & self._object_visible & self._in_main
+            rear_after = rear_arc_gap(self.positions, self.object_pos, self.goal_pos,
+                                     c.object_radius + c.agent_radius)
+            rear_reward = (c.rear_approach_weight * (rear_before - rear_after)
+                           * relay_strength * active)
+            # The cargo moved because of local contacts. Do not attribute its
+            # direction to all 900 uninformed actions (bounded scale <=16).
+            witnesses = rear_witnesses | self._object_visible
+            count = witnesses.sum(-1).clamp_min(1)
+            multiplier = (c.n_agents / count).clamp(max=16).to(progress.dtype)
+            transport_reward = progress[:, None] * witnesses * multiplier[:, None]
+        if c.rear_approach_weight:
+            team_reward = discovery + success.float() * 5 + endpoint_reward - bridge_cost
+        else:
+            # Exactly preserve historical v3 reward addition order for saved
+            # schemas that did not contain a rear-approach field.
+            team_reward = discovery + success.float() * 5 + progress + endpoint_reward - bridge_cost
+        reward = (team_reward[:, None] + transport_reward + exploration +
+                  local_progress + repair_reward + work_credit + rear_reward -
+                  detachment_cost - effort)
         self.episode_return += reward.mean(-1)
         info = self.metrics()
         info.update(reward_progress=progress, reward_discovery=discovery,
                     reward_connectivity=-detachment_cost.mean(-1) - bridge_cost,
                     reward_repair=repair_reward.mean(-1), reward_endpoint_progress=endpoint_reward,
                     reward_exploration=exploration.mean(-1), reward_local_progress=local_progress.mean(-1),
-                    reward_effort=-effort.mean(-1), reward_contact_credit=work_credit.mean(-1))
+                    reward_effort=-effort.mean(-1), reward_contact_credit=work_credit.mean(-1),
+                    reward_rear_approach=rear_reward.mean(-1),
+                    reward_transport_local=transport_reward.mean(-1))
         return self.observe(), reward, success, (self.steps >= c.episode_steps) & ~success, info
 
     @torch.no_grad()
@@ -335,6 +388,7 @@ class SwarmEnv:
         # Additive reward option: earlier schema-3 states used actual work.
         # Missing is exactly "work", never permission to switch to marginal.
         saved_config.setdefault("contact_credit_mode", "work")
+        saved_config.setdefault("rear_approach_weight", 0.0)
         if saved_config != asdict(self.cfg):
             raise ValueError("Environment configuration differs from checkpoint")
         for name in self._state_names:

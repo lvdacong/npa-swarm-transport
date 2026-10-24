@@ -37,3 +37,34 @@ Arrival requires the complete cargo disk inside the destination (`center distanc
 A particle seeing cargo or destination can start a six-channel, agent-relative message (object/goal confidence plus local bearing). On each control step, neighbors can forward only the **previous** step's message across an actual communication edge; their relative edge displacement updates the bearing. Message confidence decays at each hop and in disconnected memory. This solves a communication bottleneck without granting an oracle global target direction: no local witness and no connected route means no remote target information. The relay never acts, pulls, reconnects, assigns roles or chooses a route for the agents. The shared neural actor learns coefficients for these local bearings along with the original learned recurrent messages. Training reward, environment geometry, 900 population, no-course baseline and WebGPU are otherwise unchanged. This is a **hypothesis for training**, not a claim of learned recruitment or arrival.
 
 The model adds six non-learned relay-state channels outside the existing 32 learned recurrent channels. Checkpoint schema **3** is not compatible with schema 2/v2 weights; retain the prior checkpoint and use a new run directory. No old model comparisons may be claimed under unchanged task identifiers.
+
+## Informed rear-arc learning reward (next study; no curriculum)
+
+Issue #4 established that a correctly aligned goal message may reach almost every
+contactor while the trained policy still pushes away from the goal. The next
+minimal, train-only intervention is a **signed per-agent change in rear-sector
+distance** for agents that directly *see* cargo, belong to the largest live
+communication component, and have received an actual local goal message.
+`rear_arc_gap` is defined by cargo-relative orientation, contact-rim distance
+and a continuous rear-sector weighting; approaching cargo radially from the
+**front** does not earn the bonus. It is a change in potential, not a per-step
+standing bonus. Simulator truth for cargo and destination is used ONLY to
+compute that reward. The actor still sees exactly the local 20 observations,
+shared recurrent state and one-hop local goal messages. No teacher action,
+role, privileged target coordinate in NN, scripted pushing, connectivity shield,
+teleport, agent deletion or easier reset distribution is introduced.
+
+Under the same new-reward switch, true cargo-distance improvement is credited
+only to local witnesses, with amplification capped at 16, rather than
+broadcasting the same motion event to all 900 uninformed actions. Actual
+physics, terminal success, discovery, exploration and graph objectives are
+unchanged. The default new experiment uses `rear_approach_weight=0.8`
+and trained relay memory decay `.997` (chosen because it greatly improved
+same-weight contactor message reach, **not** because prior B20 RL learned).
+A value of **0** keeps the original v3 progress broadcast and no rear reward.
+Earlier schema-3 checkpoints that lack this new field restore with 0.0;
+their saved model, reward and optimiser meanings must not silently change.
+A new v3 training run may warmstart the preserved A20 weights with the new
+reward and retention but must record its parent hash, new optimizer,
+separate output directory and new evaluation denominators. Historical frozen
+B/C failures must not be reported as successes.

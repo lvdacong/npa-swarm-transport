@@ -21,3 +21,6 @@ Codex may modify algorithms, rewards and settings based on evidence, then revali
 
 
 v3 research: local beacons are a one-hop geometry-corrected communication primitive, never privileged world observations or a scripted controller. All neural action coefficients remain learned. New model schema 3 requires a new search run; do not overwrite the preserved v2 checkpoints. Prefer targeted CUDA and relay tests, no large CI matrix.
+
+
+Next train-only rear-sector reward is simulator-privileged **reward computation**, not an NN observation/action, scripted agent, controller or curriculum. `rear_approach_weight=0` retains old v3 reward semantics; old checkpoints missing this config field must load as 0. Keep physical task unchanged and run only focused hardware validation, never duplicate broad CI.

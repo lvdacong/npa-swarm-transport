@@ -115,7 +115,8 @@ class Trainer:
         physical = {key: [] for key in (
             "connected", "largest_fraction", "bridge", "object_distance", "object_speed", "contact_count",
             "cargo_force_norm", "cargo_force_toward_goal", "reward_progress", "reward_contact_credit",
-            "found_object", "found_goal", "repair_gap_max", "endpoint_gap", "reward_repair", "reward_connectivity")}
+            "found_object", "found_goal", "repair_gap_max", "endpoint_gap",
+            "reward_repair", "reward_connectivity", "reward_rear_approach", "reward_transport_local")}
         initial_hidden = self.hidden.detach().clone()
         contact_peaks, contact_active = [], []
         relay_statistics = {}
@@ -124,7 +125,8 @@ class Trainer:
             action, z, lp, value, memory = self.policy.act(obs, self.hidden, graph)
             for key, statistic in relay_diagnostics(self.env, memory).items():
                 relay_statistics.setdefault(key, []).append(statistic.float().mean())
-            next_obs, reward, terminated, truncated, info = self.env.step(action)
+            next_obs, reward, terminated, truncated, info = self.env.step(
+                action, goal_relay=memory[..., -3])
             observations.append(obs.detach())
             graphs.append(graph)
             latent.append(z)
@@ -258,7 +260,9 @@ class Trainer:
         data = _read_checkpoint(path, device)
         before = capture_rng()
         try:
-            env = SwarmEnv(EnvConfig(**data["env_config"]), device=device)
+            env_cfg = dict(data["env_config"])
+            env_cfg.setdefault("rear_approach_weight", 0.0)
+            env = SwarmEnv(EnvConfig(**env_cfg), device=device)
             trainer = cls(env, TrainConfig(**data["train_config"]))
             trainer.policy.load_state_dict(data["model"])
             trainer.optimizer.load_state_dict(data["optimizer"])
@@ -298,7 +302,9 @@ def has_trained_weights(data):
 
 def load_policy_checkpoint(path, device="cpu"):
     data = _read_checkpoint(path, device)
-    cfg = EnvConfig(**data["env_config"])
+    env_cfg = dict(data["env_config"])
+    env_cfg.setdefault("rear_approach_weight", 0.0)
+    cfg = EnvConfig(**env_cfg)
     tc = TrainConfig(**data["train_config"])
     policy = LocalPolicy(data["obs_dim"], tc.hidden_dim, tc.relay_memory_decay).to(device)
     policy.load_state_dict(data["model"])

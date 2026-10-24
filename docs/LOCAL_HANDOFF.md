@@ -81,3 +81,29 @@ Chrome 路径按实际安装调整；Edge 同理。烟测是未训练、CPU 模�
 ## v3 relay experiment — targeted addendum
 
 Start from the published relay revision (not any prior v2 checkpoint). Keep the last v2 failed trajectories/checkpoint as immutable baseline; v3 needs a **fresh direct search run** because the message architecture has changed (schema 3). No contact curriculum, no scripted controller, no action shield. First use the existing CUDA environment and a short two-world smoke/training window; check finite gradients, saved-state resume and actual world-step throughput. Pay special attention to the new two reductions and extra edge-relative vectors: if they cut throughput materially, optimize them before longer training. Do **not** repeat old Windows/Linux CI or the hardware-browser soak unless a relevant code change breaks that path. On actual search trajectories log how many nodes acquire cargo/goal relay confidence, distance progress and signed goal-directed cargo force, bridge after discovery, contact persistence and training reward terms. Only then choose a bounded continuation. Preserve failure denominators and independent seeds; stop/rethink when learning gets worse, rather than boosting reward globally or mechanically training longer. Work and report within the active handoff Issue.
+
+## Next direct-search experiment: rear-sector credit
+
+Latest source adds **reward-only** goal-informed rear-sector potential progress
+and localizes true cargo motion credit to nearby participants. It does NOT
+change particle count, arena, mass/drag, time limit, local NN information,
+physical contacts or WebGPU. Keep the 900-particle full unknown-endpoint
+search from every reset; **do not** reintroduce contact or light-load curricula.
+Only agents with a locally propagated goal cue and direct cargo sensing
+receive the training-only rear progress. Detached agents receive no bonus.
+The legacy v3 checkpoint with missing `rear_approach_weight` means zero,
+preserving exact older reward semantics under strict resume.
+
+Do not resume old A20 into silently changed rewards: choose a fresh v3
+directory with an explicitly recorded A20 warmstart and `--relay-memory-decay
+.997` (also new-run default). Prefer A20 to B20 and C20: its zero-update
+retention variant showed positive cargo distance progress in one layout,
+although **0/1 full success**. First do targeted CUDA shape/sign/no-physics-
+change tests and a single real PPO update, comparing saved config and
+actually observed rear-positive vs front-negative/zero reward. Then
+evaluate a bounded train window with actual contact persistence, net signed
+cargo force, rear-witness reward, message confidence and bridge coverage.
+Stop and adjust a *specific* problem if it regresses. An absolute world goal
+coordinate is never an actor input. Old frozen failures remain preserved.
+No repeated Linux CI, WebGPU soak, 4096 benchmarks, arbitrary seed sweeps
+or large action matrix.

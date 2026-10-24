@@ -29,6 +29,9 @@ class EnvConfig:
     bridge_weight: float = 0.05
     bridge_progress_weight: float = 0.25
     work_credit_weight: float = 1.0
+    # New run: reward-only rear-arc geometry and localized cargo progress.
+    # 0 preserves historical v3 rewards for existing checkpoints.
+    rear_approach_weight: float = 0.8
     contact_credit_mode: str = "work"
     exploration_weight: float = 0.2
     seed: int = 42
@@ -49,7 +52,7 @@ class EnvConfig:
         if self.substeps < 1 or self.episode_steps < 1 or self.goal_radius <= self.object_radius:
             raise ValueError("Positive step counts and a goal containing the complete cargo are required")
         for name in ("object_static_friction", "connectivity_weight", "repair_weight", "bridge_weight",
-                     "bridge_progress_weight", "work_credit_weight", "exploration_weight"):
+                     "bridge_progress_weight", "work_credit_weight", "rear_approach_weight", "exploration_weight"):
             if getattr(self, name) < 0:
                 raise ValueError(f"{name} cannot be negative")
 
@@ -71,7 +74,7 @@ class TrainConfig:
     entropy_coef: float = 0.005
     max_grad_norm: float = 0.5
     seed: int = 42
-    relay_memory_decay: float = 0.97
+    relay_memory_decay: float = 0.997
 
     def __post_init__(self):
         if self.hidden_dim < 8 or min(self.rollout_steps, self.bptt_steps, self.ppo_epochs) < 1:
